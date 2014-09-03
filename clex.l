@@ -9,17 +9,18 @@ W        [ \t\f]*
 LIT      \"(\\.|[^\\"])*\"
 
 %{
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <ctype.h>
 #include "cgram.tab.h"
+#include <string>
+#include <fstream>
+#include <iostream>
+
+using namespace std;
 
 extern YYSTYPE yylval;
 extern int yychar;
 
 void lexerr(char *s);
-void handle_include();
+void handle_user_include_file();
 
 /* #define DEBUG */
 
@@ -90,7 +91,7 @@ FILE *saved_yyin;
 {LIT}                   {
 			  return STRING; }
 
-"#include"[ ]*\"[^\\"]+\"  { handle_include(); }
+"#include"[ ]*\"[^\\"]+\"  { handle_user_include_file(); }
 
 "#include <iostream>"   { included_iostream = 1; }
 
@@ -160,16 +161,30 @@ int yywrap()
    return 1;
 }
 
-void handle_include()
+void handle_user_include_file()
 {
-   char *newfilename = malloc(strlen(yytext)+1-strlen("#include \"\""));
-   saved_yyin = yyin;
-   char *fname = strchr(yytext, '\"')+1;
-   fname[strlen(fname)-1] = '\0';
-fprintf(stdout, "included filename '%s'\n", fname); fflush(stdout);
-   yyin = fopen(fname,"r");
-   if (yyin == NULL) {
-     lexerr("cannot open include file");
-     exit(1);
+    /* 
+    * Create a new string that contains only the file name
+    * to be included.
+    */
+    string newfile;
+    int startIndex = strchr(yytext, '\"')+1 - yytext;
+    int endIndex = strlen(yytext)-1;
+    int stringLength = endIndex - startIndex;
+
+    newfile.assign(yytext,startIndex,stringLength);
+
+    //cout << "Start Index: " << startIndex << "\n";
+    //cout << "End Index: " << endIndex << "\n";
+    //cout << "String Length: " << stringLength << "\n";
+    //cout << "Included file: " << newfile << "\n";
+
+    saved_yyin = yyin;
+    yyin = fopen(newfile.c_str(),"r");
+    if (!yyin) 
+    {
+        lexerr("cannot open include file");
+        exit(1);
    }
+
 }

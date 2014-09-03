@@ -1,33 +1,18 @@
-CC=g++
-CFLAGS=-c -g
+CC=gcc
+CPP=g++
+CFLAGS=-c -g -v
 
 120++: 120++.o lex.yy.o
-	$(CC) -o 120++ 120++.o lex.yy.o
+	$(CPP) -v -o 120++ 120++.o lex.yy.o
 
-120++.o: 120++.c
-	$(CC) $(CFLAGS) 120++.c
+120++.o: 120++.cpp
+	$(CPP) $(CFLAGS) 120++.cpp
 
 lex.yy.o: lex.yy.c
-	$(CC) $(CFLAGS) lex.yy.c
+	$(CPP) $(CFLAGS) lex.yy.c
 
 lex.yy.c: clex.l cgram.tab.h
 	flex clex.l
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 ## phase 2: ignore for now
 
