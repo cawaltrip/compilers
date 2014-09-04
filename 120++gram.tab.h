@@ -142,7 +142,7 @@ typedef union YYSTYPE
 {
 
 /* Line 1676 of yacc.c  */
-#line 19 "cgram.y"
+#line 19 "120++gram.y"
 
 struct token *tokptr;
 struct tree *treeptr;
@@ -150,7 +150,7 @@ struct tree *treeptr;
 
 
 /* Line 1676 of yacc.c  */
-#line 154 "cgram.tab.h"
+#line 154 "120++gram.tab.h"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */

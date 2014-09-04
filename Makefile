@@ -7,7 +7,7 @@ CPPFLAGS=-c -g -v
 #######################################
 # Filename configurations #############
 #######################################
-BASE_NAME="120++"
+BASE_NAME=120++
 CPP_OBJECT=$(addsuffix .o,$(BASE_NAME))
 CPP_FILE=$(addsuffix .cpp,$(BASE_NAME))
 
@@ -27,7 +27,7 @@ SCANNER_OBJECT=$(addsuffix .o,$(BASE_SCANNER))
 #######################################
 
 # Primary makefile
-all: 120++
+all: $(BASE_NAME)
 
 # Remove created files
 clean:
@@ -35,16 +35,16 @@ clean:
 	-rm -f *.a
 	-rm -f $(SCANNER_FILE) $(SCANNER_OBJECT)
 
-120++: 120++.o lex.yy.o
+$(BASE_NAME): $(CPP_OBJECT) $(SCANNER_OBJECT)
 	$(CPP) -o $(BASE_NAME) $(CPP_OBJECT) $(SCANNER_OBJECT)
 
-120++.o: 120++.cpp
+$(CPP_OBJECT): 120++.cpp
 	$(CPP) $(CPPFLAGS) $(CPP_FILE)
 
-lex.yy.o: lex.yy.c
+$(SCANNER_OBJECT): $(SCANNER_OBJECT)
 	$(CPP) $(CPPFLAGS) $(SCANNER_FILE)
 
-lex.yy.c: $(FLEX_FILE) $(GRAMMAR_FILE)
+$(SCANNER_FILE): $(FLEX_FILE) $(GRAMMAR_FILE)
 	flex $(FLEX_FILE) --outfile=$(SCANNER_FILE)
 
 ## phase 2: ignore for now

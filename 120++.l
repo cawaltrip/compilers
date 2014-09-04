@@ -12,7 +12,7 @@ W        [ \t\f]*
 LIT      \"(\\.|[^\\"])*\"
 
 %{
-#include "cgram.tab.h"
+#include "120++gram.tab.h"
 #include <string>
 #include <fstream>
 #include <iostream>
