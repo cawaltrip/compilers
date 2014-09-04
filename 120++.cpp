@@ -21,7 +21,7 @@ _INITIALIZE_EASYLOGGINGPP
 int main(int argc, char *argv[])
 {    
     // Configure Logging
-    easyloggingpp::Configurations confFromFile("120++.cpp.conf");
+    easyloggingpp::Configurations confFromFile("conf/120++.conf");
     easyloggingpp::Loggers::setDefaultConfigurations(confFromFile,true);
     easyloggingpp::Loggers::reconfigureAllLoggers(confFromFile);
 
