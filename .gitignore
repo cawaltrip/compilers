@@ -2,6 +2,8 @@
 hello.cpp
 hello.c
 myfile.h
+myfile2.h
+myfile3.h
 
 # Object files
 *.o

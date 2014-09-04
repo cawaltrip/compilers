@@ -142,6 +142,11 @@ FILE *saved_yyin;
 "^"                     { return ER; }
 "|"                     { return OR; }
 "?"                     { return QUEST; }
+<<EOF>>                 {
+                            yypop_buffer_state();
+                            if(!YY_CURRENT_BUFFER)
+                                yyterminate();
+                        }
 %%
 
 
@@ -161,7 +166,7 @@ void lexerr(char *s)
  */
 int yywrap()
 {
-   return 1;
+    return 1;
 }
 
 void handle_user_include_file()
@@ -177,13 +182,13 @@ void handle_user_include_file()
 
     newfile.assign(yytext,startIndex,stringLength);
 
-    LOG(INFO) << "Handling an include file: " << newfile;
+    //LOG(INFO) << "Handling an include file: " << newfile;
     //cout << "Start Index: " << startIndex << "\n";
     //cout << "End Index: " << endIndex << "\n";
     //cout << "String Length: " << stringLength << "\n";
     //cout << "Included file: " << newfile << "\n";
 
-    saved_yyin = yyin;
+    //saved_yyin = yyin;
     yyin = fopen(newfile.c_str(),"r");
     if (!yyin) 
     {
@@ -193,7 +198,7 @@ void handle_user_include_file()
     }
     else
     {
-
+        yypush_buffer_state(yy_new_buffer(yyin, YY_BUF_SIZE));
     }
 
 }

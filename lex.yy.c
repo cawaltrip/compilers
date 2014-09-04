@@ -1377,14 +1377,20 @@ YY_RULE_SETUP
 #line 144 "clex.l"
 { return QUEST; }
 	YY_BREAK
+case YY_STATE_EOF(INITIAL):
+#line 145 "clex.l"
+{
+                            yypop_buffer_state();
+                            if(!YY_CURRENT_BUFFER)
+                                yyterminate();
+                        }
+	YY_BREAK
 case 90:
 YY_RULE_SETUP
-#line 145 "clex.l"
+#line 150 "clex.l"
 ECHO;
 	YY_BREAK
-#line 1386 "lex.yy.c"
-case YY_STATE_EOF(INITIAL):
-	yyterminate();
+#line 1394 "lex.yy.c"
 
 	case YY_END_OF_BUFFER:
 		{
@@ -2379,7 +2385,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 145 "clex.l"
+#line 150 "clex.l"
 
 
 
@@ -2400,7 +2406,7 @@ void lexerr(char *s)
  */
 int yywrap()
 {
-   return 1;
+    return 1;
 }
 
 void handle_user_include_file()
@@ -2416,13 +2422,13 @@ void handle_user_include_file()
 
     newfile.assign(yytext,startIndex,stringLength);
 
-    LOG(INFO) << "Handling an include file: " << newfile;
+    //LOG(INFO) << "Handling an include file: " << newfile;
     //cout << "Start Index: " << startIndex << "\n";
     //cout << "End Index: " << endIndex << "\n";
     //cout << "String Length: " << stringLength << "\n";
     //cout << "Included file: " << newfile << "\n";
 
-    saved_yyin = yyin;
+    //saved_yyin = yyin;
     yyin = fopen(newfile.c_str(),"r");
     if (!yyin) 
     {
@@ -2432,7 +2438,7 @@ void handle_user_include_file()
     }
     else
     {
-
+        yypush_buffer_state(yy_new_buffer(yyin, YY_BUF_SIZE));
     }
 
 }

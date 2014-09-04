@@ -2,6 +2,11 @@
 #include <fstream>
 #include <string>
 
+/*  EasyLogging++ written by Majid Khan.
+ *  Version 8.91
+ *  Source code available at: https://github.com/easylogging/easyloggingpp
+ *  Licensed under MIT License
+ */    
 #include "easylogging++.h"
 
 extern FILE *yyin;
@@ -15,13 +20,16 @@ _INITIALIZE_EASYLOGGINGPP
 
 int main(int argc, char *argv[])
 {    
-    // Initialize the logging
-    easyloggingpp::Configurations confFromFile("conf/120++.cpp.conf");
+    // Configure Logging
+    easyloggingpp::Configurations confFromFile("120++.cpp.conf");
     easyloggingpp::Loggers::setDefaultConfigurations(confFromFile,true);
     easyloggingpp::Loggers::reconfigureAllLoggers(confFromFile);
 
+    // Test logging functionality
     LOG(INFO) << "Logging initialized.";
 
+    // Loop through each file that was passed in.
+    // Better error handling could be done here!
     for (int i = 1; i < argc; ++i)
     {
         yyin = fopen(argv[i],"r");
