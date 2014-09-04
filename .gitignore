@@ -2,6 +2,9 @@
 sample/*
 samples/*
 
+# Flex file
+120++.yy.cpp
+
 # Object files
 *.o
 *.ko
