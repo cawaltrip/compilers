@@ -33,7 +33,7 @@ all: 120++
 clean:
 	-rm -f *.o
 	-rm -f *.a
-	-rm -f $(SCANNER) $(SCANNER_OBJECT)
+	-rm -f $(SCANNER_FILE) $(SCANNER_OBJECT)
 
 120++: 120++.o lex.yy.o
 	$(CPP) -o $(BASE_NAME) $(CPP_OBJECT) $(SCANNER_OBJECT)
