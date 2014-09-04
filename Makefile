@@ -27,7 +27,11 @@ SCANNER_OBJECT=$(addsuffix .o,$(BASE_SCANNER))
 #######################################
 
 # Primary makefile
-all: $(BASE_NAME)
+all: 
+	run_flex
+	compile_flex
+	120++.o
+	120++
 
 # Remove created files
 clean:
@@ -35,16 +39,16 @@ clean:
 	-rm -f *.a
 	-rm -f $(SCANNER_FILE) $(SCANNER_OBJECT)
 
-$(BASE_NAME): $(CPP_OBJECT) $(SCANNER_OBJECT)
+120++: $(CPP_OBJECT) $(SCANNER_OBJECT)
 	$(CPP) -o $(BASE_NAME) $(CPP_OBJECT) $(SCANNER_OBJECT)
 
-$(CPP_OBJECT): 120++.cpp
+120++.o: 120++.cpp
 	$(CPP) $(CPPFLAGS) $(CPP_FILE)
 
-$(SCANNER_OBJECT): $(SCANNER_OBJECT)
+compile_flex: $(SCANNER_OBJECT)
 	$(CPP) $(CPPFLAGS) $(SCANNER_FILE)
 
-$(SCANNER_FILE): $(FLEX_FILE) $(GRAMMAR_FILE)
+run_flex: $(FLEX_FILE) $(GRAMMAR_FILE)
 	flex $(FLEX_FILE) --outfile=$(SCANNER_FILE)
 
 ## phase 2: ignore for now
