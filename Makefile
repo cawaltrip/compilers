@@ -45,7 +45,7 @@ lex.yy.o: lex.yy.c
 	$(CPP) $(CPPFLAGS) $(SCANNER_FILE)
 
 lex.yy.c: $(FLEX_FILE) $(GRAMMAR_FILE)
-	flex $(FLEX_FILE)
+	flex $(FLEX_FILE) --outfile=$(SCANNER_FILE)
 
 ## phase 2: ignore for now
 
