@@ -636,6 +636,8 @@ char *yytext;
 #include <string>
 #include <fstream>
 #include <iostream>
+#include "easylogging++.h"
+
 
 using namespace std;
 
@@ -651,7 +653,7 @@ int line_num = 1;
 int errors;
 int included_iostream = 0;
 FILE *saved_yyin;
-#line 655 "lex.yy.c"
+#line 657 "lex.yy.c"
 
 #define INITIAL 0
 
@@ -833,10 +835,10 @@ YY_DECL
 	register char *yy_cp, *yy_bp;
 	register int yy_act;
     
-#line 33 "clex.l"
+#line 35 "clex.l"
 
 
-#line 840 "lex.yy.c"
+#line 842 "lex.yy.c"
 
 	if ( !(yy_init) )
 		{
@@ -922,465 +924,465 @@ do_action:	/* This label is used only to access EOF actions. */
 case 1:
 /* rule 1 can match eol */
 YY_RULE_SETUP
-#line 35 "clex.l"
+#line 37 "clex.l"
 { line_num++; }
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 36 "clex.l"
+#line 38 "clex.l"
 { }
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 38 "clex.l"
+#line 40 "clex.l"
 { return BREAK; }
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 39 "clex.l"
+#line 41 "clex.l"
 { return CASE; }
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 40 "clex.l"
+#line 42 "clex.l"
 { return CHAR; }
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 41 "clex.l"
+#line 43 "clex.l"
 { return CONST; }
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 42 "clex.l"
+#line 44 "clex.l"
 { return CONTINUE; }
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 43 "clex.l"
+#line 45 "clex.l"
 { return DEFAULT; }
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 44 "clex.l"
+#line 46 "clex.l"
 { return DO; }
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 45 "clex.l"
+#line 47 "clex.l"
 { return DOUBLE; }
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 46 "clex.l"
+#line 48 "clex.l"
 { return ELSE; }
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 47 "clex.l"
+#line 49 "clex.l"
 { return ENUM; }
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 48 "clex.l"
+#line 50 "clex.l"
 { return EXTERN; }
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 49 "clex.l"
+#line 51 "clex.l"
 { return FLOAT; }
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 50 "clex.l"
+#line 52 "clex.l"
 { return FOR; }
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 51 "clex.l"
+#line 53 "clex.l"
 { return GOTO; }
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 52 "clex.l"
+#line 54 "clex.l"
 { return IF; }
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 53 "clex.l"
+#line 55 "clex.l"
 { return INT; }
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 54 "clex.l"
+#line 56 "clex.l"
 { return LONG; }
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 55 "clex.l"
+#line 57 "clex.l"
 { return REGISTER; }
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 56 "clex.l"
+#line 58 "clex.l"
 { return RETURN; }
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 57 "clex.l"
+#line 59 "clex.l"
 { return SHORT; }
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 58 "clex.l"
+#line 60 "clex.l"
 { return SIGNED; }
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 59 "clex.l"
+#line 61 "clex.l"
 { return SIZEOF; }
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 60 "clex.l"
+#line 62 "clex.l"
 { return STATIC; }
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 61 "clex.l"
+#line 63 "clex.l"
 { return STRUCT; }
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 62 "clex.l"
+#line 64 "clex.l"
 { return SWITCH; }
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 63 "clex.l"
+#line 65 "clex.l"
 { return TYPEDEF; }
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 64 "clex.l"
+#line 66 "clex.l"
 { return UNION; }
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 65 "clex.l"
+#line 67 "clex.l"
 { return UNSIGNED; }
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 66 "clex.l"
+#line 68 "clex.l"
 { return VOID; }
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 67 "clex.l"
+#line 69 "clex.l"
 { return VOLATILE; }
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 68 "clex.l"
+#line 70 "clex.l"
 { return WHILE; }
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 70 "clex.l"
+#line 72 "clex.l"
 { return IDENTIFIER; }
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 73 "clex.l"
+#line 75 "clex.l"
 { lexerr("Hex not supported\n"); }
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-#line 75 "clex.l"
+#line 77 "clex.l"
 { lexerr("Octal not supported\n"); }
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 77 "clex.l"
+#line 79 "clex.l"
 {
 			  return ICON; }
 	YY_BREAK
 case 38:
 /* rule 38 can match eol */
 YY_RULE_SETUP
-#line 80 "clex.l"
+#line 82 "clex.l"
 {
 			  return CCON;
 			}
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
-#line 84 "clex.l"
+#line 86 "clex.l"
 {
 			  return FCON; }
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
-#line 86 "clex.l"
+#line 88 "clex.l"
 {
 			  return FCON; }
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
-#line 88 "clex.l"
+#line 90 "clex.l"
 {
 			  return FCON; }
 	YY_BREAK
 case 42:
 /* rule 42 can match eol */
 YY_RULE_SETUP
-#line 91 "clex.l"
+#line 93 "clex.l"
 {
 			  return STRING; }
 	YY_BREAK
 case 43:
 /* rule 43 can match eol */
 YY_RULE_SETUP
-#line 94 "clex.l"
+#line 96 "clex.l"
 { handle_user_include_file(); }
 	YY_BREAK
 case 44:
 YY_RULE_SETUP
-#line 96 "clex.l"
+#line 98 "clex.l"
 { included_iostream = 1; }
 	YY_BREAK
 case 45:
 YY_RULE_SETUP
-#line 98 "clex.l"
+#line 100 "clex.l"
 { return SRASN; }
 	YY_BREAK
 case 46:
 YY_RULE_SETUP
-#line 99 "clex.l"
+#line 101 "clex.l"
 { return SLASN; }
 	YY_BREAK
 case 47:
 YY_RULE_SETUP
-#line 100 "clex.l"
+#line 102 "clex.l"
 { return PLASN; }
 	YY_BREAK
 case 48:
 YY_RULE_SETUP
-#line 101 "clex.l"
+#line 103 "clex.l"
 { return MIASN; }
 	YY_BREAK
 case 49:
 YY_RULE_SETUP
-#line 102 "clex.l"
+#line 104 "clex.l"
 { return MUASN; }
 	YY_BREAK
 case 50:
 YY_RULE_SETUP
-#line 103 "clex.l"
+#line 105 "clex.l"
 { return DIASN; }
 	YY_BREAK
 case 51:
 YY_RULE_SETUP
-#line 104 "clex.l"
+#line 106 "clex.l"
 { return MOASN; }
 	YY_BREAK
 case 52:
 YY_RULE_SETUP
-#line 105 "clex.l"
+#line 107 "clex.l"
 { return ANASN; }
 	YY_BREAK
 case 53:
 YY_RULE_SETUP
-#line 106 "clex.l"
+#line 108 "clex.l"
 { return ERASN; }
 	YY_BREAK
 case 54:
 YY_RULE_SETUP
-#line 107 "clex.l"
+#line 109 "clex.l"
 { return ORASN; }
 	YY_BREAK
 case 55:
 YY_RULE_SETUP
-#line 108 "clex.l"
+#line 110 "clex.l"
 { return SHR; }
 	YY_BREAK
 case 56:
 YY_RULE_SETUP
-#line 109 "clex.l"
+#line 111 "clex.l"
 { return SHL; }
 	YY_BREAK
 case 57:
 YY_RULE_SETUP
-#line 110 "clex.l"
+#line 112 "clex.l"
 { return INCOP; }
 	YY_BREAK
 case 58:
 YY_RULE_SETUP
-#line 111 "clex.l"
+#line 113 "clex.l"
 { return DECOP; }
 	YY_BREAK
 case 59:
 YY_RULE_SETUP
-#line 112 "clex.l"
+#line 114 "clex.l"
 { return FOLLOW; }
 	YY_BREAK
 case 60:
 YY_RULE_SETUP
-#line 113 "clex.l"
+#line 115 "clex.l"
 { return ANDAND; }
 	YY_BREAK
 case 61:
 YY_RULE_SETUP
-#line 114 "clex.l"
+#line 116 "clex.l"
 { return OROR; }
 	YY_BREAK
 case 62:
 YY_RULE_SETUP
-#line 115 "clex.l"
+#line 117 "clex.l"
 { return LE; }
 	YY_BREAK
 case 63:
 YY_RULE_SETUP
-#line 116 "clex.l"
+#line 118 "clex.l"
 { return GE; }
 	YY_BREAK
 case 64:
 YY_RULE_SETUP
-#line 117 "clex.l"
+#line 119 "clex.l"
 { return EQ; }
 	YY_BREAK
 case 65:
 YY_RULE_SETUP
-#line 118 "clex.l"
+#line 120 "clex.l"
 { return NE; }
 	YY_BREAK
 case 66:
 YY_RULE_SETUP
-#line 119 "clex.l"
+#line 121 "clex.l"
 { return SM; }
 	YY_BREAK
 case 67:
 YY_RULE_SETUP
-#line 120 "clex.l"
+#line 122 "clex.l"
 { return LC; }
 	YY_BREAK
 case 68:
 YY_RULE_SETUP
-#line 121 "clex.l"
+#line 123 "clex.l"
 { return RC; }
 	YY_BREAK
 case 69:
 YY_RULE_SETUP
-#line 122 "clex.l"
+#line 124 "clex.l"
 { return CM; }
 	YY_BREAK
 case 70:
 YY_RULE_SETUP
-#line 123 "clex.l"
+#line 125 "clex.l"
 { return COLON; }
 	YY_BREAK
 case 71:
 YY_RULE_SETUP
-#line 124 "clex.l"
+#line 126 "clex.l"
 { return ASN; }
 	YY_BREAK
 case 72:
 YY_RULE_SETUP
-#line 125 "clex.l"
+#line 127 "clex.l"
 { return LP; }
 	YY_BREAK
 case 73:
 YY_RULE_SETUP
-#line 126 "clex.l"
+#line 128 "clex.l"
 { return RP; }
 	YY_BREAK
 case 74:
 YY_RULE_SETUP
-#line 127 "clex.l"
+#line 129 "clex.l"
 { return LB; }
 	YY_BREAK
 case 75:
 YY_RULE_SETUP
-#line 128 "clex.l"
+#line 130 "clex.l"
 { return RB; }
 	YY_BREAK
 case 76:
 YY_RULE_SETUP
-#line 129 "clex.l"
+#line 131 "clex.l"
 { return DOT; }
 	YY_BREAK
 case 77:
 YY_RULE_SETUP
-#line 130 "clex.l"
+#line 132 "clex.l"
 { return AND; }
 	YY_BREAK
 case 78:
 YY_RULE_SETUP
-#line 131 "clex.l"
+#line 133 "clex.l"
 { return BANG; }
 	YY_BREAK
 case 79:
 YY_RULE_SETUP
-#line 132 "clex.l"
+#line 134 "clex.l"
 { return NOT; }
 	YY_BREAK
 case 80:
 YY_RULE_SETUP
-#line 133 "clex.l"
+#line 135 "clex.l"
 { return MINUS; }
 	YY_BREAK
 case 81:
 YY_RULE_SETUP
-#line 134 "clex.l"
+#line 136 "clex.l"
 { return PLUS; }
 	YY_BREAK
 case 82:
 YY_RULE_SETUP
-#line 135 "clex.l"
+#line 137 "clex.l"
 { return MUL; }
 	YY_BREAK
 case 83:
 YY_RULE_SETUP
-#line 136 "clex.l"
+#line 138 "clex.l"
 { return DIV; }
 	YY_BREAK
 case 84:
 YY_RULE_SETUP
-#line 137 "clex.l"
+#line 139 "clex.l"
 { return MOD; }
 	YY_BREAK
 case 85:
 YY_RULE_SETUP
-#line 138 "clex.l"
+#line 140 "clex.l"
 { return LT; }
 	YY_BREAK
 case 86:
 YY_RULE_SETUP
-#line 139 "clex.l"
+#line 141 "clex.l"
 { return GT; }
 	YY_BREAK
 case 87:
 YY_RULE_SETUP
-#line 140 "clex.l"
+#line 142 "clex.l"
 { return ER; }
 	YY_BREAK
 case 88:
 YY_RULE_SETUP
-#line 141 "clex.l"
+#line 143 "clex.l"
 { return OR; }
 	YY_BREAK
 case 89:
 YY_RULE_SETUP
-#line 142 "clex.l"
+#line 144 "clex.l"
 { return QUEST; }
 	YY_BREAK
 case 90:
 YY_RULE_SETUP
-#line 143 "clex.l"
+#line 145 "clex.l"
 ECHO;
 	YY_BREAK
-#line 1384 "lex.yy.c"
+#line 1386 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -2377,7 +2379,8 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 143 "clex.l"
+#line 145 "clex.l"
+
 
 
 
@@ -2413,6 +2416,7 @@ void handle_user_include_file()
 
     newfile.assign(yytext,startIndex,stringLength);
 
+    LOG(INFO) << "Handling an include file: " << newfile;
     //cout << "Start Index: " << startIndex << "\n";
     //cout << "End Index: " << endIndex << "\n";
     //cout << "String Length: " << stringLength << "\n";
@@ -2422,9 +2426,14 @@ void handle_user_include_file()
     yyin = fopen(newfile.c_str(),"r");
     if (!yyin) 
     {
-        lexerr("cannot open include file");
+        //lexerr("cannot open include file");
+        LOG(ERROR) << "Cannot open include file";
         exit(1);
-   }
+    }
+    else
+    {
+
+    }
 
 }
 

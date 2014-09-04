@@ -2,30 +2,32 @@
 #include <fstream>
 #include <string>
 
+#include "easylogging++.h"
 
 extern FILE *yyin;
 extern char *yytext;
 extern int yylex(void);
 
-// This allows us to use C++
-// even though flex code is compiled
-// using gcc and not g++
-//extern "C"
-//{
-//    extern int yylex(void);
-//}
-
 using namespace std;
+
+// Enable logging
+_INITIALIZE_EASYLOGGINGPP
 
 int main(int argc, char *argv[])
 {    
-    /* Run each input file through flex */
+    // Initialize the logging
+    easyloggingpp::Configurations confFromFile("conf/120++.cpp.conf");
+    easyloggingpp::Loggers::setDefaultConfigurations(confFromFile,true);
+    easyloggingpp::Loggers::reconfigureAllLoggers(confFromFile);
+
+    LOG(INFO) << "Logging initialized.";
+
     for (int i = 1; i < argc; ++i)
     {
         yyin = fopen(argv[i],"r");
         if(yyin == NULL)
         {
-            fprintf(stderr, "File not found: %s\n", argv[i]);
+            LOG(FATAL) << "File not found: " << argv[i];
             return(-1);
         }
         else
@@ -33,12 +35,10 @@ int main(int argc, char *argv[])
             int j = 0;
             while( (j = yylex()) > 0 )
             {
-                printf("%d: %s\n",j,yytext);
+                cout << j << ": " << yytext << "\n";
             }
         }
     }
-
-
     return(0);
 
 }

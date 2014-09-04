@@ -1,6 +1,7 @@
 # Files for testing
 hello.cpp
 hello.c
+myfile.h
 
 # Object files
 *.o

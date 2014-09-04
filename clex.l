@@ -13,6 +13,8 @@ LIT      \"(\\.|[^\\"])*\"
 #include <string>
 #include <fstream>
 #include <iostream>
+#include "easylogging++.h"
+
 
 using namespace std;
 
@@ -142,6 +144,7 @@ FILE *saved_yyin;
 "?"                     { return QUEST; }
 %%
 
+
 void lexerr(char *s)
 {
 	errors++;
@@ -174,6 +177,7 @@ void handle_user_include_file()
 
     newfile.assign(yytext,startIndex,stringLength);
 
+    LOG(INFO) << "Handling an include file: " << newfile;
     //cout << "Start Index: " << startIndex << "\n";
     //cout << "End Index: " << endIndex << "\n";
     //cout << "String Length: " << stringLength << "\n";
@@ -183,8 +187,13 @@ void handle_user_include_file()
     yyin = fopen(newfile.c_str(),"r");
     if (!yyin) 
     {
-        lexerr("cannot open include file");
+        //lexerr("cannot open include file");
+        LOG(ERROR) << "Cannot open include file";
         exit(1);
-   }
+    }
+    else
+    {
+
+    }
 
 }
