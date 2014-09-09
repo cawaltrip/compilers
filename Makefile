@@ -1,18 +1,21 @@
 #######################################
 # Compiler Options ####################
 #######################################
+#CPP=/opt/local/bin/g++-mp-4.4
 CPP=g++
-CPPFLAGS=-c -g -v
+CPPFLAGS=-c -g
 
 #######################################
 # Filename configurations #############
 #######################################
-BASE_NAME=120++
-CPP_OBJECT=$(addsuffix .o,$(BASE_NAME))
-CPP_FILE=$(addsuffix .cpp,$(BASE_NAME))
+BIN=120++
+SOURCES=120++.cc lex.yy.cc
+OBJECTS=$(SOURCES:.cc=.o)
+
+
 
 # Grammar File
-GRAMMAR_FILE=$(addsuffix .tab.h,$(BASE_NAME))
+GRAMMAR_FILE=$(addsuffix gram.tab.h,$(BASE_NAME))
 
 # Flex file
 FLEX_FILE=$(addsuffix .l,$(BASE_NAME))
@@ -26,40 +29,24 @@ SCANNER_OBJECT=$(addsuffix .o,$(BASE_SCANNER))
 # Make rules ##########################
 #######################################
 
-# Primary makefile
-all: 
-	run_flex
-	compile_flex
-	120++.o
-	120++
+all: $(BIN)
+
+$(BIN): 120++.o lex.yy.o
+	$(CPP) -o 120++ 120++.o lex.yy.o
+
+120++.o: 120++.c
+	$(CPP) $(CPPFLAGS) 120++.c
+
+lex.yy.o: lex.yy.cc
+	$(CPP) $(CPPFLAGS) lex.yy.cc
+
+lex.yy.cc: 120++.l cgram.tab.h
+	flex 120++.l
 
 # Remove created files
 clean:
 	-rm -f *.o
 	-rm -f *.a
-	-rm -f $(SCANNER_FILE) $(SCANNER_OBJECT)
-
-120++: $(CPP_OBJECT) $(SCANNER_OBJECT)
-	$(CPP) -o $(BASE_NAME) $(CPP_OBJECT) $(SCANNER_OBJECT)
-
-120++.o: 120++.cpp
-	$(CPP) $(CPPFLAGS) $(CPP_FILE)
-
-compile_flex: $(SCANNER_OBJECT)
-	$(CPP) $(CPPFLAGS) $(SCANNER_FILE)
-
-run_flex: $(FLEX_FILE) $(GRAMMAR_FILE)
-	flex $(FLEX_FILE) --outfile=$(SCANNER_FILE)
-
-## phase 2: ignore for now
-
-#c: main.o cgram.tab.o lex.yy.o
-#	cc -o c main.o cgram.tab.o lex.yy.o
-
-#cgram.tab.o: cgram.tab.c
-#	cc -c -DYYDEBUG cgram.tab.c
-
-#cgram.tab.c: cgram.y
-#	bison -d -v cgram.y
-
-#cgram.tab.h: cgram.tab.c
+	-rf -f $(BIN)
+	-rf -f $(OBJECTS)
+	-rf -f lex.yy.c clex.h

@@ -3,7 +3,7 @@ sample/*
 samples/*
 
 # Flex file
-120++.yy.cpp
+lex.yy.cc
 
 # Object files
 *.o

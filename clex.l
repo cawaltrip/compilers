@@ -1,5 +1,4 @@
 %option c++
-%option full
 
 O        [0-7]
 D        [0-9]
@@ -12,12 +11,11 @@ W        [ \t\f]*
 LIT      \"(\\.|[^\\"])*\"
 
 %{
-#include "120++gram.tab.h"
+#include "cgram.tab.h"
 #include <string>
 #include <fstream>
 #include <iostream>
 #include "easylogging++.h"
-
 
 using namespace std;
 
@@ -184,12 +182,6 @@ void handle_user_include_file()
     int stringLength = endIndex - startIndex;
 
     newfile.assign(yytext,startIndex,stringLength);
-
-    //LOG(INFO) << "Handling an include file: " << newfile;
-    //cout << "Start Index: " << startIndex << "\n";
-    //cout << "End Index: " << endIndex << "\n";
-    //cout << "String Length: " << stringLength << "\n";
-    //cout << "Included file: " << newfile << "\n";
 
     //saved_yyin = yyin;
     yyin = fopen(newfile.c_str(),"r");
