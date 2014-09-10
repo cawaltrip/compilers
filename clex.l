@@ -1,4 +1,4 @@
-%option c++
+%option header-file="lex.yy.h"
 
 O        [0-7]
 D        [0-9]

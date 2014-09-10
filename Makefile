@@ -3,8 +3,10 @@
 #######################################
 #CPP=/opt/local/bin/g++-mp-4.4
 CPP=g++
-CPPFLAGS=-c -g
+CPPFLAGS=-c -g -std=gnu++98
 
+#FLEX=/opt/local/bin/flex++
+FLEX=flex
 #######################################
 # Filename configurations #############
 #######################################
@@ -12,18 +14,9 @@ BIN=120++
 SOURCES=120++.cc lex.yy.cc
 OBJECTS=$(SOURCES:.cc=.o)
 
-
-
 # Grammar File
-GRAMMAR_FILE=$(addsuffix gram.tab.h,$(BASE_NAME))
-
-# Flex file
-FLEX_FILE=$(addsuffix .l,$(BASE_NAME))
-
-# Scanner files (created by flex)
-BASE_SCANNER=$(addsuffix .yy,$(BASE_NAME))
-SCANNER_FILE=$(addsuffix .cpp,$(BASE_SCANNER))
-SCANNER_OBJECT=$(addsuffix .o,$(BASE_SCANNER))
+GRAMMAR_FILE=cgram.tab.h
+FLEX_FILE=clex.l
 
 #######################################
 # Make rules ##########################
@@ -31,17 +24,18 @@ SCANNER_OBJECT=$(addsuffix .o,$(BASE_SCANNER))
 
 all: $(BIN)
 
-$(BIN): 120++.o lex.yy.o
+$(BIN): $(OBJECTS)
 	$(CPP) -o 120++ 120++.o lex.yy.o
 
-120++.o: 120++.c
-	$(CPP) $(CPPFLAGS) 120++.c
+.c.o:
+	$(CPP) $(CPPFLAGS) -c $< -o $@
 
-lex.yy.o: lex.yy.cc
-	$(CPP) $(CPPFLAGS) lex.yy.cc
+120++.cc: clex.h
 
-lex.yy.cc: 120++.l cgram.tab.h
-	flex 120++.l
+clex.h: lex.yy.cc
+
+lex.yy.cc: clex.l cgram.tab.h
+	$(FLEX) $<
 
 # Remove created files
 clean:

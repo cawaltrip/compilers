@@ -8,10 +8,7 @@
  *  Licensed under MIT License
  */    
 #include "easylogging++.h"
-
-extern FILE *yyin;
-extern char *yytext;
-extern int yylex(void);
+#include "lex.yy.h"
 
 using namespace std;
 

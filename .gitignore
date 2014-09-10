@@ -2,8 +2,10 @@
 sample/*
 samples/*
 
-# Flex file
+# Flex files
 lex.yy.cc
+lex.yy.c
+lex.yy.h
 
 # Object files
 *.o
