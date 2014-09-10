@@ -6,6 +6,9 @@ samples/*
 *.yy.cc
 *.yy.c
 *.yy.h
+*.xx.cc
+*.xx.c
+*.xx.h
 
 # Object files
 *.o

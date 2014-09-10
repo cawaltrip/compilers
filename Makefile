@@ -6,7 +6,10 @@ CPP=g++
 CPPFLAGS=-c -g -std=gnu++98
 
 #FLEX=/opt/local/bin/flex++
+#FLEX++
 FLEX=flex
+
+RM=-rm -f
 #######################################
 # Filename configurations #############
 #######################################
@@ -14,6 +17,8 @@ BIN=120++
 CC_SOURCES=120++.cc
 C_SOURCES=lex.yy.c
 OBJECTS=$(CC_SOURCES:.cc=.o) $(C_SOURCES:.c=.o)
+#SOURCES=120++.cc lex.yy.cc
+#OBJECTS=$(SOURCES:.cc=.o)
 
 # Grammar File
 GRAMMAR_FILE=cgram.tab.h
@@ -33,15 +38,11 @@ $(BIN): $(OBJECTS)
 
 120++.cc: clex.h
 
-clex.h: lex.yy.cc
+clex.h: lex.yy.c
 
-lex.yy.cc: clex.l cgram.tab.h
+lex.yy.c: clex.l cgram.tab.h
 	$(FLEX) $<
 
 # Remove created files
 clean:
-	-rm -f *.o
-	-rm -f *.a
-	-rf -f $(BIN)
-	-rf -f $(OBJECTS)
-	-rf -f lex.yy.c clex.h
+	$(RM) *.o *.a lex.yy.c clex.h lex.yy.h $(BIN) $(OBJECTS)

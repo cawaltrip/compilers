@@ -33,6 +33,7 @@ int main(int argc, char *argv[])
         if(yyin == NULL)
         {
             LOG(FATAL) << "File not found: " << argv[i];
+            fclose(yyin);
             return(-1);
         }
         else
@@ -43,6 +44,7 @@ int main(int argc, char *argv[])
                 cout << j << ": " << yytext << "\n";
             }
         }
+        fclose(yyin);
     }
     return(0);
 
