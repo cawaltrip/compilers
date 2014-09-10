@@ -11,8 +11,9 @@ FLEX=flex
 # Filename configurations #############
 #######################################
 BIN=120++
-SOURCES=120++.cc lex.yy.cc
-OBJECTS=$(SOURCES:.cc=.o)
+CC_SOURCES=120++.cc
+C_SOURCES=lex.yy.c
+OBJECTS=$(CC_SOURCES:.cc=.o) $(C_SOURCES:.c=.o)
 
 # Grammar File
 GRAMMAR_FILE=cgram.tab.h
