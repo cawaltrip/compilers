@@ -3,9 +3,9 @@ sample/*
 samples/*
 
 # Flex files
-lex.yy.cc
-lex.yy.c
-lex.yy.h
+*.yy.cc
+*.yy.c
+*.yy.h
 
 # Object files
 *.o
