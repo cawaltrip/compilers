@@ -17,8 +17,6 @@ BIN=120++
 CC_SOURCES=120++.cc
 C_SOURCES=lex.yy.c
 OBJECTS=$(CC_SOURCES:.cc=.o) $(C_SOURCES:.c=.o)
-#SOURCES=120++.cc lex.yy.cc
-#OBJECTS=$(SOURCES:.cc=.o)
 
 # Grammar File
 GRAMMAR_FILE=cgram.tab.h

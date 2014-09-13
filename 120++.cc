@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <list>
 
 /*  EasyLogging++ written by Majid Khan.
  *  Version 8.91
@@ -12,40 +13,56 @@
 
 using namespace std;
 
-// Enable logging
+/* Enable logging */
 _INITIALIZE_EASYLOGGINGPP
 
+/*
+ * First create the lists for storing both the filenames and the tokens.
+ * Then, configure (and test?) the logging features.  Finally, populate the
+ * input file list and loop through it, adding the tokens to a linked
+ * list that is printed to the screen.  This is the list that will become a
+ * tree in the next stage.
+ */
+
+ /*
+  * TODO:
+  *   - Error checking/handling
+  */
 int main(int argc, char *argv[])
-{    
-    // Configure Logging
-    easyloggingpp::Configurations confFromFile("conf/120++.conf");
-    easyloggingpp::Loggers::setDefaultConfigurations(confFromFile,true);
-    easyloggingpp::Loggers::reconfigureAllLoggers(confFromFile);
+{   
+    list<char*> file_list;
+    list<char*>::iterator fiter;
+    //list<token> token_list;
+    //list<token>::iterator titer;
 
-    // Test logging functionality
-    LOG(INFO) << "Logging initialized.";
+    easyloggingpp::Configurations c;
+    c.setToDefault();
+    c.setAll(easyloggingpp::ConfigurationType::Format, "120++: %level %log");
+    easyloggingpp::Loggers::reconfigureAllLoggers(c);
+    c.clear();
+    c.setAll(easyloggingpp::ConfigurationType::Format, "%log");
+    easyloggingpp::Loggers::reconfigureLogger("business", c);
+    c.clear();
 
-    // Loop through each file that was passed in.
-    // Better error handling could be done here!
-    for (int i = 1; i < argc; ++i)
-    {
-        yyin = fopen(argv[i],"r");
-        if(yyin == NULL)
-        {
-            LOG(FATAL) << "File not found: " << argv[i];
-            fclose(yyin);
-            return(-1);
+    LDEBUG << "Logging initialized.";
+
+    for (int i = 1; i < argc; ++i) {
+        FILE *fp;
+        if ((fp = fopen(argv[i], "r"))!= NULL) {
+            file_list.push_back(argv[i]);
+            fclose(fp);
+        } else {
+            LOG(WARNING) << "File '" << argv[i] << "' not found -- not including in compilation";
         }
-        else
-        {
-            int j = 0;
-            while( (j = yylex()) > 0 )
-            {
-                cout << j << ": " << yytext << "\n";
-            }
+    }
+    for (fiter=file_list.begin(); fiter != file_list.end(); ++fiter) {
+        LDEBUG << "Parsing file: " << *fiter;
+        yyin = fopen(*fiter, "r");
+        int i;
+        while( (i = yylex()) > 0 ) {
+            BINFO << i << "\t" << yytext;
         }
         fclose(yyin);
     }
     return(0);
-
 }
