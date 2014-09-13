@@ -4,6 +4,7 @@
 #CPP=/opt/local/bin/g++-mp-4.4
 CPP=g++
 CPPFLAGS=-c -g -std=gnu++98
+LDFLAGS=
 
 #FLEX=/opt/local/bin/flex++
 #FLEX++
@@ -15,7 +16,7 @@ RM=-rm -f
 #######################################
 BIN=120++
 CC_SOURCES=120++.cc
-C_SOURCES=lex.yy.c
+C_SOURCES=lex.yy.c token.c
 OBJECTS=$(CC_SOURCES:.cc=.o) $(C_SOURCES:.c=.o)
 
 # Grammar File
@@ -29,7 +30,7 @@ FLEX_FILE=clex.l
 all: $(BIN)
 
 $(BIN): $(OBJECTS)
-	$(CPP) -o 120++ 120++.o lex.yy.o
+	$(CPP) $(LDFLAGS) $^ -o $@
 
 .c.o:
 	$(CPP) $(CPPFLAGS) -c $< -o $@

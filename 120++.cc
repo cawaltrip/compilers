@@ -10,6 +10,10 @@
  */    
 #include "easylogging++.h"
 #include "lex.yy.h"
+#include "token.h"
+#include "cgram.tab.h"
+
+struct token *yytoken = NULL;
 
 using namespace std;
 
@@ -28,12 +32,13 @@ _INITIALIZE_EASYLOGGINGPP
   * TODO:
   *   - Error checking/handling
   */
+
 int main(int argc, char *argv[])
 {   
     list<char*> file_list;
     list<char*>::iterator fiter;
-    //list<token> token_list;
-    //list<token>::iterator titer;
+    list<struct token*> token_list;
+    list<struct token*>::iterator titer;
 
     easyloggingpp::Configurations c;
     c.setToDefault();
@@ -44,25 +49,37 @@ int main(int argc, char *argv[])
     easyloggingpp::Loggers::reconfigureLogger("business", c);
     c.clear();
 
-    LDEBUG << "Logging initialized.";
-
     for (int i = 1; i < argc; ++i) {
         FILE *fp;
         if ((fp = fopen(argv[i], "r"))!= NULL) {
-            file_list.push_back(argv[i]);
+            yyin = fp;
+            yypush_buffer_state(yy_create_buffer(yyin, YY_BUF_SIZE));
+            
+            int i;
+            while( (i = yylex()) > 0 ) {
+                token_list.push_back(yytoken);
+            }
             fclose(fp);
+            yylineno = 1;
         } else {
             LOG(WARNING) << "File '" << argv[i] << "' not found -- not including in compilation";
         }
     }
-    for (fiter=file_list.begin(); fiter != file_list.end(); ++fiter) {
-        LDEBUG << "Parsing file: " << *fiter;
-        yyin = fopen(*fiter, "r");
-        int i;
-        while( (i = yylex()) > 0 ) {
-            BINFO << i << "\t" << yytext;
-        }
-        fclose(yyin);
+
+    BINFO << "Category \t\t Text \t\t Line \t\t Filename \t\t Ival/Sval";
+    BINFO << "=================================================================";
+    for (titer = token_list.begin(); titer != token_list.end(); ++titer) {
+        std::string value;
+        if ((*titer)->category == ICON)
+            value = (*titer)->ival;
+        else if ((*titer)->category == CCON)
+            value = (*titer)->sval;
+        //else if ((*titer)->category == FCON)
+        //    value = (*titer)->fval;
+        else
+            value = "";
+        BINFO << (*titer)->category << "\t\t" << (*titer)->text << "\t\t" << (*titer)->lineno << "\t\t" << (*titer)->filename << "\t\t" << value;
     }
+
     return(0);
 }

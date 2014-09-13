@@ -1,4 +1,7 @@
 %option header-file="lex.yy.h"
+%option noyywrap
+%option yylineno
+%x COMMENT
 
 O        [0-7]
 D        [0-9]
@@ -11,140 +14,159 @@ W        [ \t\f]*
 LIT      \"(\\.|[^\\"])*\"
 
 %{
-#include "cgram.tab.h"
 #include <string>
 #include <fstream>
 #include <iostream>
+#include "cgram.tab.h"
+#include "token.h"
 #include "easylogging++.h"
-
-using namespace std;
 
 extern YYSTYPE yylval;
 extern int yychar;
+extern struct token *yytoken;
 
 void lexerr(char *s);
 void handle_user_include_file();
+void create_token(int category);
 
-/* #define DEBUG */
-
-int line_num = 1;
 int errors;
-int included_iostream = 0;
+
+int sysinclude_iostream = 0;
+int sysinclude_string = 0;
+int sysinclude_iomanip = 0;
+int sysinclude_fstream = 0;
+int sysinclude_cstring = 0;
+int sysinclude_ctime = 0;
+int sysinclude_cmath = 0;
+int sysinclude_cstdlib = 0;
+
 FILE *saved_yyin;
 %}
 
 %%
 
-\n                      { line_num++; }
-[ \t\f]+                { }
+  /* Whitespace */
+[ \n\r\v\t\f]*          { }
 
-"break"                 { return BREAK; }
-"case"                  { return CASE; }
-"char"                  { return CHAR; }
-"const"                 { return CONST; }
-"continue"              { return CONTINUE; }
-"default"               { return DEFAULT; }
-"do"                    { return DO; }
-"double"                { return DOUBLE; }
-"else"                  { return ELSE; }
-"enum"                  { return ENUM; }
-"extern"                { return EXTERN; }
-"float"                 { return FLOAT; }
-"for"                   { return FOR; }
-"goto"                  { return GOTO; }
-"if"                    { return IF; }
-"int"                   { return INT; }
-"long"                  { return LONG; }
-"register"              { return REGISTER; }
-"return"                { return RETURN; }
-"short"                 { return SHORT; }
-"signed"                { return SIGNED; }
-"sizeof"                { return SIZEOF; }
-"static"                { return STATIC; }
-"struct"                { return STRUCT; }
-"switch"                { return SWITCH; }
-"typedef"               { return TYPEDEF; }
-"union"                 { return UNION; }
-"unsigned"              { return UNSIGNED; }
-"void"                  { return VOID; }
-"volatile"              { return VOLATILE; }
-"while"                 { return WHILE; }
+  /* Comments */
+"//".*$                 { }
+"/*"                    { BEGIN(COMMENT); }
+<COMMENT>{
+        [^*]*           { }
+        "*"+[^*/]*      { }
+        "*"+"/"         { BEGIN(INITIAL); }
+}
 
-{L}({L}|{D})*           { return IDENTIFIER; }
+  /* Reserved Words */
+"break"                 { create_token(BREAK);      return BREAK; }
+"case"                  { create_token(CASE);       return CASE; }
+"char"                  { create_token(CHAR);       return CHAR; }
+"const"                 { create_token(CONST);      return CONST; }
+"continue"              { create_token(CONTINUE);   return CONTINUE; }
+"default"               { create_token(DEFAULT);    return DEFAULT; }
+"do"                    { create_token(DO);         return DO; }
+"double"                { create_token(DOUBLE);     return DOUBLE; }
+"else"                  { create_token(ELSE);       return ELSE; }
+"enum"                  { create_token(ENUM);       return ENUM; }
+"extern"                { create_token(EXTERN);     return EXTERN; }
+"float"                 { create_token(FLOAT);      return FLOAT; }
+"for"                   { create_token(FOR);        return FOR; }
+"goto"                  { create_token(GOTO);       return GOTO; }
+"if"                    { create_token(IF);         return IF; }
+"int"                   { create_token(INT);        return INT; }
+"long"                  { create_token(LONG);       return LONG; }
+"register"              { create_token(REGISTER);   return REGISTER; }
+"return"                { create_token(RETURN);     return RETURN; }
+"short"                 { create_token(SHORT);      return SHORT; }
+"signed"                { create_token(SIGNED);     return SIGNED; }
+"sizeof"                { create_token(SIZEOF);     return SIZEOF; }
+"static"                { create_token(STATIC);     return STATIC; }
+"struct"                { create_token(STRUCT);     return STRUCT; }
+"switch"                { create_token(SWITCH);     return SWITCH; }
+"typedef"               { create_token(TYPEDEF);    return TYPEDEF; }
+"union"                 { create_token(UNION);      return UNION; }
+"unsigned"              { create_token(UNSIGNED);   return UNSIGNED; }
+"void"                  { create_token(VOID);       return VOID; }
+"volatile"              { create_token(VOLATILE);   return VOLATILE; }
+"while"                 { create_token(WHILE);      return WHILE; }
 
+  /* Identifiers */
+{L}({L}|{D})*           { create_token(IDENTIFIER); return IDENTIFIER; }
 
 0[xX]{H}+{IS}?          { lexerr("Hex not supported\n"); }
 
 0{O}+{IS}?              { lexerr("Octal not supported\n"); }
 
-{D}+{IS}?               {
-			  return ICON; }
+{D}+{IS}?               { create_token(ICON); return ICON; }
 
-'(\\.|[^\\'])+'         {
-			  return CCON;
-			}
+'(\\.|[^\\'])+'         { create_token(CCON); return CCON; }
 
-{D}+{E}{FS}?            {
-			  return FCON; }
-{D}*"."{D}+({E})?{FS}?  {
-			  return FCON; }
-{D}+"."{D}*({E})?{FS}?  {
-			  return FCON; }
+{D}+{E}{FS}?            { create_token(FCON); return FCON; }
+{D}*"."{D}+({E})?{FS}?  { create_token(FCON); return FCON; }
+{D}+"."{D}*({E})?{FS}?  { create_token(FCON); return FCON; }
 
-{LIT}                   {
-			  return STRING; }
+{LIT}                   { create_token(STRING); return STRING; }
 
 "#include"[ ]*\"[^\\"]+\"  { handle_user_include_file(); }
 
-"#include <iostream>"   { included_iostream = 1; }
+"#include <iostream>"   { sysinclude_iostream = 1; }
+"#include <string>"     { sysinclude_string = 1; }
+"#include <iomanip>"    { sysinclude_iomanip = 1; }
+"#include <fstream>"    { sysinclude_fstream = 1; }
+"#include <cstring>"    { sysinclude_cstring = 1; }
+"#include <ctime>"      { sysinclude_ctime = 1; }
+"#include <cmath>"      { sysinclude_cmath = 1; }
+"#include <cstdlib>"    { sysinclude_cstdlib = 1; }
+"#include"{W}"<"[A-Za-z.]*">"       {  }
 
-">>="                   { return SRASN; }
-"<<="                   { return SLASN; }
-"+="                    { return PLASN; }
-"-="                    { return MIASN; }
-"*="                    { return MUASN; }
-"/="                    { return DIASN; }
-"%="                    { return MOASN; }
-"&="                    { return ANASN; }
-"^="                    { return ERASN; }
-"|="                    { return ORASN; }
-">>"                    { return SHR; }
-"<<"                    { return SHL; }
-"++"                    { return INCOP; }
-"--"                    { return DECOP; }
-"->"                    { return FOLLOW; }
-"&&"                    { return ANDAND; }
-"||"                    { return OROR; }
-"<="                    { return LE; }
-">="                    { return GE; }
-"=="                    { return EQ; }
-"!="                    { return NE; }
-";"                     { return SM; }
-"{"                     { return LC; }
-"}"                     { return RC; }
-","                     { return CM; }
-":"                     { return COLON; }
-"="                     { return ASN; }
-"("                     { return LP; }
-")"                     { return RP; }
-"["                     { return LB; }
-"]"                     { return RB; }
-"."                     { return DOT; }
-"&"                     { return AND; }
-"!"                     { return BANG; }
-"~"                     { return NOT; }
-"-"                     { return MINUS; }
-"+"                     { return PLUS; }
-"*"                     { return MUL; }
-"/"                     { return DIV; }
-"%"                     { return MOD; }
-"<"                     { return LT; }
-">"                     { return GT; }
-"^"                     { return ER; }
-"|"                     { return OR; }
-"?"                     { return QUEST; }
+">>="                   {create_token(SRASN); return SRASN; } 
+"<<="                   {create_token(SLASN); return SLASN; } 
+"+="                    {create_token(PLASN); return PLASN; } 
+"-="                    {create_token(MIASN); return MIASN; } 
+"*="                    {create_token(MUASN); return MUASN; } 
+"/="                    {create_token(DIASN); return DIASN; } 
+"%="                    {create_token(MOASN); return MOASN; } 
+"&="                    {create_token(ANASN); return ANASN; } 
+"^="                    {create_token(ERASN); return ERASN; } 
+"|="                    {create_token(ORASN); return ORASN; } 
+">>"                    {create_token(SHR); return SHR; } 
+"<<"                    {create_token(SHL); return SHL; } 
+"++"                    {create_token(INCOP); return INCOP; } 
+"--"                    {create_token(DECOP); return DECOP; } 
+"->"                    {create_token(FOLLOW); return FOLLOW; } 
+"&&"                    {create_token(ANDAND); return ANDAND; } 
+"||"                    {create_token(OROR); return OROR; } 
+"<="                    {create_token(LE); return LE; } 
+">="                    {create_token(GE); return GE; } 
+"=="                    {create_token(EQ); return EQ; } 
+"!="                    {create_token(NE); return NE; } 
+";"                     {create_token(SM); return SM; } 
+"{"                     {create_token(LC); return LC; } 
+"}"                     {create_token(RC); return RC; } 
+","                     {create_token(CM); return CM; } 
+":"                     {create_token(COLON); return COLON; } 
+"="                     {create_token(ASN); return ASN; } 
+"("                     {create_token(LP); return LP; } 
+")"                     {create_token(RP); return RP; } 
+"["                     {create_token(LB); return LB; } 
+"]"                     {create_token(RB); return RB; } 
+"."                     {create_token(DOT); return DOT; } 
+"&"                     {create_token(AND); return AND; } 
+"!"                     {create_token(BANG); return BANG; } 
+"~"                     {create_token(NOT); return NOT; } 
+"-"                     {create_token(MINUS); return MINUS; } 
+"+"                     {create_token(PLUS); return PLUS; } 
+"*"                     {create_token(MUL); return MUL; } 
+"/"                     {create_token(DIV); return DIV; } 
+"%"                     {create_token(MOD); return MOD; } 
+"<"                     {create_token(LT); return LT; } 
+">"                     {create_token(GT); return GT; } 
+"^"                     {create_token(ER); return ER; } 
+"|"                     {create_token(OR); return OR; } 
+"?"                     {create_token(QUEST); return QUEST; } 
 <<EOF>>                 {
                             yypop_buffer_state();
+                            yylineno = 1;
                             if(!YY_CURRENT_BUFFER)
                                 yyterminate();
                         }
@@ -162,32 +184,22 @@ void lexerr(char *s)
 	fprintf(stderr, ", token = \"%s\"\n", yytext);
 }
 
-/*
- * Return 1 if done, 0 if yyin points at more input
- */
-int yywrap()
-{
-    return 1;
-}
-
 void handle_user_include_file()
 {
     /* 
     * Create a new string that contains only the file name
     * to be included.
     */
-    string newfile;
+    std::string newfile;
     int startIndex = strchr(yytext, '\"')+1 - yytext;
     int endIndex = strlen(yytext)-1;
     int stringLength = endIndex - startIndex;
 
     newfile.assign(yytext,startIndex,stringLength);
 
-    //saved_yyin = yyin;
     yyin = fopen(newfile.c_str(),"r");
     if (!yyin) 
     {
-        //lexerr("cannot open include file");
         LOG(ERROR) << "Cannot open include file";
         exit(1);
     }
@@ -196,4 +208,8 @@ void handle_user_include_file()
         yypush_buffer_state(yy_new_buffer(yyin, YY_BUF_SIZE));
     }
 
+}
+void create_token(int category) {
+    //LOG(DEBUG) << "Creating token: " << yylineno << "|" << category << "|" << yytext;
+    yytoken = token_new(category, yylineno, "somefile", yytext);
 }
