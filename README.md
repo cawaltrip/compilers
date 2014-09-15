@@ -2,7 +2,6 @@ uidaho cs445 - compilers
 ==========================
 
 # HW1
-==========================
 Lexical Analysis assignment using `flex`.
 
 ## TODO:
@@ -15,5 +14,4 @@ Lexical Analysis assignment using `flex`.
  *  More error checking?
 
 # HW2
-==========================
 Parsing assignment using `bison`.
