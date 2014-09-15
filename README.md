@@ -1,4 +1,4 @@
-uidaho cs445 - compilers
+UIdaho CS445 - Compilers
 ==========================
 
 # HW1
