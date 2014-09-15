@@ -74,6 +74,8 @@ int main(int argc, char *argv[])
             value = (*titer)->ival;
         else if ((*titer)->category == CCON)
             value = (*titer)->sval;
+        else if ((*titer)->category == STRING)
+            value = (*titer)->sval;
         //else if ((*titer)->category == FCON)
         //    value = (*titer)->fval;
         else

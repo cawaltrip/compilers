@@ -33,16 +33,28 @@ struct token *token_new(int category, int lineno, const char *filename, const ch
 	strcpy(t->text, text);
 	strcpy(t->filename, filename);
 
-	/* TODO: [isf]val setting */
-	if(category == ICON) {
-		//t->ival = (int) strtonum(text, INT_MIN, INT_MAX, &errstr);
-		//if(errstr) {
-		//	perror(errstr);
-		//}
+	if(category == ICON)
+		/* TODO: atoi() should not ever return an illegal value
+		 * but using strtonum() would be safer and has fewer
+		 * undefined conditions.
+		 */
 		t->ival = atoi(text);
+
+	if (category == CCON) {
+		/* should only be a single character matched, but it
+		 * will be added by token_set_char().  Allocate two
+		 * characters for the null terminator.
+		 */
+		t->sval = (char *) calloc(2, sizeof(char)); 
 	}
-	if(category == CCON) {
-		/* remove quotes and escapes and store */
+
+	if(category == STRING) {
+		/* allocate room for the first quote and null
+		 * terminator because rest of string will be added
+		 * by token_append_literal().
+		 */
+		t->sval = (char *) calloc(strlen(text+1), sizeof(char));
+		strcpy(t->sval, text);
 	}
 
 	return t;
@@ -54,15 +66,51 @@ void token_free(struct token *t) {
 	 * allocated to them and then free the token itself.
 	 */
 
-	 free(t->text);
-	 free(t->filename);
-	 free(t);
-
-	 return;
+	free(t->text);
+	free(t->filename);
+	free(t->sval);
+	free(t);
+	return;
 }
 
+/* TODO: Combine token_append_literal() and token_append_text() into
+ * one function and use warappers to call this combined function. */
 
+void token_append_literal(struct token *t, const char *sval) {
+	/* 
+	 * sval gets appended during string matching because
+	 * there are several parts of a string (such as the
+	 * beginning quote, characters, escape characters and
+	 * the ending quote that all get matched) and yytext
+	 * isn't preserved throughout this.
+	 */
 
+	int current_length = strlen(t->sval);
+	int new_length = strlen(sval);
 
+	//t->sval = (char *) realloc(t->sval, (current_length + new_length + 1));
+	t->sval = (char *) realloc(t->sval, (current_length + new_length));
+	strncat(t->sval, sval, new_length);
+}
+void token_append_text(struct token *t, const char *text) {
+	/* append the additional text to the text field as well */
 
+	int current_length = strlen(t->text);
+	int new_length = strlen(text);
+	t->text = (char *) realloc(t->sval, (current_length + new_length));
+	strncat(t->text, text, new_length);
+}
+/*
+void token_append_escape(struct token *t, cchar esc) {
+	int current_length = strlen(t->sval);
+	t->sval = (char *) realloc(t->sval, (current_length + 1));
 
+}
+*/
+void token_set_char(struct token *t, const char *sval) {
+	/* 
+	 * sval should only be a single character here
+	 * and was allocated by the constructor.
+	 */
+	strcpy(t->sval, sval);
+}

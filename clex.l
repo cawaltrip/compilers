@@ -1,7 +1,7 @@
 %option header-file="lex.yy.h"
 %option noyywrap
 %option yylineno
-%x COMMENT
+%x COMMENT STR
 
 O        [0-7]
 D        [0-9]
@@ -28,6 +28,8 @@ extern struct token *yytoken;
 void lexerr(char *s);
 void handle_user_include_file();
 void create_token(int category);
+void append_sval_token(const char* text);
+void append_sval_token(char escape);
 
 int errors;
 
@@ -40,22 +42,48 @@ int sysinclude_ctime = 0;
 int sysinclude_cmath = 0;
 int sysinclude_cstdlib = 0;
 
-FILE *saved_yyin;
+std::string literal;
 %}
 
 %%
 
   /* Whitespace */
-[ \n\r\v\t\f]*          { }
+[ \n\r\v\t\f]*		{ }
 
   /* Comments */
 "//".*$                 { }
 "/*"                    { BEGIN(COMMENT); }
 <COMMENT>{
-        [^*]*           { }
-        "*"+[^*/]*      { }
-        "*"+"/"         { BEGIN(INITIAL); }
+	[^*]*           { }
+	"*"+[^*/]*      { }
+	"*"+"/"         { BEGIN(INITIAL); }
 }
+
+  /* String Constants -- adapted from http://stackoverflow.com/a/5423131 */
+\"			{ create_token(STRING); BEGIN(STR); literal.clear(); }
+<STR>{
+	[^\\"\n]*	{ append_sval_token(yytext); }
+	\\n		{ append_sval_token('\n'); }
+	\\t		{ append_sval_token('\t'); }
+	\\[\\"]		{ append_sval_token('\"'); }
+	\"		{ append_sval_token(yytext[1]);
+			  BEGIN(INITIAL);
+			  return STRING;
+			}
+	\\.		{ LOG(ERROR) << "Invalid escape sequence"; }
+	\n		{ LOG(ERROR) << "Newline in string literal"; }
+}
+
+  /* Character Constants */
+'(\\.|[^\\'])+'         { create_token(CCON); return CCON; }
+
+  /* Integer Constants */
+{D}+{IS}?               { create_token(ICON); return ICON; }
+
+  /* Floating-point Constants */
+{D}+{E}{FS}?            { create_token(FCON); return FCON; }
+{D}*"."{D}+({E})?{FS}?  { create_token(FCON); return FCON; }
+{D}+"."{D}*({E})?{FS}?  { create_token(FCON); return FCON; }
 
   /* Reserved Words */
 "break"                 { create_token(BREAK);      return BREAK; }
@@ -97,15 +125,6 @@ FILE *saved_yyin;
 
 0{O}+{IS}?              { lexerr("Octal not supported\n"); }
 
-{D}+{IS}?               { create_token(ICON); return ICON; }
-
-'(\\.|[^\\'])+'         { create_token(CCON); return CCON; }
-
-{D}+{E}{FS}?            { create_token(FCON); return FCON; }
-{D}*"."{D}+({E})?{FS}?  { create_token(FCON); return FCON; }
-{D}+"."{D}*({E})?{FS}?  { create_token(FCON); return FCON; }
-
-{LIT}                   { create_token(STRING); return STRING; }
 
 "#include"[ ]*\"[^\\"]+\"  { handle_user_include_file(); }
 
@@ -165,11 +184,11 @@ FILE *saved_yyin;
 "|"                     {create_token(OR); return OR; } 
 "?"                     {create_token(QUEST); return QUEST; } 
 <<EOF>>                 {
-                            yypop_buffer_state();
-                            yylineno = 1;
-                            if(!YY_CURRENT_BUFFER)
-                                yyterminate();
-                        }
+			    yypop_buffer_state();
+			    yylineno = 1;
+			    if(!YY_CURRENT_BUFFER)
+				yyterminate();
+			}
 %%
 
 
@@ -200,16 +219,36 @@ void handle_user_include_file()
     yyin = fopen(newfile.c_str(),"r");
     if (!yyin) 
     {
-        LOG(ERROR) << "Cannot open include file";
-        exit(1);
+	LOG(ERROR) << "Cannot open include file";
+	exit(1);
     }
     else
     {
-        yypush_buffer_state(yy_new_buffer(yyin, YY_BUF_SIZE));
+	yypush_buffer_state(yy_new_buffer(yyin, YY_BUF_SIZE));
     }
 
 }
+
 void create_token(int category) {
-    //LOG(DEBUG) << "Creating token: " << yylineno << "|" << category << "|" << yytext;
-    yytoken = token_new(category, yylineno, "somefile", yytext);
+	yytoken = token_new(category, yylineno, "somefile", yytext);
 }
+
+void append_sval_token(const char *text) {
+	token_append_text(yytoken, yytext);
+	token_append_literal(yytoken, text);
+}
+void append_sval_token(char escape) {
+	BDEBUG << "Preparing to append escape character.";
+	char *text = (char *) malloc(sizeof(char));
+	text[0] = escape;
+	append_sval_token(text);
+	free(text);
+}
+//void append_sval_escape(char esc) {
+//	append_sval_token(); /* always append to sval */
+//	token_append_sval_escape(yytoken, esc);
+//}
+//void append_sval_string(const char *string) {
+//	append_sval_token();
+//	token_append_sval_string(yytoken, string);
+//}
