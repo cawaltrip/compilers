@@ -5,7 +5,8 @@
 
 #include "token.hh"
 
-Token::Token(int category, int lineno, string filename, string text) {
+Token::Token(int category, int lineno, string filename,
+				string text, string sval = "") {
 	this.category = category;
 	this.lineno = lineno;
 	this.filename = filename;
@@ -22,17 +23,20 @@ Token::Token(int category, int lineno, string filename, string text) {
 			this.cval = text.at(0); /* try/catch - out_of_range */
 			break;
 		case STRING:
-			this.sval = text; /* should just be a double-quote */
+			this.sval = sval;
 			break;
 	}
 }
 
 void Token::append_sval(string sval) {
+	this.sval.append(sval);
 	return;
 }
 void Token::set_cval(char cval) {
+	this.cval = cval;
 	return;
 }
 void Token::append_text(string text) {
+	this.text.append(text);
 	return;
 }

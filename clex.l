@@ -18,7 +18,7 @@ LIT      \"(\\.|[^\\"])*\"
 #include <fstream>
 #include <iostream>
 #include "cgram.tab.h"
-#include "token.h"
+#include "token.hh"
 #include "easylogging++.h"
 
 extern YYSTYPE yylval;
@@ -28,8 +28,9 @@ extern struct token *yytoken;
 void lexerr(char *s);
 void handle_user_include_file();
 void create_token(int category);
-void append_sval_token(const char* text);
-void append_sval_token(char escape);
+void start_string_match();
+void append_string_match(const char *text);
+void append_string_match(const char *sval, const char *text);
 
 int errors;
 
@@ -42,7 +43,9 @@ int sysinclude_ctime = 0;
 int sysinclude_cmath = 0;
 int sysinclude_cstdlib = 0;
 
-std::string literal;
+/* strings for string matching */
+std::string token_sval;
+std::string token_text;
 %}
 
 %%
@@ -60,16 +63,14 @@ std::string literal;
 }
 
   /* String Constants -- adapted from http://stackoverflow.com/a/5423131 */
-\"			{ create_token(STRING); BEGIN(STR); literal.clear(); }
+\"			{ start_string_match(); }
 <STR>{
-	[^\\"\n]*	{ append_sval_token(yytext); }
-	\\n		{ append_sval_token('\n'); }
-	\\t		{ append_sval_token('\t'); }
-	\\[\\"]		{ append_sval_token('\"'); }
-	\"		{ append_sval_token(yytext[1]);
-			  BEGIN(INITIAL);
-			  return STRING;
-			}
+	[^\\"\n]*	{ append_string_match(yytext); }
+	\\n		{ append_string_match(yytext, '\n'); }
+	\\t		{ append_string_match(yytext, '\t'); }
+	\\[\\"]		{ append_string_match(yytext, '\"'); }
+	\"		{ end_string_match(STRING); 
+			  BEGIN(INITIAL); return STRING; }
 	\\.		{ LOG(ERROR) << "Invalid escape sequence"; }
 	\n		{ LOG(ERROR) << "Newline in string literal"; }
 }
@@ -228,27 +229,26 @@ void handle_user_include_file()
     }
 
 }
-
 void create_token(int category) {
-	yytoken = token_new(category, yylineno, "somefile", yytext);
+	yytoken = new Token(category, yylineno, "unknown", yytext);
+}
+void start_string_match() {
+	token_sval.clear();
+	token_text.clear();
+	token_sval = "\"";
 }
 
-void append_sval_token(const char *text) {
-	token_append_text(yytoken, yytext);
-	token_append_literal(yytoken, text);
+void append_string_match(const char *text) {
+	append_string_match(text, text);
 }
-void append_sval_token(char escape) {
-	BDEBUG << "Preparing to append escape character.";
-	char *text = (char *) malloc(sizeof(char));
-	text[0] = escape;
-	append_sval_token(text);
-	free(text);
+
+void append_string_match(const char *sval, const char *text) {
+	token_sval.append(sval);
+	token_text.append(text);	
 }
-//void append_sval_escape(char esc) {
-//	append_sval_token(); /* always append to sval */
-//	token_append_sval_escape(yytoken, esc);
-//}
-//void append_sval_string(const char *string) {
-//	append_sval_token();
-//	token_append_sval_string(yytoken, string);
-//}
+
+void end_string_match(int category) {
+	token_sval.append("\"");
+	yytoken = new Token(category, yylineno, "unknown",
+				token_text, token_sval);
+}

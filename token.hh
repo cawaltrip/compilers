@@ -25,6 +25,8 @@ private:
 
 public:
 	Token(int category, int lineno, string filename, string text);
+	Token(int category, int lineno, string filename,
+				string text, string sval);
 	~Token();
 	int get_category()
 		return this.category;
