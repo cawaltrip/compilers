@@ -25,7 +25,7 @@ extern YYSTYPE yylval;
 extern int yychar;
 extern Token *yytoken;
 
-void lexerr(char *s);
+void lexerr(std::string s);
 
 void handle_user_include_file();
 
@@ -80,13 +80,17 @@ std::string token_text;
 			  BEGIN(INITIAL); return STRING; }
 	\\.		{ LOG(ERROR) << "Invalid escape sequence"; }
 	\n		{ LOG(ERROR) << "Newline in string literal"; }
+	<<EOF>>		{ lexerr("EOF reached before closing \" found"); }
 }
 
   /* Character Constants */
 '(\\.|[^\\'])+'         { create_token(CCON); return CCON; }
 
   /* Integer Constants */
+0[xX]{H}+{IS}?          { lexerr("Hex not supported"); }
+0{O}+{IS}?              { lexerr("Octal not supported"); }
 {D}+{IS}?               { create_token(ICON); return ICON; }
+
 
   /* Floating-point Constants */
 {D}+{E}{FS}?            { create_token(FCON); return FCON; }
@@ -128,10 +132,6 @@ std::string token_text;
 
   /* Identifiers */
 {L}({L}|{D})*           { create_token(IDENTIFIER); return IDENTIFIER; }
-
-0[xX]{H}+{IS}?          { lexerr("Hex not supported\n"); }
-
-0{O}+{IS}?              { lexerr("Octal not supported\n"); }
 
 
 "#include"[ ]*\"[^\\"]+\"  { handle_user_include_file(); }
@@ -200,15 +200,13 @@ std::string token_text;
 %%
 
 
-void lexerr(char *s)
+void lexerr(std::string s)
 {
 	errors++;
-
-	fprintf(stderr, "%s: lexical error", s);
+	LOG(ERROR) << "lexical error on line " << yylineno << ": " << s;
 
 	/* to do: add mechanism for reporting file name and line number */
-
-	fprintf(stderr, ", token = \"%s\"\n", yytext);
+	//fprintf(stderr, ", token = \"%s\"\n", yytext);
 }
 
 void handle_user_include_file()
