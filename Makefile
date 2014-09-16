@@ -3,7 +3,8 @@
 #######################################
 #CPP=/opt/local/bin/g++-mp-4.4
 CPP=g++
-CPPFLAGS=-c -g -std=gnu++98 -x c++ -Wall
+CPPFLAGS=-c -g -std=gnu++98 -x c++
+#CPPFLAGS=-c -g -std=gnu++98 -x c++ -Wall -Wextra
 LDFLAGS=
 
 #FLEX=/opt/local/bin/flex++
