@@ -25,8 +25,13 @@ Token::Token(int category, int lineno, std::string filename,
 			this->fval = 0.0;
 			break;
 		case CCON:
-			this->cval = text.at(0); /* try/catch - out_of_range */
-			break;
+			/* 
+			 * drop down and set character constants as strings 
+			 * so that when printing, the actual escape characters
+			 * are working 
+			 */
+			//this->cval = ; /* try/catch - out_of_range */
+			//break;
 		case STRING:
 			this->sval = sval;
 			break;

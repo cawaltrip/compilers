@@ -1,7 +1,7 @@
 %option header-file="lex.yy.h"
 %option noyywrap
 %option yylineno
-%x COMMENT STR
+%x COMMENT STR INCLUDE CHR CHR_END
 
 O        [0-7]
 D        [0-9]
@@ -24,6 +24,7 @@ LIT      \"(\\.|[^\\"])*\"
 extern YYSTYPE yylval;
 extern int yychar;
 extern Token *yytoken;
+extern std::string current_filename;
 
 void lexerr(std::string s);
 
@@ -39,19 +40,24 @@ void append_string_match(const char *text, char escape);
 void append_string_match(char text_escape, char sval_escape);
 void end_string_match(int category);
 
-int errors;
+void start_character_match();
+void set_character_match(const char* text, char match);
+void end_character_match(int category);
 
-int sysinclude_iostream = 0;
-int sysinclude_string = 0;
-int sysinclude_iomanip = 0;
-int sysinclude_fstream = 0;
-int sysinclude_cstring = 0;
-int sysinclude_ctime = 0;
+int errors = 0;
+
+/* include file flags */
 int sysinclude_cmath = 0;
 int sysinclude_cstdlib = 0;
+int sysinclude_cstring = 0;
+int sysinclude_ctime = 0;
+int sysinclude_fstream = 0;
+int sysinclude_iomanip = 0;
+int sysinclude_iostream = 0;
+int sysinclude_string = 0;
 
 /* strings for string matching */
-std::string token_sval;
+std::string token_val;
 std::string token_text;
 %}
 
@@ -69,25 +75,64 @@ std::string token_text;
 	"*"+"/"         { BEGIN(INITIAL); }
 }
 
-  /* String Constants -- adapted from http://stackoverflow.com/a/5423131 */
+  /* String Constants 
+   *	Adapted from: http://stackoverflow.com/a/5423131 
+   *	Escape character sequence from: 
+   * 		http://en.wikipedia.org/wiki/String_literal#Escape_sequences	
+   */
+  
 \"			{ start_string_match(); BEGIN(STR); }
 <STR>{
 	[^\\"\n]*	{ append_string_match(yytext); }
+	\\0		{ append_string_match(yytext, '\0'); }
+	\\a		{ append_string_match(yytext, '\a'); }
+	\\b		{ append_string_match(yytext, '\b'); }
+	\\f		{ append_string_match(yytext, '\f'); }
 	\\n		{ append_string_match(yytext, '\n'); }
+	\\r		{ append_string_match(yytext, '\r'); }
 	\\t		{ append_string_match(yytext, '\t'); }
+	\\v		{ append_string_match(yytext, '\v'); }
 	\\[\\"]		{ append_string_match(yytext, '\"'); }
+	\\\		{ append_string_match(yytext, '\\'); }
+	\\'		{ append_string_match(yytext, '\''); }
 	\"		{ end_string_match(STRING); 
 			  BEGIN(INITIAL); return STRING; }
-	\\.		{ LOG(ERROR) << "Invalid escape sequence"; }
-	\n		{ LOG(ERROR) << "Newline in string literal"; }
+	\\u{H}{4}	{ lexerr("16-bit unicode not supported"); }
+	\\U{H}{6}	{ lexerr("32-bit unicode not supported"); }
+	\\x{H}{2}	{ lexerr("Hexadecimal ASCII not supported"); }
+	\\{O}{4}	{ lexerr("Octal ASCII not supported"); }
+	\\.		{ lexerr("Invalid escape sequence"); }
+	\n		{ lexerr("Newline in string literal"); }
 	<<EOF>>		{ lexerr("EOF reached before closing \" found"); }
 }
 
   /* Character Constants */
-'(\\.|[^\\'])+'         { create_token(CCON); return CCON; }
+\'			{ start_character_match(); BEGIN(CHR); }
+<CHR>{
+	\\0		{ set_character_match(yytext, '\0'); BEGIN(CHR_END); }
+	\\a		{ set_character_match(yytext, '\a'); BEGIN(CHR_END); }
+	\\b		{ set_character_match(yytext, '\b'); BEGIN(CHR_END); }
+	\\f		{ set_character_match(yytext, '\f'); BEGIN(CHR_END); }
+	\\n		{ set_character_match(yytext, '\n'); BEGIN(CHR_END); }
+	\\r		{ set_character_match(yytext, '\r'); BEGIN(CHR_END); }
+	\\t		{ set_character_match(yytext, '\t'); BEGIN(CHR_END); }
+	\\v		{ set_character_match(yytext, '\v'); BEGIN(CHR_END); }
+	\\[\\"]		{ set_character_match(yytext, '\"'); BEGIN(CHR_END); }
+	\\\		{ set_character_match(yytext, '\\'); BEGIN(CHR_END); }
+	\\'		{ set_character_match(yytext, '\''); BEGIN(CHR_END); }
+	.		{ set_character_match(yytext, yytext[0]); 
+			  BEGIN(CHR_END); }
+	<<EOF>>		{ lexerr("EOF reached while matching character"); }
+}
+<CHR_END>{
+	\'		{ end_character_match(CCON);
+			  BEGIN(INITIAL); return CCON; }
+	<<EOF>>		{ lexerr("EOF reached while closing character"); }
+	.		{ lexerr("Character constants must be 1 character"); }
+}
 
   /* Integer Constants */
-0[xX]{H}+{IS}?          { lexerr("Hex not supported"); }
+0[xX]{H}+{IS}?          { lexerr("Hexadecimal not supported"); }
 0{O}+{IS}?              { lexerr("Octal not supported"); }
 {D}+{IS}?               { create_token(ICON); return ICON; }
 
@@ -133,18 +178,22 @@ std::string token_text;
   /* Identifiers */
 {L}({L}|{D})*           { create_token(IDENTIFIER); return IDENTIFIER; }
 
-
-"#include"[ ]*\"[^\\"]+\"  { handle_user_include_file(); }
-
-"#include <iostream>"   { sysinclude_iostream = 1; }
-"#include <string>"     { sysinclude_string = 1; }
-"#include <iomanip>"    { sysinclude_iomanip = 1; }
-"#include <fstream>"    { sysinclude_fstream = 1; }
-"#include <cstring>"    { sysinclude_cstring = 1; }
-"#include <ctime>"      { sysinclude_ctime = 1; }
-"#include <cmath>"      { sysinclude_cmath = 1; }
-"#include <cstdlib>"    { sysinclude_cstdlib = 1; }
-"#include"{W}"<"[A-Za-z.]*">"       {  }
+  /* Include Files */
+"#include"		{ BEGIN(INCLUDE); }
+<INCLUDE>{
+	[ \t]*		{ /* eat whitespace on both sides of include */ }
+	"<cmath>"	{ sysinclude_cmath       = 1; BEGIN(INITIAL); }
+	"<cstdlib>"	{ sysinclude_cstdlib     = 1; BEGIN(INITIAL); }
+	"<cstring>"	{ sysinclude_cstring     = 1; BEGIN(INITIAL); }
+	"<ctime>"	{ sysinclude_ctime       = 1; BEGIN(INITIAL); }
+	"<fstream>"	{ sysinclude_fstream     = 1; BEGIN(INITIAL); }
+	"<iomanip>"	{ sysinclude_iomanip     = 1; BEGIN(INITIAL); }
+	"<iostream>"	{ sysinclude_iostream    = 1; BEGIN(INITIAL); }
+	"<string>"	{ sysinclude_string      = 1; BEGIN(INITIAL); }
+	\"[^\\"]+\"	{ handle_user_include_file(); BEGIN(INITIAL); }
+	"<"[^<>]*">"	{ lexerr("Unknown system include file"); }
+	<<EOF>>		{ lexerr("EOF reached unexpectedly from include"); }
+}
 
 ">>="                   {create_token(SRASN); return SRASN; } 
 "<<="                   {create_token(SLASN); return SLASN; } 
@@ -203,7 +252,9 @@ std::string token_text;
 void lexerr(std::string s)
 {
 	errors++;
-	LOG(ERROR) << "lexical error on line " << yylineno << ": " << s;
+	LOG(ERROR) << current_filename << ": lexical error on line " << yylineno << ": " << s;
+	LOG(ERROR) << current_filename << ": \t\tcurrent token: " << yytext;
+	exit(EXIT_FAILURE);
 
 	/* to do: add mechanism for reporting file name and line number */
 	//fprintf(stderr, ", token = \"%s\"\n", yytext);
@@ -215,31 +266,24 @@ void handle_user_include_file()
     * Create a new string that contains only the file name
     * to be included.
     */
-    std::string newfile;
-    int startIndex = strchr(yytext, '\"')+1 - yytext;
-    int endIndex = strlen(yytext)-1;
-    int stringLength = endIndex - startIndex;
+	std::string include = yytext;
+	std::string filename = include.substr(1, (strlen(yytext)-2));
 
-    newfile.assign(yytext,startIndex,stringLength);
-
-    yyin = fopen(newfile.c_str(),"r");
-    if (!yyin) 
-    {
-	LOG(ERROR) << "Cannot open include file";
-	exit(1);
-    }
-    else
-    {
-	yypush_buffer_state(yy_new_buffer(yyin, YY_BUF_SIZE));
-    }
-
+	yyin = fopen(filename.c_str(),"r");
+	if (!yyin) {
+		lexerr("Cannot open include file '" + filename + "'");
+		exit(EXIT_FAILURE);
+	}
+	else
+		yypush_buffer_state(yy_new_buffer(yyin, YY_BUF_SIZE));
 }
+
 void create_token(int category) {
-	yytoken = new Token(category, yylineno, "unknown", yytext);
+	yytoken = new Token(category, yylineno, current_filename, yytext);
 }
 void start_string_match() {
 	token_text.clear();
-	token_sval.clear();
+	token_val.clear();
 	token_text = "\"";
 }
 
@@ -249,26 +293,42 @@ void append_string_match(const char *text) {
 
 void append_string_match(const char *text, const char *sval) {
 	token_text.append(text);
-	token_sval.append(sval);
+	token_val.append(sval);
 }
 
 void append_string_match(char escape, const char *sval) {
 	token_text.append(1, escape);
-	token_sval.append(sval);
+	token_val.append(sval);
 }
 
 void append_string_match(const char *text, char escape) {
 	token_text.append(text);
-	token_sval.append(1, escape);
+	token_val.append(1, escape);
 }
 
 void append_string_match(char text_escape, char sval_escape) {
-	token_text.append(1,text_escape);
-	token_sval.append(1,sval_escape);
+	token_text.append(1, text_escape);
+	token_val.append(1, sval_escape);
 }
 
 void end_string_match(int category) {
 	token_text.append(1, '"');
-	yytoken = new Token(category, yylineno, "unknown",
-				token_text, token_sval);
+	yytoken = new Token(category, yylineno, current_filename,
+					token_text, token_val);
+}
+
+void start_character_match() {
+	token_text.clear();
+	token_val.clear();
+	token_text = "\'";
+}
+
+void set_character_match(const char* text, char match) {
+	token_text += text;
+	token_val = match;
+}
+void end_character_match(int category) {
+	token_text += "'";
+	yytoken = new Token(category, yylineno, current_filename, 
+						token_text, token_val);
 }
