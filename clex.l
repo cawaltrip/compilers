@@ -23,14 +23,21 @@ LIT      \"(\\.|[^\\"])*\"
 
 extern YYSTYPE yylval;
 extern int yychar;
-extern struct token *yytoken;
+extern Token *yytoken;
 
 void lexerr(char *s);
+
 void handle_user_include_file();
+
 void create_token(int category);
+
 void start_string_match();
 void append_string_match(const char *text);
-void append_string_match(const char *sval, const char *text);
+void append_string_match(const char *text, const char *sval);
+void append_string_match(char escape, const char *sval);
+void append_string_match(const char *text, char escape);
+void append_string_match(char text_escape, char sval_escape);
+void end_string_match(int category);
 
 int errors;
 
@@ -63,7 +70,7 @@ std::string token_text;
 }
 
   /* String Constants -- adapted from http://stackoverflow.com/a/5423131 */
-\"			{ start_string_match(); }
+\"			{ start_string_match(); BEGIN(STR); }
 <STR>{
 	[^\\"\n]*	{ append_string_match(yytext); }
 	\\n		{ append_string_match(yytext, '\n'); }
@@ -233,22 +240,37 @@ void create_token(int category) {
 	yytoken = new Token(category, yylineno, "unknown", yytext);
 }
 void start_string_match() {
-	token_sval.clear();
 	token_text.clear();
-	token_sval = "\"";
+	token_sval.clear();
+	token_text = "\"";
 }
 
 void append_string_match(const char *text) {
 	append_string_match(text, text);
 }
 
-void append_string_match(const char *sval, const char *text) {
+void append_string_match(const char *text, const char *sval) {
+	token_text.append(text);
 	token_sval.append(sval);
-	token_text.append(text);	
+}
+
+void append_string_match(char escape, const char *sval) {
+	token_text.append(1, escape);
+	token_sval.append(sval);
+}
+
+void append_string_match(const char *text, char escape) {
+	token_text.append(text);
+	token_sval.append(1, escape);
+}
+
+void append_string_match(char text_escape, char sval_escape) {
+	token_text.append(1,text_escape);
+	token_sval.append(1,sval_escape);
 }
 
 void end_string_match(int category) {
-	token_sval.append("\"");
+	token_text.append(1, '"');
 	yytoken = new Token(category, yylineno, "unknown",
 				token_text, token_sval);
 }

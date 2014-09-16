@@ -15,8 +15,8 @@ RM=-rm -f
 # Filename configurations #############
 #######################################
 BIN=120++
-CC_SOURCES=120++.cc
-C_SOURCES=lex.yy.c token.c
+CC_SOURCES=120++.cc token.cc
+C_SOURCES=lex.yy.c
 OBJECTS=$(CC_SOURCES:.cc=.o) $(C_SOURCES:.c=.o)
 
 # Grammar File

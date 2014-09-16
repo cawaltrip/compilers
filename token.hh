@@ -14,53 +14,40 @@ private:
 	/* these values are always set */
 	int category;
 	int lineno;
-	string filename;
-	string text;
+	std::string filename;
+	std::string text;
 	
 	/* these values are conditionally set depending on category */
 	int ival;
-	string sval;
+	std::string sval;
 	char cval;
 	double fval;
 
 public:
-	Token(int category, int lineno, string filename, string text);
-	Token(int category, int lineno, string filename,
-				string text, string sval);
-	~Token();
-	int get_category()
-		return this.category;
-	int get_lineno()
-		return this.lineno;
-	string get_filename()
-		return this.filename;
-	char* get_filename()
-		return this.filename.c_str();
+	Token();
+	Token(int category, int lineno, std::string filename,
+				std::string text, std::string sval = "");
+	int get_category();
+	int get_lineno();
+	std::string get_filename();
 	
 	/* text actions */
-	void append_text(string text);
-	string get_text()
-		return this.text;
-	char* get_text()
-		return this.text.c_str();
+	void append_text(std::string text);
+	std::string get_text();
 
 	/* ival actions */
-	int get_ival()
-		return this.ival;
+	int get_ival();
+
 	/* fval actions */
-	int get_fval()
-		return this.fval;
+	int get_fval();
+
 	/* sval actions */
-	void append_sval(string sval);
-	string get_sval()
-		return this.sval;
-	char* get_sval()
-		return this.sval.c_str();
+	void append_sval(std::string sval);
+	std::string get_sval();
 	
 	/* cval actions */
 	void set_cval(char cval);
-	char get_cval()
-		return this.cval;
+	char get_cval();
 };
 
 #endif /* _TOKEN_HH_ */

@@ -10,10 +10,11 @@
  */    
 #include "easylogging++.h"
 #include "lex.yy.h"
-#include "token.h"
+#include "token.hh"
 #include "cgram.tab.h"
 
-struct token *yytoken = NULL;
+Token *yytoken;
+//struct token *yytoken = NULL;
 
 using namespace std;
 
@@ -35,10 +36,8 @@ _INITIALIZE_EASYLOGGINGPP
 
 int main(int argc, char *argv[])
 {   
-    list<char*> file_list;
-    list<char*>::iterator fiter;
-    list<struct token*> token_list;
-    list<struct token*>::iterator titer;
+    list<Token *> token_list;
+    list<Token *>::iterator iter;
 
     easyloggingpp::Configurations c;
     c.setToDefault();
@@ -68,19 +67,19 @@ int main(int argc, char *argv[])
 
     BINFO << "Category \t\t Text \t\t Line \t\t Filename \t\t Ival/Sval";
     BINFO << "=================================================================";
-    for (titer = token_list.begin(); titer != token_list.end(); ++titer) {
+    for (iter = token_list.begin(); iter != token_list.end(); ++iter) {
         std::string value;
-        if ((*titer)->category == ICON)
-            value = (*titer)->ival;
-        else if ((*titer)->category == CCON)
-            value = (*titer)->sval;
-        else if ((*titer)->category == STRING)
-            value = (*titer)->sval;
-        //else if ((*titer)->category == FCON)
-        //    value = (*titer)->fval;
+        if ((*iter)->get_category() == ICON)
+            value = (*iter)->get_ival();
+        else if ((*iter)->get_category() == CCON)
+            value = (*iter)->get_sval();
+        else if ((*iter)->get_category() == STRING)
+            value = (*iter)->get_sval();
+        //else if ((*iter)->get_category() == FCON)
+        //    value = (*iter)->get_fval();
         else
             value = "";
-        BINFO << (*titer)->category << "\t\t" << (*titer)->text << "\t\t" << (*titer)->lineno << "\t\t" << (*titer)->filename << "\t\t" << value;
+        BINFO << (*iter)->get_category() << "\t\t" << (*iter)->get_text() << "\t\t" << (*iter)->get_lineno() << "\t\t" << (*iter)->get_filename() << "\t\t" << value;
     }
 
     return(0);
