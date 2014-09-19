@@ -1,4 +1,5 @@
 #include <iostream>
+#include <iomanip>
 #include <fstream>
 #include <string>
 #include <list>
@@ -92,21 +93,47 @@ int main(int argc, char *argv[])
 
 	}
 
-    BINFO << "Category \t\t Text \t\t Line \t\t Filename \t\t Ival/Sval";
-    BINFO << "=================================================================";
-    for (iter = token_list.begin(); iter != token_list.end(); ++iter) {
-	std::string value;
-	if ((*iter)->get_category() == ICON)
-	    value = (*iter)->get_ival();
-	else if ((*iter)->get_category() == CCON)
-	    value = (*iter)->get_sval();
-	else if ((*iter)->get_category() == STRING)
-	    value = (*iter)->get_sval();
-	//else if ((*iter)->get_category() == FCON)
-	//    value = (*iter)->get_fval();
-	else
-	    value = "";
-	BINFO << (*iter)->get_category() << "\t\t" << (*iter)->get_text() << "\t\t" << (*iter)->get_lineno() << "\t\t" << (*iter)->get_filename() << "\t\t" << value;
+	/* Print table */
+	setiosflags(ios::left);
+
+	int catw = 5; /* category width */
+	int textw = 30;
+	int linew = 5;
+	int filew = 15;
+	int valw = 25;
+	string sep = string(80,'=');
+
+	cout << left << setw(catw) << "Cat";
+	cout << left << setw(textw) << "Text";
+	cout << left << setw(linew) << "Line";
+	cout << left << setw(filew) << "Filename";
+	cout << left << setw(valw) << "Ival/Sval";
+	cout << endl;
+
+	cout << sep << endl;
+
+	for (iter = token_list.begin(); iter != token_list.end(); ++iter) {
+		std::string value;
+		if ((*iter)->get_category() == ICON) {
+		    stringstream s;
+		    s << (*iter)->get_ival();
+		    value = s.str();
+		}
+		else if ((*iter)->get_category() == CCON)
+		    value = (*iter)->get_sval();
+		else if ((*iter)->get_category() == STRING)
+		    value = (*iter)->get_sval();
+		else if ((*iter)->get_category() == FCON)
+		    value = (*iter)->get_fval();
+		else
+		    value = "";
+
+		cout << left << setw(catw) << (*iter)->get_category();
+		cout << left << setw(textw) << (*iter)->get_text();
+		cout << left << setw(linew) << (*iter)->get_lineno();
+		cout << left << setw(filew) << (*iter)->get_filename();
+		cout << left << setw(valw) << value;
+		cout << endl;
     }
 
     return(0);

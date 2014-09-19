@@ -23,6 +23,7 @@ Token::Token(int category, int lineno, std::string filename,
 			this->ival = atoi(text.c_str());
 			break;
 		case FCON:
+			/* use errno */
 			this->fval = strtod(text.c_str(), NULL);
 			break;
 		case CCON:

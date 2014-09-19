@@ -154,9 +154,9 @@ std::list<std::string> include_stack;
 {S}?{D}+"."{D}*{E}{1}{S}?{D}+	{ create_token(FCON); return FCON; }
 {S}?"."{D}+{E}{1}{S}?{D}+	{ create_token(FCON); return FCON; }
 
-{D}+{E}{FS}?            { lexerr("Float symbol not supported"); return FCON; }
-{D}*"."{D}+({E})?{FS}?  { lexerr("Float symbol not supported"); return FCON; }
-{D}+"."{D}*({E})?{FS}?  { lexerr("Float symbol not supported"); return FCON; }
+{D}+{E}{FS}?            { lexerr("Float suffix not supported"); return FCON; }
+{D}*"."{D}+({E})?{FS}?  { lexerr("Float suffix not supported"); return FCON; }
+{D}+"."{D}*({E})?{FS}?  { lexerr("Float suffix not supported"); return FCON; }
 
   /* Reserved Words */
 "break"                 { create_token(BREAK);      return BREAK; }
