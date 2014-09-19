@@ -113,26 +113,21 @@ int main(int argc, char *argv[])
 	cout << sep << endl;
 
 	for (iter = token_list.begin(); iter != token_list.end(); ++iter) {
-		std::string value;
-		if ((*iter)->get_category() == ICON) {
-		    stringstream s;
+		stringstream s;
+		if ((*iter)->get_category() == ICON)
 		    s << (*iter)->get_ival();
-		    value = s.str();
-		}
 		else if ((*iter)->get_category() == CCON)
-		    value = (*iter)->get_sval();
+		    s << (*iter)->get_sval();
 		else if ((*iter)->get_category() == STRING)
-		    value = (*iter)->get_sval();
+		    s << (*iter)->get_sval();
 		else if ((*iter)->get_category() == FCON)
-		    value = (*iter)->get_fval();
-		else
-		    value = "";
+			s << (*iter)->get_fval();
 
 		cout << left << setw(catw) << (*iter)->get_category();
 		cout << left << setw(textw) << (*iter)->get_text();
 		cout << left << setw(linew) << (*iter)->get_lineno();
 		cout << left << setw(filew) << (*iter)->get_filename();
-		cout << left << setw(valw) << value;
+		cout << left << setw(valw) << s.str();
 		cout << endl;
     }
 
