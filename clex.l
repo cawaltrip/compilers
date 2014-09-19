@@ -266,15 +266,18 @@ std::list<std::string> include_stack;
 %%
 
 
-void lexerr(std::string s)
+void lexerr(std::string str)
 {
-	errors++;
-	LOG(ERROR) << current_filename << ": lexical error on line " << yylineno << ": " << s;
-	LOG(ERROR) << current_filename << ": \t\tcurrent token: " << yytext;
-	exit(EXIT_FAILURE);
+	/* Add a list of errors */
+	std::stringstream s;
+	s << get_current_filename() << ":";
+	s << yylineno << ":";
+	s << yytext << ": ";
+	s << "lexical error: ";
+	s << str;
 
-	/* to do: add mechanism for reporting file name and line number */
-	//fprintf(stderr, ", token = \"%s\"\n", yytext);
+	errors++;
+	LOG(ERROR) << s.str();
 }
 
 void handle_user_include_file()
