@@ -1,7 +1,3 @@
-# Files for testing
-sample/*
-samples/*
-
 # Flex files
 *.yy.cc
 *.yy.c
