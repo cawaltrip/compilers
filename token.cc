@@ -19,19 +19,13 @@ Token::Token(int category, int lineno, std::string filename,
 
 	switch(category) {
 		case ICON:
+			/* use std::stoi if c++11 is supported */
 			this->ival = atoi(text.c_str());
 			break;
 		case FCON:
-			this->fval = 0.0;
+			this->fval = strtod(text.c_str(), NULL);
 			break;
 		case CCON:
-			/* 
-			 * drop down and set character constants as strings 
-			 * so that when printing, the actual escape characters
-			 * are working 
-			 */
-			//this->cval = ; /* try/catch - out_of_range */
-			//break;
 		case STRING:
 			this->sval = sval;
 			break;

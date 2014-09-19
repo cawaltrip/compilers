@@ -11,12 +11,15 @@ E        [Ee][+-]?{D}+
 FS       (f|F|l|L)
 IS       (u|U|l|L)
 W        [ \t\f]*
+S	[+-]
 LIT      \"(\\.|[^\\"])*\"
 
 %{
 #include <string>
 #include <fstream>
 #include <iostream>
+#include <list>
+#include <libgen.h> /* dirname and basename */
 #include "cgram.tab.h"
 #include "token.hh"
 #include "easylogging++.h"
@@ -44,6 +47,10 @@ void start_character_match();
 void set_character_match(const char* text, char match);
 void end_character_match(int category);
 
+std::string get_current_filename();
+void push_include_file(std::string inc);
+void pop_include_file();
+
 int errors = 0;
 
 /* include file flags */
@@ -59,6 +66,10 @@ int sysinclude_string = 0;
 /* strings for string matching */
 std::string token_val;
 std::string token_text;
+
+/* is this an included file */
+std::list<std::string> include_stack;
+
 %}
 
 %%
@@ -138,9 +149,14 @@ std::string token_text;
 
 
   /* Floating-point Constants */
-{D}+{E}{FS}?            { create_token(FCON); return FCON; }
-{D}*"."{D}+({E})?{FS}?  { create_token(FCON); return FCON; }
-{D}+"."{D}*({E})?{FS}?  { create_token(FCON); return FCON; }
+{S}?{D}+"."{D}*		{ create_token(FCON); return FCON; }
+{S}?"."{D}+		{ create_token(FCON); return FCON; }
+{S}?{D}+"."{D}*{E}{1}{S}?{D}+	{ create_token(FCON); return FCON; }
+{S}?"."{D}+{E}{1}{S}?{D}+	{ create_token(FCON); return FCON; }
+
+{D}+{E}{FS}?            { lexerr("Float symbol not supported"); return FCON; }
+{D}*"."{D}+({E})?{FS}?  { lexerr("Float symbol not supported"); return FCON; }
+{D}+"."{D}*({E})?{FS}?  { lexerr("Float symbol not supported"); return FCON; }
 
   /* Reserved Words */
 "break"                 { create_token(BREAK);      return BREAK; }
@@ -241,10 +257,11 @@ std::string token_text;
 "|"                     {create_token(OR); return OR; } 
 "?"                     {create_token(QUEST); return QUEST; } 
 <<EOF>>                 {
-			    yypop_buffer_state();
-			    yylineno = 1;
-			    if(!YY_CURRENT_BUFFER)
-				yyterminate();
+				pop_include_file();
+				yypop_buffer_state();
+				yylineno = 1;
+				if(!YY_CURRENT_BUFFER)
+					yyterminate();
 			}
 %%
 
@@ -274,12 +291,15 @@ void handle_user_include_file()
 		lexerr("Cannot open include file '" + filename + "'");
 		exit(EXIT_FAILURE);
 	}
-	else
+	else {
+		push_include_file(filename);
 		yypush_buffer_state(yy_new_buffer(yyin, YY_BUF_SIZE));
+	}
 }
 
 void create_token(int category) {
-	yytoken = new Token(category, yylineno, current_filename, yytext);
+	yytoken = new Token(category, yylineno, 
+					get_current_filename(), yytext);
 }
 void start_string_match() {
 	token_text.clear();
@@ -313,7 +333,7 @@ void append_string_match(char text_escape, char sval_escape) {
 
 void end_string_match(int category) {
 	token_text.append(1, '"');
-	yytoken = new Token(category, yylineno, current_filename,
+	yytoken = new Token(category, yylineno, get_current_filename(),
 					token_text, token_val);
 }
 
@@ -329,6 +349,27 @@ void set_character_match(const char* text, char match) {
 }
 void end_character_match(int category) {
 	token_text += "'";
-	yytoken = new Token(category, yylineno, current_filename, 
+	yytoken = new Token(category, yylineno, get_current_filename(), 
 						token_text, token_val);
+}
+
+std::string get_current_filename() {
+	std::string str;
+	char *tmp;
+	if(!include_stack.empty())
+		tmp = strdup(include_stack.front().c_str());
+	else
+		tmp = strdup(current_filename.c_str());
+
+	str.assign(basename(tmp));
+	free(tmp);
+	return str;
+}
+
+void push_include_file(std::string inc) {
+	include_stack.push_front(inc);
+}
+void pop_include_file() {
+	if(!include_stack.empty())
+		include_stack.pop_front();
 }
