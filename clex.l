@@ -3,15 +3,24 @@
 %option yylineno
 %x COMMENT STR INCLUDE CHR CHR_END
 
+  /* Bases */
 O        [0-7]
 D        [0-9]
 L        [a-zA-Z_]
 H        [a-fA-F0-9]
+
+  /* Integers */
+IS       (u|U|l|L)
+
+  /* Floating-points */
+FP	({D}*\.{D}+)|({D}+\.)
 E        [Ee][+-]?{D}+
 FS       (f|F|l|L)
-IS       (u|U|l|L)
+
+  /* Spaces */
 W        [ \t\f]*
-S	[+-]
+
+  /* Literals */
 LIT      \"(\\.|[^\\"])*\"
 
 %{
@@ -86,6 +95,154 @@ std::list<std::string> include_stack;
 	"*"+"/"         { BEGIN(INITIAL); }
 }
 
+  /* Reserved Words */
+"asm"			{ create_token(ASM);		return ASM; }
+"auto"			{ create_token(AUTO);		return AUTO; }
+"bool"			{ create_token(BOOL);		return BOOL; }
+"break"                 { create_token(BREAK);      return BREAK; }
+"case"                  { create_token(CASE);       return CASE; }
+"catch"			{ create_token(CATCH);		return CATCH; }
+"char"                  { create_token(CHAR);       return CHAR; }
+"class"			{ create_token(CLASS); 		return CLASS; }
+"const"                 { create_token(CONST);      return CONST; }
+"const_class"		{ create_token(CONST_CAST);	return CONST_CAST; }
+"continue"              { create_token(CONTINUE);   return CONTINUE; }
+"default"               { create_token(DEFAULT);    return DEFAULT; }
+"delete"		{ create_token(DELETE);		return DELETE; }
+"do"                    { create_token(DO);         return DO; }
+"double"                { create_token(DOUBLE);     return DOUBLE; }
+"dynamic_cast"		{ create_token(DYNAMIC_CAST);	return DYNAMIC_CAST; }
+"else"                  { create_token(ELSE);       return ELSE; }
+"enum"                  { create_token(ENUM);       return ENUM; }
+"explicit"		{ create_token(EXPLICIT);	return EXPLICIT; }
+"export"		{ create_token(EXPORT);		return EXPORT; }
+"extern"                { create_token(EXTERN);     return EXTERN; }
+"false"			{ create_token(FALSE); 		return FALSE; }
+"float"                 { create_token(FLOAT);      return FLOAT; }
+"for"                   { create_token(FOR);        return FOR; }
+"friend"		{ create_token(FRIEND);		return FRIEND; }
+"goto"                  { create_token(GOTO);       return GOTO; }
+"if"                    { create_token(IF);         return IF; }
+"inline"		{ create_token(INLINE);		return INLINE; }
+"int"                   { create_token(INT);        return INT; }
+"long"                  { create_token(LONG);       return LONG; }
+"mutable"		{ create_token(MUTABLE);	return MUTABLE; }
+"namespace"		{ create_token(NAMESPACE);	return NAMESPACE; }
+"new"			{ create_token(NEW);		return NEW; }
+"operator"		{ create_token(OPERATOR);	return OPERATOR; }
+"private"		{ create_token(PRIVATE);	return PRIVATE; }
+"protected"		{ create_token(PROTECTED);	return PROTECTED; }
+"public"		{ create_token(PUBLIC);		return PUBLIC; }
+"register"              { create_token(REGISTER);   return REGISTER; }
+"reinterpret_cast"	{ create_token(REINTER_CAST); return REINTER_CAST; }
+"return"                { create_token(RETURN);     return RETURN; }
+"short"                 { create_token(SHORT);      return SHORT; }
+"signed"                { create_token(SIGNED);     return SIGNED; }
+"sizeof"                { create_token(SIZEOF);     return SIZEOF; }
+"static"                { create_token(STATIC);     return STATIC; }
+"static_cast"		{ create_token(STATIC_CAST);	return STATIC_CAST; }
+"struct"                { create_token(STRUCT);     return STRUCT; }
+"switch"                { create_token(SWITCH);     return SWITCH; }
+"template"		{ create_token(TEMPLATE);	return TEMPLATE; }
+"this"			{ create_token(THIS); 		return THIS; }
+"throw"			{ create_token(THROW); 		return THROW; }
+"true"			{ create_token(TRUE);		return TRUE; }
+"try"			{ create_token(TRY); 		return TRY; }
+"typedef"               { create_token(TYPEDEF);    return TYPEDEF; }
+"typeid"		{ create_token(TYPEID);		return TYPEID; }
+"typename"		{ create_token(TYPENAME);	return TYPENAME; }
+"union"                 { create_token(UNION);      return UNION; }
+"unsigned"              { create_token(UNSIGNED);   return UNSIGNED; }
+"using"			{ create_token(USING);		return USING; }
+"virtual"		{ create_token(VIRTUAL);	return VIRTUAL; }
+"void"                  { create_token(VOID);       return VOID; }
+"volatile"              { create_token(VOLATILE);   return VOLATILE; }
+"wchar_t"		{ create_token(WCHAR_T);	return WCHAR_T; }
+"while"                 { create_token(WHILE);      return WHILE; }
+
+  /* Include Files */
+"#include"		{ BEGIN(INCLUDE); }
+<INCLUDE>{
+	[ \t]*		{ /* eat whitespace on both sides of include */ }
+	"<cmath>"	{ sysinclude_cmath       = 1; BEGIN(INITIAL); }
+	"<cstdlib>"	{ sysinclude_cstdlib     = 1; BEGIN(INITIAL); }
+	"<cstring>"	{ sysinclude_cstring     = 1; BEGIN(INITIAL); }
+	"<ctime>"	{ sysinclude_ctime       = 1; BEGIN(INITIAL); }
+	"<fstream>"	{ sysinclude_fstream     = 1; BEGIN(INITIAL); }
+	"<iomanip>"	{ sysinclude_iomanip     = 1; BEGIN(INITIAL); }
+	"<iostream>"	{ sysinclude_iostream    = 1; BEGIN(INITIAL); }
+	"<string>"	{ sysinclude_string      = 1; BEGIN(INITIAL); }
+	\"[^\\"]+\"	{ handle_user_include_file(); BEGIN(INITIAL); }
+	"<"[^<>]*">"	{ lexerr("Unknown system include file"); }
+	<<EOF>>		{ lexerr("EOF reached unexpectedly from include"); }
+}
+
+">>="                   { create_token(SREQ); return SREQ; } 
+"<<="                   { create_token(SLEQ); return SLEQ; } 
+"+="                    { create_token(ADDEQ); return ADDEQ; } 
+"-="                    { create_token(SUBEQ); return SUBEQ; } 
+"*="                    { create_token(MULEQ); return MULEQ; } 
+"/="                    { create_token(DIVEQ); return DIVEQ; } 
+"%="                    { create_token(MODEQ); return MODEQ; } 
+"&="                    { create_token(ANDEQ); return ANDEQ; }
+"and_eq"		{ create_token(ANDEQ); return ANDEQ; } 
+"^="                    { create_token(XOREQ); return XOREQ; }
+"xor_eq"		{ create_token(XOREQ); return XOREQ; } 
+"|="                    { create_token(OREQ); return OREQ; }
+"or_eq"			{ create_token(OREQ); return OREQ; }
+">>"                    { create_token(SR); return SR; } 
+"<<"                    { create_token(SL); return SL; } 
+"++"                    { create_token(PLUSPLUS); return PLUSPLUS; } 
+"--"                    { create_token(MINUSMINUS); return MINUSMINUS; } 
+"->"                    { create_token(ARROW); return ARROW; } 
+"->*"			{ create_token(ARROWSTAR); return ARROWSTAR; }
+"&&"                    { create_token(ANDAND); return ANDAND; } 
+"and"			{ create_token(ANDAND); return ANDAND; }
+"||"                    { create_token(OROR); return OROR; } 
+"or"			{ create_token(OROR); return OROR; }
+"<="                    { create_token(LTEQ); return LTEQ; } 
+">="                    { create_token(GTEQ); return GTEQ; } 
+"=="                    { create_token(EQ); return EQ; } 
+"!="                    { create_token(NOTEQ); return NOTEQ; }
+"not_eq"		{ create_token(NOTEQ); return NOTEQ; }
+
+";"                     { create_token(';'); return ';'; } 
+"{"                     { create_token('{'); return '{'; }
+"<%"			{ create_token('{'); return '{'; } 
+"}"                     { create_token('}'); return '}'; }
+"%>"			{ create_token('}'); return '}'; } 
+","                     { create_token(','); return ','; } 
+":"                     { create_token(':'); return ':'; }
+"::"			{ create_token(COLONCOLON); return COLONCOLON; } 
+"="                     { create_token('='); return '='; } 
+"("                     { create_token('('); return '('; } 
+")"                     { create_token(')'); return ')'; } 
+"["                     { create_token('['); return '['; } 
+"<:"			{ create_token('['); return '['; }
+"]"                     { create_token(']'); return ']'; }
+":>"			{ create_token(']'); return ']'; } 
+"."                     { create_token('.'); return '.'; }
+"..."			{ create_token(ELLIPSIS); return ELLIPSIS; }
+".*"			{ create_token(DOTSTAR); return DOTSTAR; } 
+"&"                     { create_token('&'); return '&'; } 
+"bitand"		{ create_token('&'); return '&'; }
+"!"                     { create_token('!'); return '!'; }
+"not"			{ create_token('!'); return '!'; } 
+"~"                     { create_token('~'); return '~'; } 
+"compl"			{ create_token('~'); return '~'; }
+"-"                     { create_token('-'); return '-'; } 
+"+"                     { create_token('+'); return '+'; } 
+"*"                     { create_token('*'); return '*'; } 
+"/"                     { create_token('/'); return '/'; } 
+"%"                     { create_token('%'); return '%'; } 
+"<"                     { create_token('<'); return '<'; } 
+">"                     { create_token('>'); return '>'; } 
+"^"                     { create_token('^'); return '^'; } 
+"xor"			{ create_token('^'); return '^'; }
+"|"                     { create_token('|'); return '|'; }
+"bitor"			{ create_token('|'); return '|'; } 
+"?"                     { create_token('?'); return '?'; } 
+
   /* String Constants 
    *	Adapted from: http://stackoverflow.com/a/5423131 
    *	Escape character sequence from: 
@@ -136,126 +293,26 @@ std::list<std::string> include_stack;
 	<<EOF>>		{ lexerr("EOF reached while matching character"); }
 }
 <CHR_END>{
-	\'		{ end_character_match(CCON);
-			  BEGIN(INITIAL); return CCON; }
+	\'		{ end_character_match(CHARACTER);
+			  BEGIN(INITIAL); return CHARACTER; }
 	<<EOF>>		{ lexerr("EOF reached while closing character"); }
 	.		{ lexerr("Character constants must be 1 character"); }
 }
 
   /* Integer Constants */
+{D}+{IS}?               { create_token(INTEGER); return INTEGER; }
 0[xX]{H}+{IS}?          { lexerr("Hexadecimal not supported"); }
 0{O}+{IS}?              { lexerr("Octal not supported"); }
-{D}+{IS}?               { create_token(ICON); return ICON; }
 
 
   /* Floating-point Constants */
-{S}?{D}+"."{D}*		{ create_token(FCON); return FCON; }
-{S}?"."{D}+		{ create_token(FCON); return FCON; }
-{S}?{D}+"."{D}*{E}{1}{S}?{D}+	{ create_token(FCON); return FCON; }
-{S}?"."{D}+{E}{1}{S}?{D}+	{ create_token(FCON); return FCON; }
-
-{D}+{E}{FS}?            { lexerr("Float suffix not supported"); return FCON; }
-{D}*"."{D}+({E})?{FS}?  { lexerr("Float suffix not supported"); return FCON; }
-{D}+"."{D}*({E})?{FS}?  { lexerr("Float suffix not supported"); return FCON; }
-
-  /* Reserved Words */
-"break"                 { create_token(BREAK);      return BREAK; }
-"case"                  { create_token(CASE);       return CASE; }
-"char"                  { create_token(CHAR);       return CHAR; }
-"const"                 { create_token(CONST);      return CONST; }
-"continue"              { create_token(CONTINUE);   return CONTINUE; }
-"default"               { create_token(DEFAULT);    return DEFAULT; }
-"do"                    { create_token(DO);         return DO; }
-"double"                { create_token(DOUBLE);     return DOUBLE; }
-"else"                  { create_token(ELSE);       return ELSE; }
-"enum"                  { create_token(ENUM);       return ENUM; }
-"extern"                { create_token(EXTERN);     return EXTERN; }
-"float"                 { create_token(FLOAT);      return FLOAT; }
-"for"                   { create_token(FOR);        return FOR; }
-"goto"                  { create_token(GOTO);       return GOTO; }
-"if"                    { create_token(IF);         return IF; }
-"int"                   { create_token(INT);        return INT; }
-"long"                  { create_token(LONG);       return LONG; }
-"register"              { create_token(REGISTER);   return REGISTER; }
-"return"                { create_token(RETURN);     return RETURN; }
-"short"                 { create_token(SHORT);      return SHORT; }
-"signed"                { create_token(SIGNED);     return SIGNED; }
-"sizeof"                { create_token(SIZEOF);     return SIZEOF; }
-"static"                { create_token(STATIC);     return STATIC; }
-"struct"                { create_token(STRUCT);     return STRUCT; }
-"switch"                { create_token(SWITCH);     return SWITCH; }
-"typedef"               { create_token(TYPEDEF);    return TYPEDEF; }
-"union"                 { create_token(UNION);      return UNION; }
-"unsigned"              { create_token(UNSIGNED);   return UNSIGNED; }
-"void"                  { create_token(VOID);       return VOID; }
-"volatile"              { create_token(VOLATILE);   return VOLATILE; }
-"while"                 { create_token(WHILE);      return WHILE; }
+{FP}{E}?{FS}?		{ create_token(FLOATING);	return FLOATING; }
+{D}+{E}{FS}?		{ create_token(FLOATING);	return FLOATING; }
 
   /* Identifiers */
 {L}({L}|{D})*           { create_token(IDENTIFIER); return IDENTIFIER; }
 
-  /* Include Files */
-"#include"		{ BEGIN(INCLUDE); }
-<INCLUDE>{
-	[ \t]*		{ /* eat whitespace on both sides of include */ }
-	"<cmath>"	{ sysinclude_cmath       = 1; BEGIN(INITIAL); }
-	"<cstdlib>"	{ sysinclude_cstdlib     = 1; BEGIN(INITIAL); }
-	"<cstring>"	{ sysinclude_cstring     = 1; BEGIN(INITIAL); }
-	"<ctime>"	{ sysinclude_ctime       = 1; BEGIN(INITIAL); }
-	"<fstream>"	{ sysinclude_fstream     = 1; BEGIN(INITIAL); }
-	"<iomanip>"	{ sysinclude_iomanip     = 1; BEGIN(INITIAL); }
-	"<iostream>"	{ sysinclude_iostream    = 1; BEGIN(INITIAL); }
-	"<string>"	{ sysinclude_string      = 1; BEGIN(INITIAL); }
-	\"[^\\"]+\"	{ handle_user_include_file(); BEGIN(INITIAL); }
-	"<"[^<>]*">"	{ lexerr("Unknown system include file"); }
-	<<EOF>>		{ lexerr("EOF reached unexpectedly from include"); }
-}
-
-">>="                   {create_token(SRASN); return SRASN; } 
-"<<="                   {create_token(SLASN); return SLASN; } 
-"+="                    {create_token(PLASN); return PLASN; } 
-"-="                    {create_token(MIASN); return MIASN; } 
-"*="                    {create_token(MUASN); return MUASN; } 
-"/="                    {create_token(DIASN); return DIASN; } 
-"%="                    {create_token(MOASN); return MOASN; } 
-"&="                    {create_token(ANASN); return ANASN; } 
-"^="                    {create_token(ERASN); return ERASN; } 
-"|="                    {create_token(ORASN); return ORASN; } 
-">>"                    {create_token(SHR); return SHR; } 
-"<<"                    {create_token(SHL); return SHL; } 
-"++"                    {create_token(INCOP); return INCOP; } 
-"--"                    {create_token(DECOP); return DECOP; } 
-"->"                    {create_token(FOLLOW); return FOLLOW; } 
-"&&"                    {create_token(ANDAND); return ANDAND; } 
-"||"                    {create_token(OROR); return OROR; } 
-"<="                    {create_token(LE); return LE; } 
-">="                    {create_token(GE); return GE; } 
-"=="                    {create_token(EQ); return EQ; } 
-"!="                    {create_token(NE); return NE; } 
-";"                     {create_token(SM); return SM; } 
-"{"                     {create_token(LC); return LC; } 
-"}"                     {create_token(RC); return RC; } 
-","                     {create_token(CM); return CM; } 
-":"                     {create_token(COLON); return COLON; } 
-"="                     {create_token(ASN); return ASN; } 
-"("                     {create_token(LP); return LP; } 
-")"                     {create_token(RP); return RP; } 
-"["                     {create_token(LB); return LB; } 
-"]"                     {create_token(RB); return RB; } 
-"."                     {create_token(DOT); return DOT; } 
-"&"                     {create_token(AND); return AND; } 
-"!"                     {create_token(BANG); return BANG; } 
-"~"                     {create_token(NOT); return NOT; } 
-"-"                     {create_token(MINUS); return MINUS; } 
-"+"                     {create_token(PLUS); return PLUS; } 
-"*"                     {create_token(MUL); return MUL; } 
-"/"                     {create_token(DIV); return DIV; } 
-"%"                     {create_token(MOD); return MOD; } 
-"<"                     {create_token(LT); return LT; } 
-">"                     {create_token(GT); return GT; } 
-"^"                     {create_token(ER); return ER; } 
-"|"                     {create_token(OR); return OR; } 
-"?"                     {create_token(QUEST); return QUEST; } 
+  /* End of File */
 <<EOF>>                 {
 				pop_include_file();
 				yypop_buffer_state();
@@ -265,10 +322,9 @@ std::list<std::string> include_stack;
 			}
 %%
 
-
 void lexerr(std::string str)
 {
-	/* Add a list of errors */
+	/* TODO: Add a list of errors */
 	std::stringstream s;
 	s << get_current_filename() << ":";
 	s << yylineno << ":";
@@ -283,8 +339,9 @@ void lexerr(std::string str)
 void handle_user_include_file()
 {
     /* 
-    * Create a new string that contains only the file name
-    * to be included.
+    * Create a new string that contains only the file name to be 
+    * included and push it to include_stack so that errors can 
+    * eventually report the calling file if include_stack isn't empty.
     */
 	std::string include = yytext;
 	std::string filename = include.substr(1, (strlen(yytext)-2));
@@ -304,6 +361,8 @@ void create_token(int category) {
 	yytoken = new Token(category, yylineno, 
 					get_current_filename(), yytext);
 }
+
+/* String literal matching */
 void start_string_match() {
 	token_text.clear();
 	token_val.clear();
@@ -340,6 +399,7 @@ void end_string_match(int category) {
 					token_text, token_val);
 }
 
+/* Character literal matching */
 void start_character_match() {
 	token_text.clear();
 	token_val.clear();
@@ -356,6 +416,7 @@ void end_character_match(int category) {
 						token_text, token_val);
 }
 
+/* File operations */
 std::string get_current_filename() {
 	std::string str;
 	char *tmp;
@@ -372,6 +433,7 @@ std::string get_current_filename() {
 void push_include_file(std::string inc) {
 	include_stack.push_front(inc);
 }
+
 void pop_include_file() {
 	if(!include_stack.empty())
 		include_stack.pop_front();
