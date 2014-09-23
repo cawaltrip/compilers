@@ -31,10 +31,42 @@
  * Based on the ISO C++ draft standard of December '96.
  */
 
+/*
+ * TODO:
+ *
+ * Resolve matters regarding type names and the need to return different 
+ *	terminal symbol codes for "identifier" regular expressions, 
+ * 	depending on syntactic context.
+ * For every production rule in the grammar:
+ *	if the production rule is not legal in 120++, add 
+ *		a semantic_error("C++ operation not supported") and 
+ *		set $$ = NULL.
+ *	if the production rule is legal in 120++ and the right hand side 
+ *		has > 1 children, add a semantic action to construct a 
+ *		construct a tree node and assign $$ to point at it
+ *	if the production rule is legal in 120++ and the right hand side 
+ *		has 0 or 1 children, add a semantic action to set $$ to
+ *		NULL (0 children) or to the child (if there is 1 child) 
+ * Place a pointer to your token in a yylval field on each call 
+ *	to yylex(), and ensure that those tokens get inserted as 
+ *	leaves into your syntax tree.
+ * If the parse succeeds, assign the root of the tree to a global 
+ *	variable from the semantic action associated with your start symbol.
+ * Revise the main() procedure from HW#1 to call yyparse() and 
+ *	use its return value and/or global variables to ascertain 
+ *	whether the parse succeeded.
+ * If the parse succeeded, traverse/print your syntax tree as described below.
+ *
+ *
+ *
+ * Templates: Remove 
+ */
+
+
+
+
 %{
 #include <stdio.h>
-
-extern int lineno;
 
 static void yyerror(char *s);
 %}
@@ -1212,7 +1244,7 @@ type_id_list_opt:
 static void
 yyerror(char *s)
 {
-	fprintf(stderr, "%d: %s\n", lineno, s);
+	fprintf(stderr, "%d: %s\n", yylineno, s);
 }
 
 #ifdef MAIN
@@ -1220,7 +1252,7 @@ yyerror(char *s)
 int
 main(void)
 {
-	lineno = 1;
+	yylineno = 1;
 	yyparse();
 
 	return 0;
