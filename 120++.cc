@@ -97,9 +97,9 @@ int main(int argc, char *argv[])
 	setiosflags(ios::left);
 
 	int catw = 5; /* category width */
-	int textw = 30;
+	int textw = 25;
 	int linew = 5;
-	int filew = 15;
+	int filew = 20;
 	int valw = 25;
 	string sep = string(80,'=');
 
@@ -114,13 +114,13 @@ int main(int argc, char *argv[])
 
 	for (iter = token_list.begin(); iter != token_list.end(); ++iter) {
 		stringstream s;
-		if ((*iter)->get_category() == ICON)
+		if ((*iter)->get_category() == INTEGER)
 		    s << (*iter)->get_ival();
-		else if ((*iter)->get_category() == CCON)
+		else if ((*iter)->get_category() == CHARACTER)
 		    s << (*iter)->get_sval();
 		else if ((*iter)->get_category() == STRING)
 		    s << (*iter)->get_sval();
-		else if ((*iter)->get_category() == FCON)
+		else if ((*iter)->get_category() == FLOATING)
 			s << (*iter)->get_fval();
 
 		cout << left << setw(catw) << (*iter)->get_category();

@@ -67,8 +67,12 @@
 
 %{
 #include <stdio.h>
+#include <unordered_map>
 
+extern int yylineno;
+extern int yylex();
 static void yyerror(char *s);
+
 %}
 
 %token IDENTIFIER INTEGER FLOATING CHARACTER STRING
@@ -81,7 +85,7 @@ static void yyerror(char *s);
 %token ASM AUTO BOOL BREAK CASE CATCH CHAR CLASS CONST CONST_CAST CONTINUE
 %token DEFAULT DELETE DO DOUBLE DYNAMIC_CAST ELSE ENUM EXPLICIT EXPORT EXTERN
 %token FALSE FLOAT FOR FRIEND GOTO IF INLINE INT LONG MUTABLE NAMESPACE NEW
-%token OPERATOR PRIVATE PROTECTED PUBLIC REGISTER REINTERPRET_CAST RETURN
+%token OPERATOR PRIVATE PROTECTED PUBLIC REGISTER REINTER_CAST RETURN_TOK
 %token SHORT SIGNED SIZEOF STATIC STATIC_CAST STRUCT SWITCH TEMPLATE THIS
 %token THROW TRUE TRY TYPEDEF TYPEID TYPENAME UNION UNSIGNED USING VIRTUAL
 %token VOID VOLATILE WCHAR_T WHILE
@@ -228,7 +232,7 @@ postfix_expression:
 	| postfix_expression MINUSMINUS
 	| DYNAMIC_CAST '<' type_id '>' '(' expression ')'
 	| STATIC_CAST '<' type_id '>' '(' expression ')'
-	| REINTERPRET_CAST '<' type_id '>' '(' expression ')'
+	| REINTER_CAST '<' type_id '>' '(' expression ')'
 	| CONST_CAST '<' type_id '>' '(' expression ')'
 	| TYPEID '(' expression ')'
 	| TYPEID '(' type_id ')'
@@ -458,7 +462,7 @@ for_init_statement:
 jump_statement:
 	BREAK ';'
 	| CONTINUE ';'
-	| RETURN expression_opt ';'
+	| RETURN_TOK expression_opt ';'
 	| GOTO identifier ';'
 	;
 

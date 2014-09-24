@@ -18,15 +18,15 @@ Token::Token(int category, int lineno, std::string filename,
 	this->text = text;
 
 	switch(category) {
-		case ICON:
+		case INTEGER:
 			/* use std::stoi if c++11 is supported */
 			this->ival = atoi(text.c_str());
 			break;
-		case FCON:
+		case FLOATING:
 			/* use errno */
 			this->fval = strtod(text.c_str(), NULL);
 			break;
-		case CCON:
+		case CHARACTER:
 		case STRING:
 			this->sval = sval;
 			break;

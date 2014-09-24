@@ -6,6 +6,10 @@
 *.xx.c
 *.xx.h
 
+# Bison files
+*gram.tab.*
+*.output
+
 # Object files
 *.o
 *.ko

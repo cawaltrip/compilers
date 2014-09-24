@@ -135,7 +135,7 @@ std::list<std::string> include_stack;
 "public"		{ create_token(PUBLIC);		return PUBLIC; }
 "register"              { create_token(REGISTER);   return REGISTER; }
 "reinterpret_cast"	{ create_token(REINTER_CAST); return REINTER_CAST; }
-"return"                { create_token(RETURN);     return RETURN; }
+"return"                { create_token(RETURN_TOK);     return RETURN_TOK; }
 "short"                 { create_token(SHORT);      return SHORT; }
 "signed"                { create_token(SIGNED);     return SIGNED; }
 "sizeof"                { create_token(SIZEOF);     return SIZEOF; }
@@ -301,8 +301,6 @@ std::list<std::string> include_stack;
 
   /* Integer Constants */
 {D}+{IS}?               { create_token(INTEGER); return INTEGER; }
-0[xX]{H}+{IS}?          { lexerr("Hexadecimal not supported"); }
-0{O}+{IS}?              { lexerr("Octal not supported"); }
 
 
   /* Floating-point Constants */
@@ -438,3 +436,4 @@ void pop_include_file() {
 	if(!include_stack.empty())
 		include_stack.pop_front();
 }
+

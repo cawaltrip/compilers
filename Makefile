@@ -1,29 +1,19 @@
 #######################################
 # Compiler Options ####################
 #######################################
-#CPP=/opt/local/bin/g++-mp-4.4
 CPP=g++
-CPPFLAGS=-c -g -std=gnu++98 -x c++
-#CPPFLAGS=-c -g -std=gnu++98 -x c++ -Wall -Wextra
+CPPFLAGS=-c -g -std=gnu++0x -x c++
 LDFLAGS=
-
-#FLEX=/opt/local/bin/flex++
-#FLEX++
-FLEX=flex
-
+LEX=flex
+YACC=bison
 RM=-rm -f
 #######################################
 # Filename configurations #############
 #######################################
 BIN=120++
 CC_SOURCES=120++.cc token.cc
-C_SOURCES=lex.yy.c
+C_SOURCES=lex.yy.c cgram.tab.c
 OBJECTS=$(CC_SOURCES:.cc=.o) $(C_SOURCES:.c=.o)
-
-# Grammar File
-GRAMMAR_FILE=cgram.tab.h
-FLEX_FILE=clex.l
-
 #######################################
 # Make rules ##########################
 #######################################
@@ -41,8 +31,17 @@ $(BIN): $(OBJECTS)
 clex.h: lex.yy.c
 
 lex.yy.c: clex.l cgram.tab.h
-	$(FLEX) $<
+	$(LEX) $<
+
+cgram.tab.o: cgram.tab.c
+	$(CPP) $(CPPFLAGS) -DYYDEBUG cgram.tab.c
+
+cgram.tab.c cgram.tab.h: cgram.y
+	$(YACC) -dtv cgram.y
 
 # Remove created files
 clean:
-	$(RM) *.o *.a lex.yy.c clex.h lex.yy.h $(BIN) $(OBJECTS)
+	$(RM) *.o *.a
+	$(RM) cgram.tab.c cgram.tab.h 
+	$(RM) lex.yy.c clex.h lex.yy.h
+	$(RM) $(BIN) $(OBJECTS)
