@@ -2,33 +2,25 @@
 #include <iomanip>
 #include <fstream>
 #include <string>
+#include <sstream>
 #include <list>
 #include <unistd.h> /* chdir() */
 #include <libgen.h> /* dirname and basename */
-/*  EasyLogging++ written by Majid Khan.
- *  Version 8.91
- *  Source code available at: https://github.com/easylogging/easyloggingpp
- *  Licensed under MIT License
- */    
-#include "easylogging++.h"
+
 #include "lex.yy.h"
 #include "token.hh"
-#include "cgram.tab.h"
+#include "120gram.tab.h"
 
 using namespace std;
 
 Token *yytoken;
 string current_filename;
 
-/* Enable logging */
-_INITIALIZE_EASYLOGGINGPP
-
 /*
  * First create the lists for storing both the filenames and the tokens.
- * Then, configure (and test?) the logging features.  Finally, populate the
- * input file list and loop through it, adding the tokens to a linked
- * list that is printed to the screen.  This is the list that will become a
- * tree in the next stage.
+ * Then, populate the input file list and loop through it, adding the 
+ * tokens to a linked list that is printed to the screen.  This is the list 
+ * that will become a tree in the next stage.
  */
 
  /*
@@ -44,23 +36,13 @@ int main(int argc, char *argv[])
 	list<string> file_list;
 	list<string>::iterator f_iter;
 
-	easyloggingpp::Configurations c;
-	c.setToDefault();
-	c.setAll(easyloggingpp::ConfigurationType::Format, 
-					"120++: %level %log");
-	easyloggingpp::Loggers::reconfigureAllLoggers(c);
-	c.clear();
-	c.setAll(easyloggingpp::ConfigurationType::Format, "%log");
-	easyloggingpp::Loggers::reconfigureLogger("business", c);
-	c.clear();
-
     	FILE *fp;
 
     	/* Find valid files from the command line */
 	for (int i = 1; i < argc; ++i) {
 		string filename = realpath(argv[i], NULL);
 		if(filename.empty()) {
-			LOG(ERROR) << "Could not expand path " << argv[i];
+			cerr << "Could not expand path " << argv[i];
 			exit(EXIT_FAILURE);
 		} else if ((fp = fopen(filename.c_str(), "r"))!= NULL) {
 			file_list.push_back(filename);
@@ -88,7 +70,7 @@ int main(int argc, char *argv[])
 	    		fclose(fp);
 	    		yylineno = 1;
 		} else {
-			LOG(WARNING) << "Cannot find include file '" << current_filename;
+			cout << "Cannot find include file '" << current_filename;
 		}
 
 	}

@@ -27,11 +27,11 @@ LIT      \"(\\.|[^\\"])*\"
 #include <string>
 #include <fstream>
 #include <iostream>
+#include <sstream>
 #include <list>
 #include <libgen.h> /* dirname and basename */
-#include "cgram.tab.h"
+#include "120gram.tab.h"
 #include "token.hh"
-#include "easylogging++.h"
 
 extern YYSTYPE yylval;
 extern int yychar;
@@ -134,8 +134,9 @@ std::list<std::string> include_stack;
 "protected"		{ create_token(PROTECTED);	return PROTECTED; }
 "public"		{ create_token(PUBLIC);		return PUBLIC; }
 "register"              { create_token(REGISTER);   return REGISTER; }
-"reinterpret_cast"	{ create_token(REINTER_CAST); return REINTER_CAST; }
-"return"                { create_token(RETURN_TOK);     return RETURN_TOK; }
+"reinterpret_cast"	{ create_token(REINTERPRET_CAST); 
+			  return REINTERPRET_CAST; }
+"return"                { create_token(RETURN);     return RETURN; }
 "short"                 { create_token(SHORT);      return SHORT; }
 "signed"                { create_token(SIGNED);     return SIGNED; }
 "sizeof"                { create_token(SIZEOF);     return SIZEOF; }
@@ -331,7 +332,7 @@ void lexerr(std::string str)
 	s << str;
 
 	errors++;
-	LOG(ERROR) << s.str();
+	std::cerr << s.str();
 }
 
 void handle_user_include_file()

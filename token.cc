@@ -4,7 +4,7 @@
  */
 
 #include <cstdlib>
-#include "cgram.tab.h"
+#include "120gram.tab.h"
 #include "token.hh"
 
 Token::Token() {
