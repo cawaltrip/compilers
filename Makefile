@@ -5,7 +5,7 @@ CPP=g++
 CPPFLAGS=-c -g -std=gnu++0x -x c++
 LDFLAGS=
 LEX=flex
-YACC=bison
+YACC=/usr/local/Cellar/bison/3.0.2/bin/bison
 RM=-rm -f
 #######################################
 # Filename configurations #############
@@ -34,10 +34,10 @@ lex.yy.c: clex.l 120gram.tab.h
 	$(LEX) $<
 
 120gram.tab.o: 120gram.tab.c
-	$(CPP) $(CPPFLAGS) -DYYDEBUG 120gram.tab.c
+	$(CPP) $(CPPFLAGS) -DYYDEBUG=1 120gram.tab.c
 
 120gram.tab.c 120gram.tab.h: 120gram.y
-	$(YACC) -dtv 120gram.y
+	$(YACC) -dtv --debug -Wall 120gram.y
 
 # Remove created files
 clean:

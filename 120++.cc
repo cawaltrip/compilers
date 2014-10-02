@@ -11,10 +11,13 @@
 #include "token.hh"
 #include "120gram.tab.h"
 
+extern int yyparse();
+extern int yydebug;
+
 using namespace std;
 
 Token *yytoken;
-string current_filename;
+string yyfilename;
 
 /*
  * First create the lists for storing both the filenames and the tokens.
@@ -39,6 +42,9 @@ int main(int argc, char *argv[])
     	FILE *fp;
 
     	/* Find valid files from the command line */
+    	/* TODO: Don't pre-push files to the file stack or else
+    	 * only one parse tree will be created.
+    	 */
 	for (int i = 1; i < argc; ++i) {
 		string filename = realpath(argv[i], NULL);
 		if(filename.empty()) {
@@ -54,28 +60,35 @@ int main(int argc, char *argv[])
 	for (f_iter = file_list.begin(); f_iter != file_list.end(); ++f_iter) {
 		char *tmp = strdup(f_iter->c_str());
 		char *tmp1 = strdup(tmp);
-		current_filename.assign(basename(tmp));
+		yyfilename.assign(basename(tmp));
 		chdir(dirname(tmp1));
 		free(tmp);
 		free(tmp1);
 
-		if ((fp = fopen(current_filename.c_str(), "r"))!= NULL) {
+		if ((fp = fopen(yyfilename.c_str(), "r"))!= NULL) {
 			yyin = fp;
 	    		yypush_buffer_state(yy_create_buffer(yyin, 
 	    						YY_BUF_SIZE));
+	    		/*
 	    		int j;
 	    		while( (j = yylex()) > 0 ) {
 				token_list.push_back(yytoken);
 	    		}
+	    		*/
+	    		yydebug=0;
+	    		yyparse();
 	    		fclose(fp);
 	    		yylineno = 1;
+	    		
+
 		} else {
-			cout << "Cannot find include file '" << current_filename;
+			cout << "Cannot find include file '" << yyfilename;
 		}
 
 	}
 
 	/* Print table */
+	
 	setiosflags(ios::left);
 
 	int catw = 5; /* category width */
@@ -85,6 +98,7 @@ int main(int argc, char *argv[])
 	int valw = 25;
 	string sep = string(80,'=');
 
+	/*
 	cout << left << setw(catw) << "Cat";
 	cout << left << setw(textw) << "Text";
 	cout << left << setw(linew) << "Line";
@@ -111,7 +125,9 @@ int main(int argc, char *argv[])
 		cout << left << setw(filew) << (*iter)->get_filename();
 		cout << left << setw(valw) << s.str();
 		cout << endl;
-    }
+    	}
+    	*/
+
 
     return(0);
 }

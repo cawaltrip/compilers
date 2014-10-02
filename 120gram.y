@@ -72,14 +72,19 @@
 
 %{
 #include <stdio.h>
+#include <string>
 
 extern int yylineno;
 extern int yylex();
+extern std::string yyfilename;
+extern std::string yytext;
 static void yyerror(char *s);
 %}
 
 %token IDENTIFIER INTEGER FLOATING CHARACTER STRING
 %token TYPEDEF_NAME NAMESPACE_NAME CLASS_NAME ENUM_NAME TEMPLATE_NAME
+
+%token NAMESPACE_STD
 
 %token ELLIPSIS COLONCOLON DOTSTAR ADDEQ SUBEQ MULEQ DIVEQ MODEQ
 %token XOREQ ANDEQ OREQ SL SR SREQ SLEQ EQ NOTEQ LTEQ GTEQ ANDAND OROR
@@ -1200,5 +1205,7 @@ type_id_list_opt:
 static void
 yyerror(char *s)
 {
-	fprintf(stderr, "%d: %s\n", yylineno, s);
+   fprintf(stderr, "%s:%d: %s before '%s' token\n",
+	   yyfilename.c_str(), yylineno, s, yytext.c_str());
 }
+

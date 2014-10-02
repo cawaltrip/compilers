@@ -36,7 +36,7 @@ LIT      \"(\\.|[^\\"])*\"
 extern YYSTYPE yylval;
 extern int yychar;
 extern Token *yytoken;
-extern std::string current_filename;
+extern std::string yyfilename;
 
 void lexerr(std::string s);
 
@@ -308,6 +308,9 @@ std::list<std::string> include_stack;
 {FP}{E}?{FS}?		{ create_token(FLOATING);	return FLOATING; }
 {D}+{E}{FS}?		{ create_token(FLOATING);	return FLOATING; }
 
+  /* Standard namespace temporary faking */
+"std"			{ create_token(NAMESPACE_NAME); return NAMESPACE_NAME; }
+
   /* Identifiers */
 {L}({L}|{D})*           { create_token(IDENTIFIER); return IDENTIFIER; }
 
@@ -422,7 +425,7 @@ std::string get_current_filename() {
 	if(!include_stack.empty())
 		tmp = strdup(include_stack.front().c_str());
 	else
-		tmp = strdup(current_filename.c_str());
+		tmp = strdup(yyfilename.c_str());
 
 	str.assign(basename(tmp));
 	free(tmp);
