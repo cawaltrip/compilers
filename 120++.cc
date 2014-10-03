@@ -75,7 +75,7 @@ int main(int argc, char *argv[])
 				token_list.push_back(yytoken);
 	    		}
 	    		*/
-	    		yydebug=0;
+	    		yydebug=1;
 	    		yyparse();
 	    		fclose(fp);
 	    		yylineno = 1;
@@ -86,47 +86,6 @@ int main(int argc, char *argv[])
 		}
 
 	}
-
-	/* Print table */
-	
-	setiosflags(ios::left);
-
-	int catw = 5; /* category width */
-	int textw = 25;
-	int linew = 5;
-	int filew = 20;
-	int valw = 25;
-	string sep = string(80,'=');
-
-	/*
-	cout << left << setw(catw) << "Cat";
-	cout << left << setw(textw) << "Text";
-	cout << left << setw(linew) << "Line";
-	cout << left << setw(filew) << "Filename";
-	cout << left << setw(valw) << "Ival/Sval";
-	cout << endl;
-
-	cout << sep << endl;
-
-	for (iter = token_list.begin(); iter != token_list.end(); ++iter) {
-		stringstream s;
-		if ((*iter)->get_category() == INTEGER)
-		    s << (*iter)->get_ival();
-		else if ((*iter)->get_category() == CHARACTER)
-		    s << (*iter)->get_sval();
-		else if ((*iter)->get_category() == STRING)
-		    s << (*iter)->get_sval();
-		else if ((*iter)->get_category() == FLOATING)
-			s << (*iter)->get_fval();
-
-		cout << left << setw(catw) << (*iter)->get_category();
-		cout << left << setw(textw) << (*iter)->get_text();
-		cout << left << setw(linew) << (*iter)->get_lineno();
-		cout << left << setw(filew) << (*iter)->get_filename();
-		cout << left << setw(valw) << s.str();
-		cout << endl;
-    	}
-    	*/
 
 
     return(0);
