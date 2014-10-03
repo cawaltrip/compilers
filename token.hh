@@ -24,7 +24,7 @@ private:
 	double fval;
 
 public:
-	Token();
+	/* Token(); */
 	Token(int category, int lineno, std::string filename,
 				std::string text, std::string sval = "");
 	int get_category();

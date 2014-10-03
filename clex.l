@@ -38,10 +38,19 @@ extern int yychar;
 extern Token *yytoken;
 extern std::string yyfilename;
 
+struct TreeNode {
+	int production_num;
+	int num_kids;
+	struct TreeNode *kids[10];
+	Token t;
+};
+
 void lexerr(std::string s);
 
 void handle_user_include_file();
 
+void create_token(int cat, int line, std::string file, 
+			std::string text, std::string val = "");
 void create_token(int category);
 
 void start_string_match();
@@ -359,9 +368,14 @@ void handle_user_include_file()
 	}
 }
 
+void create_token(int cat, int line, std::string file,
+			std::string text, std::string val) {
+	yytoken = new Token(cat, line, file, text, val);
+	
+}
+
 void create_token(int category) {
-	yytoken = new Token(category, yylineno, 
-					get_current_filename(), yytext);
+	create_token(category, yylineno, get_current_filename(), yytext);
 }
 
 /* String literal matching */
@@ -397,8 +411,8 @@ void append_string_match(char text_escape, char sval_escape) {
 
 void end_string_match(int category) {
 	token_text.append(1, '"');
-	yytoken = new Token(category, yylineno, get_current_filename(),
-					token_text, token_val);
+	create_token(category, yylineno, get_current_filename(),
+				token_text, token_val);
 }
 
 /* Character literal matching */
@@ -414,8 +428,8 @@ void set_character_match(const char* text, char match) {
 }
 void end_character_match(int category) {
 	token_text += "'";
-	yytoken = new Token(category, yylineno, get_current_filename(), 
-						token_text, token_val);
+	create_token(category, yylineno, get_current_filename(),
+				token_text, token_val);
 }
 
 /* File operations */

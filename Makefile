@@ -2,7 +2,7 @@
 # Compiler Options ####################
 #######################################
 CPP=g++
-CPPFLAGS=-c -g -std=gnu++0x -x c++
+CPPFLAGS=-c -g -std=gnu++0x -x c++ -static
 LDFLAGS=
 LEX=flex
 YACC=/usr/local/Cellar/bison/3.0.2/bin/bison

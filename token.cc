@@ -7,9 +7,11 @@
 #include "120gram.tab.h"
 #include "token.hh"
 
+/*
 Token::Token() {
 	this->category = -1;
 }
+*/
 Token::Token(int category, int lineno, std::string filename,
 				std::string text, std::string sval) {
 	this->category = category;
@@ -17,6 +19,13 @@ Token::Token(int category, int lineno, std::string filename,
 	this->filename = filename;
 	this->text = text;
 
+	/* empty initialization */
+	this->ival = 0;
+	this->sval = "";
+	this->cval = '\0';
+	this->fval = 0.0;
+
+	/* actual initialization */
 	switch(category) {
 		case INTEGER:
 			/* use std::stoi if c++11 is supported */
