@@ -10,9 +10,11 @@
 #include "lex.yy.h"
 #include "token.hh"
 #include "120gram.tab.h"
+#include "treenode.h"
 
 extern int yyparse();
 extern int yydebug;
+extern TreeNode *root;
 
 using namespace std;
 
@@ -73,6 +75,8 @@ int main(int argc, char *argv[])
 	    		yyparse();
 	    		fclose(fp);
 	    		yylineno = 1;
+
+	    		print_tree(root);
 	    		
 
 		} else {

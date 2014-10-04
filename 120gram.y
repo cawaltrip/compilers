@@ -82,7 +82,8 @@ extern int yylex();
 extern std::string yyfilename;
 extern std::string yytext;
 
-struct TreeNode* alloc_tree(const struct yyrule *y, int num_kids, ...);
+struct TreeNode *root;
+struct TreeNode* alloc_tree(const struct yyrule y, int num_kids, ...);
 
 static void yyerror(char *s);
 %}
@@ -116,11 +117,11 @@ static void yyerror(char *s);
 
 typedef_name:
 	/* identifier */
-	TYPEDEF_NAME
+	TYPEDEF_NAME 
 	;
 
 namespace_name:
-	original_namespace_name
+	original_namespace_name 
 	;
 
 original_namespace_name:
@@ -153,11 +154,11 @@ identifier:
 	;
 
 literal:
-	integer_literal
-	| character_literal
-	| floating_literal
-	| string_literal
-	| boolean_literal
+	integer_literal { $$ = alloc_tree(LITERAL_1, 1, $1); }
+	| character_literal { $$ = alloc_tree(LITERAL_2, 1, $1); }
+	| floating_literal { $$ = alloc_tree(LITERAL_3, 1, $1); }
+	| string_literal { $$ = alloc_tree(LITERAL_4, 1, $1); }
+	| boolean_literal { $$ = alloc_tree(LITERAL_5, 1, $1); }
 	;
 
 integer_literal:
@@ -186,7 +187,7 @@ boolean_literal:
  *----------------------------------------------------------------------*/
 
 translation_unit:
-	declaration_seq_opt
+	declaration_seq_opt { $$ = alloc_tree(START_RULE, 0, $1); root = $$; }
 	;
 
 /*----------------------------------------------------------------------
@@ -1210,8 +1211,9 @@ type_id_list_opt:
 
 %%
 
-struct TreeNode* alloc_tree(struct yyrule *y, int num_kids, ...) {
+struct TreeNode* alloc_tree(struct yyrule y, int num_kids, ...) {
 	va_list vakid;
+	/* TODO: Need to alloc size of kids seperately */
 	struct TreeNode *t = (struct TreeNode*) calloc(1, 
 		sizeof(struct TreeNode) + 
 		sizeof(struct TreeNode*) * (num_kids-1));
@@ -1219,7 +1221,8 @@ struct TreeNode* alloc_tree(struct yyrule *y, int num_kids, ...) {
 		std::cerr << "TreeNode: Cannot allocate memory." << std::endl;
 		exit(1);
 	}
-	t->production_num = y->num;
+	t->prod_num = y.num;
+	t->prod_text = y.text;
 	t->num_kids = num_kids;
 	t->t = yylval->t;
 	for(int i = 1; i <= num_kids; ++i)

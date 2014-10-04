@@ -10,10 +10,15 @@ typedef struct yyrule {
 	yyrule(int n, std::string s) : num(n), text(s) { }
 } yyrule;
 
-struct yyrule PRODUCTION_RULE_1(10001,"Production Rule 1");
-struct yyrule PRODUCTION_RULE_2(10002,"Production Rule 2");
-struct yyrule PRODUCTION_RULE_3(10003,"Production Rule 3");
-struct yyrule PRODUCTION_RULE_4(10004,"Production Rule 4");
+const struct yyrule START_RULE(10000,"Start Symbol");
+
+const struct yyrule LITERAL_1(11001,"Integer Literal");
+const struct yyrule LITERAL_2(11002,"Character Literal");
+const struct yyrule LITERAL_3(11003,"Floating Literal");
+const struct yyrule LITERAL_4(11004,"String Literal");
+const struct yyrule LITERAL_5(11005,"Boolean Literal");
+
+
 
 
 #endif /* YY_PRODUCTION_RULES */
