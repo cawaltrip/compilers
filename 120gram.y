@@ -73,13 +73,21 @@
 %{
 #include <stdio.h>
 #include <string>
+#include <iostream>
+#include "treenode.h"
+#include "120rules.h"
 
 extern int yylineno;
 extern int yylex();
 extern std::string yyfilename;
 extern std::string yytext;
+
+struct TreeNode* alloc_tree(const struct yyrule *y, int num_kids, ...);
+
 static void yyerror(char *s);
 %}
+
+%define api.value.type { struct TreeNode* }
 
 %token IDENTIFIER INTEGER FLOATING CHARACTER STRING
 %token TYPEDEF_NAME NAMESPACE_NAME CLASS_NAME ENUM_NAME TEMPLATE_NAME
@@ -1202,10 +1210,28 @@ type_id_list_opt:
 
 %%
 
+struct TreeNode* alloc_tree(struct yyrule *y, int num_kids, ...) {
+	va_list vakid;
+	struct TreeNode *t = (struct TreeNode*) calloc(1, 
+		sizeof(struct TreeNode) + 
+		sizeof(struct TreeNode*) * (num_kids-1));
+	if(!t) {
+		std::cerr << "TreeNode: Cannot allocate memory." << std::endl;
+		exit(1);
+	}
+	t->production_num = y->num;
+	t->num_kids = num_kids;
+	t->t = yylval->t;
+	for(int i = 1; i <= num_kids; ++i)
+		t->kids[i] = va_arg(vakid, struct TreeNode*);
+	va_end(vakid);
+	return t;
+}
+
 static void
 yyerror(char *s)
 {
-   fprintf(stderr, "%s:%d: %s before '%s' token\n",
-	   yyfilename.c_str(), yylineno, s, yytext.c_str());
+   fprintf(stderr, "%s:%d: %s before '%s' token - token text: `%s`\n",
+	   yyfilename.c_str(), yylineno, s, yytext.c_str(),yylval->t->get_text().c_str());
 }
 

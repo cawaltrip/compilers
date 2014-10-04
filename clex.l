@@ -32,18 +32,12 @@ LIT      \"(\\.|[^\\"])*\"
 #include <libgen.h> /* dirname and basename */
 #include "120gram.tab.h"
 #include "token.hh"
+#include "treenode.h"
 
 extern YYSTYPE yylval;
 extern int yychar;
 extern Token *yytoken;
 extern std::string yyfilename;
-
-struct TreeNode {
-	int production_num;
-	int num_kids;
-	struct TreeNode *kids[10];
-	Token t;
-};
 
 void lexerr(std::string s);
 
@@ -370,8 +364,11 @@ void handle_user_include_file()
 
 void create_token(int cat, int line, std::string file,
 			std::string text, std::string val) {
-	yytoken = new Token(cat, line, file, text, val);
 	
+	struct TreeNode* treeptr = (TreeNode*) calloc(1,sizeof(TreeNode));
+	treeptr->t = new Token(cat, line, file, text, val);
+	yylval = treeptr;
+
 }
 
 void create_token(int category) {

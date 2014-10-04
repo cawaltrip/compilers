@@ -69,13 +69,7 @@ int main(int argc, char *argv[])
 			yyin = fp;
 	    		yypush_buffer_state(yy_create_buffer(yyin, 
 	    						YY_BUF_SIZE));
-	    		/*
-	    		int j;
-	    		while( (j = yylex()) > 0 ) {
-				token_list.push_back(yytoken);
-	    		}
-	    		*/
-	    		yydebug=1;
+	    		yydebug=0;
 	    		yyparse();
 	    		fclose(fp);
 	    		yylineno = 1;
