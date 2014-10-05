@@ -74,7 +74,7 @@
 #include <stdio.h>
 #include <string>
 #include <iostream>
-#include "treenode.h"
+#include "treenode.hh"
 #include "120rules.h"
 
 extern int yylineno;
@@ -150,7 +150,7 @@ template_name:
  *----------------------------------------------------------------------*/
 
 identifier:
-	IDENTIFIER
+	IDENTIFIER 
 	;
 
 literal:
@@ -1215,8 +1215,7 @@ struct TreeNode* alloc_tree(struct yyrule y, int num_kids, ...) {
 	va_list vakid;
 	/* TODO: Need to alloc size of kids seperately */
 	struct TreeNode *t = (struct TreeNode*) calloc(1, 
-		sizeof(struct TreeNode) + 
-		sizeof(struct TreeNode*) * (num_kids-1));
+				sizeof(struct TreeNode));
 	if(!t) {
 		std::cerr << "TreeNode: Cannot allocate memory." << std::endl;
 		exit(1);
@@ -1224,9 +1223,15 @@ struct TreeNode* alloc_tree(struct yyrule y, int num_kids, ...) {
 	t->prod_num = y.num;
 	t->prod_text = y.text;
 	t->num_kids = num_kids;
-	t->t = yylval->t;
-	for(int i = 1; i <= num_kids; ++i)
-		t->kids[i] = va_arg(vakid, struct TreeNode*);
+
+	/* TODO: Do I need this conditional? 
+	 * 	 If I have less than one child, I say $$=$1
+	 */
+	if(num_kids > 1) {
+		for(int i = 0; i < num_kids; ++i) {
+			t->kids[i] = va_arg(vakid, struct TreeNode*);
+		}
+	}
 	va_end(vakid);
 	return t;
 }

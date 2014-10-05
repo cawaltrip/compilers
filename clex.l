@@ -32,7 +32,7 @@ LIT      \"(\\.|[^\\"])*\"
 #include <libgen.h> /* dirname and basename */
 #include "120gram.tab.h"
 #include "token.hh"
-#include "treenode.h"
+#include "treenode.hh"
 
 extern YYSTYPE yylval;
 extern int yychar;
@@ -368,7 +368,6 @@ void create_token(int cat, int line, std::string file,
 	struct TreeNode* treeptr = (TreeNode*) calloc(1,sizeof(TreeNode));
 	treeptr->t = new Token(cat, line, file, text, val);
 	yylval = treeptr;
-
 }
 
 void create_token(int category) {

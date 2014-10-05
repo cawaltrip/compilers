@@ -10,7 +10,7 @@
 #include "lex.yy.h"
 #include "token.hh"
 #include "120gram.tab.h"
-#include "treenode.h"
+#include "treenode.hh"
 
 extern int yyparse();
 extern int yydebug;
@@ -72,11 +72,12 @@ int main(int argc, char *argv[])
 	    		yypush_buffer_state(yy_create_buffer(yyin, 
 	    						YY_BUF_SIZE));
 	    		yydebug=0;
-	    		yyparse();
+	    		int ret = yyparse();
 	    		fclose(fp);
 	    		yylineno = 1;
 
-	    		print_tree(root);
+	    		if(!ret)
+	    			print_tree(root);
 	    		
 
 		} else {
