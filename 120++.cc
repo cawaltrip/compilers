@@ -76,8 +76,12 @@ int main(int argc, char *argv[])
 	    		fclose(fp);
 	    		yylineno = 1;
 
-	    		if(!ret)
+	    		if(!ret) {
+	    			cout << yyfilename << ": parse successful";
+	    			cout << " - tree below:" << endl;
 	    			print_tree(root);
+	    			cout << endl;
+	    		}
 	    		
 
 		} else {

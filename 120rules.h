@@ -10,59 +10,59 @@ typedef struct yyrule {
 	yyrule(int n, std::string s) : num(n), text(s) { }
 } yyrule;
 
-const struct yyrule START_RULE(10000,"Start Symbol");
+const struct yyrule START_RULE(10000,"START");
 
-const struct yyrule TYPEDEF_NAME_1(11001, "Typedef Name");
-const struct yyrule NAMESPACE_NAME_1(11002, "Namespace Name");
-const struct yyrule ORIG_NAMESPACE_NAME_1(11003, "Orig. Namespace Name");
-const struct yyrule CLASS_NAME_1(11004, "Class Name");
-const struct yyrule ENUM_NAME_1(11005, "Enumerated Name");
-const struct yyrule TEMPLATE_NAME_1(11006, "Template Name");
+const struct yyrule TYPEDEF_NAME_1(11001, "typedef-name");
+const struct yyrule NAMESPACE_NAME_1(11002, "namespace-name");
+const struct yyrule ORIG_NAMESPACE_NAME_1(11003, "orig-namespace-name");
+const struct yyrule CLASS_NAME_1(11004, "class-name");
+const struct yyrule ENUM_NAME_1(11005, "enum-name");
+const struct yyrule TEMPLATE_NAME_1(11006, "template-name");
 
 /* Lexical Elements */
-const struct yyrule IDENTIFIER_1(12001, "Identifier");
+const struct yyrule IDENTIFIER_1(12001, "id");
 
-const struct yyrule LITERAL_1(13001,"Integer Literal");
-const struct yyrule LITERAL_2(13002,"Character Literal");
-const struct yyrule LITERAL_3(13003,"Floating Literal");
-const struct yyrule LITERAL_4(13004,"String Literal");
-const struct yyrule LITERAL_5(13005,"Boolean Literal");
+const struct yyrule LITERAL_1(13001,"int-literal");
+const struct yyrule LITERAL_2(13002,"char-lit");
+const struct yyrule LITERAL_3(13003,"float-lit");
+const struct yyrule LITERAL_4(13004,"string-lit");
+const struct yyrule LITERAL_5(13005,"bool-lit");
 
-const struct yyrule INTEGER_LITERAL_1(14001,"Integer Literal Value");
-const struct yyrule CHARACTER_LITERAL_1(14002,"Character Literal Value");
-const struct yyrule FLOATING_LITERAL_1(14003,"Floating Literal Value");
-const struct yyrule STRING_LITERAL_1(14004,"String Literal Value");
-const struct yyrule BOOLEAN_LITERAL_1(14005,"Boolean Literal Value");
+const struct yyrule INTEGER_LITERAL_1(14001,"int-val");
+const struct yyrule CHARACTER_LITERAL_1(14002,"char-val");
+const struct yyrule FLOATING_LITERAL_1(14003,"float-val");
+const struct yyrule STRING_LITERAL_1(14004,"string-val");
+const struct yyrule BOOLEAN_LITERAL_1(14005,"bool-val");
 
 /* Expressions */
-const struct yyrule PRIMARY_EXPRESSION_1(15001,"Primary - Literal");
-const struct yyrule PRIMARY_EXPRESSION_2(15002,"Primary - THIS");
-const struct yyrule PRIMARY_EXPRESSION_3(15003,"Primary - Parens");
-const struct yyrule PRIMARY_EXPRESSION_4(15004,"Primary - ID expression");
+const struct yyrule PRIMARY_EXPRESSION_1(15001,"prim-expr-lit");
+const struct yyrule PRIMARY_EXPRESSION_2(15002,"prim-expr-THIS");
+const struct yyrule PRIMARY_EXPRESSION_3(15003,"prim-expr-()");
+const struct yyrule PRIMARY_EXPRESSION_4(15004,"prim-expr-idexpr");
 
-const struct yyrule ID_EXPRESSION_1(16001,"ID Expression - Unqualified");
-const struct yyrule ID_EXPRESSION_2(16002,"ID Expression - Qualified");
+const struct yyrule ID_EXPRESSION_1(16001,"idexpr-unqual");
+const struct yyrule ID_EXPRESSION_2(16002,"idexpr-qual");
 
-const struct yyrule UNQUALIFIED_ID_1(17001,"Unqualified - Identifier");
-const struct yyrule UNQUALIFIED_ID_2(17002,"Unqualified - Operator Func ID");
-const struct yyrule UNQUALIFIED_ID_3(17003,"Unqualified - Conversion Func ID");
-const struct yyrule UNQUALIFIED_ID_4(17004,"Unqualified - ~ClassName");
+const struct yyrule UNQUALIFIED_ID_1(17001,"unqual-id");
+const struct yyrule UNQUALIFIED_ID_2(17002,"unqual-funcid");
+const struct yyrule UNQUALIFIED_ID_3(17003,"unqual-conv-funcid");
+const struct yyrule UNQUALIFIED_ID_4(17004,"unqual-~class");
 
-const struct yyrule QUALIFIED_ID_1(18001,"Qualified - Non-template");
-const struct yyrule QUALIFIED_ID_2(18002,"Qualified - Template");
+const struct yyrule QUALIFIED_ID_1(18001,"qual-nontemplate");
+const struct yyrule QUALIFIED_ID_2(18002,"qual-template");
 
-const struct yyrule NESTED_NAME_1(18001,"Nested name: Class 1");
-const struct yyrule NESTED_NAME_2(18002,"Nested name: Namespace 1");
-const struct yyrule NESTED_NAME_3(18003,"Nested name: Class 2");
-const struct yyrule NESTED_NAME_4(18004,"Nested name: Namespace 2");
+const struct yyrule NESTED_NAME_1(18001,"nestedname-class1");
+const struct yyrule NESTED_NAME_2(18002,"nestedname-namespace1");
+const struct yyrule NESTED_NAME_3(18003,"nestedname-class2");
+const struct yyrule NESTED_NAME_4(18004,"nestedname-namespace2");
 
-const struct yyrule POSTFIX_EXPR_1(19001,"Postix Expr: 1");
-const struct yyrule POSTFIX_EXPR_2(19002,"Postix Expr: 2");
-const struct yyrule POSTFIX_EXPR_3(19003,"Postix Expr: 3");
-const struct yyrule POSTFIX_EXPR_4(19004,"Postix Expr: 4");
-const struct yyrule POSTFIX_EXPR_5(19005,"Postix Expr: 5");
-const struct yyrule POSTFIX_EXPR_6(19006,"Postix Expr: 6");
-const struct yyrule POSTFIX_EXPR_7(19007,"Postix Expr: 7");
+const struct yyrule POSTFIX_EXPR_1(19001,"postfix-primary");
+const struct yyrule POSTFIX_EXPR_2(19002,"postfix-[]");
+const struct yyrule POSTFIX_EXPR_3(19003,"postfix-()");
+const struct yyrule POSTFIX_EXPR_4(19004,"postfix-template1");
+const struct yyrule POSTFIX_EXPR_5(19005,"postfix-template2");
+const struct yyrule POSTFIX_EXPR_6(19006,"postfix-::");
+const struct yyrule POSTFIX_EXPR_7(19007,"postfix-.idexpr");
 const struct yyrule POSTFIX_EXPR_8(19008,"Postix Expr: 8");
 const struct yyrule POSTFIX_EXPR_9(19009,"Postix Expr: 9");
 const struct yyrule POSTFIX_EXPR_10(19010,"Postix Expr: 10");
@@ -76,8 +76,8 @@ const struct yyrule POSTFIX_EXPR_17(19017,"Postix Expr: 17");
 const struct yyrule POSTFIX_EXPR_18(19018,"Postix Expr: 18");
 const struct yyrule POSTFIX_EXPR_19(19018,"Postix Expr: 19");
 
-const struct yyrule EXPR_LIST_1(20001,"Placeholder");
-const struct yyrule EXPR_LIST_2(20002,"Placeholder");
+const struct yyrule EXPR_LIST_1(20001,"expr-list1");
+const struct yyrule EXPR_LIST_2(20002,"expr-list2");
 
 const struct yyrule UNARY_EXPR_1(21001,"Placeholder");
 const struct yyrule UNARY_EXPR_2(21002,"Placeholder");

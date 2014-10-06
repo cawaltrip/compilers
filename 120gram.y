@@ -188,7 +188,8 @@ boolean_literal:
  *----------------------------------------------------------------------*/
 
 translation_unit:
-	declaration_seq_opt { root = $$ = alloc_tree(START_RULE, 1, $1); }
+	declaration_seq_opt { root = $$ = $1; }
+	/* declaration_seq_opt { root = $$ = alloc_tree(START_RULE, 1, $1); } */
 	;
 
 /*----------------------------------------------------------------------
@@ -1214,9 +1215,13 @@ type_id_list_opt:
 
 struct TreeNode* alloc_tree(struct yyrule y, int num_kids, ...) {
 	va_list vakid;
-	/* TODO: Need to alloc size of kids seperately */
+	/* 
+	 * TODO: Need to alloc size of kids seperately (causes a segfault
+	 * when printing if not handled there).
+	 */
 	struct TreeNode *t = (struct TreeNode*) calloc(1, 
-				sizeof(struct TreeNode) + 10*sizeof(TreeNode*));
+				sizeof(struct TreeNode) + 
+				10 * sizeof(TreeNode*));
 	if(!t) {
 		std::cerr << "TreeNode: Cannot allocate memory." << std::endl;
 		exit(1);
@@ -1225,17 +1230,11 @@ struct TreeNode* alloc_tree(struct yyrule y, int num_kids, ...) {
 	t->prod_text = y.text;
 	t->num_kids = num_kids;
 
-	/* TODO: Do I need this conditional? 
-	 * 	 If I have less than one child, I say $$=$1
-	 */
 	va_start(vakid, num_kids);
 	if(num_kids > 1) {
 		for(int i = 0; i < num_kids; ++i) {
 			t->kids[i] = va_arg(vakid, struct TreeNode*);
 		}
-	} else if(y.num == START_RULE.num) {
-		/* always have a translation unit */
-		t = va_arg(vakid,struct TreeNode*);
 	}
 	va_end(vakid);
 	return t;
