@@ -45,6 +45,9 @@ Token::Token(int category, int lineno, std::string filename,
 int Token::get_category() {
 	return this->category;
 }
+void Token::set_category(int category) {
+	this->category = category;
+}
 
 int Token::get_lineno() {
 	return this->lineno;

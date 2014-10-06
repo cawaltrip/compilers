@@ -28,6 +28,7 @@ public:
 	Token(int category, int lineno, std::string filename,
 				std::string text, std::string sval = "");
 	int get_category();
+	void set_category(int category);
 	int get_lineno();
 	std::string get_filename();
 	

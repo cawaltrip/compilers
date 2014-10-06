@@ -78,8 +78,10 @@
 #include <utility>
 
 #include "treenode.hh"
+#include "hashmap.hh"
 #include "120rules.h"
 
+extern std::list<Token *> hash_table;
 extern int yylineno;
 extern int yylex();
 extern std::string yyfilename;
@@ -89,8 +91,7 @@ type_map map;
 
 struct TreeNode *root;
 struct TreeNode* alloc_tree(const struct yyrule y, int num_kids, ...);
-void add_typename(struct TreeNode *t);
-bool lookup_typename(struct TreeNode *t);
+void add_typename(struct TreeNode *t, int cat);
 
 static void yyerror(std::string s);
 %}
@@ -124,32 +125,32 @@ static void yyerror(std::string s);
 
 typedef_name:
 	/* identifier */
-	TYPEDEF_NAME  { $$ = $1; add_typename($$); }
+	TYPEDEF_NAME  { $$ = $1; add_typename($$, TYPEDEF_NAME); }
 	;
 
 namespace_name:
-	original_namespace_name  { $$ = $1; add_typename($$); }
+	original_namespace_name  { $$ = $1; }
 	;
 
 original_namespace_name:
 	/* identifier */
-	NAMESPACE_NAME { $$ = $1; add_typename($$); }
+	NAMESPACE_NAME { $$ = $1; add_typename($$, NAMESPACE_NAME); }
 	;
 
 class_name:
 	/* identifier */
-	CLASS_NAME { $$ = $1; add_typename($$); }
+	CLASS_NAME { $$ = $1; add_typename($$, CLASS_NAME); }
 	| template_id { $$ = $1; }
 	;
 
 enum_name:
 	/* identifier */
-	ENUM_NAME { $$ = $1; add_typename($$); }
+	ENUM_NAME { $$ = $1; add_typename($$, ENUM_NAME); }
 	;
 
 template_name:
 	/* identifier */
-	TEMPLATE_NAME { $$ = $1; add_typename($$); }
+	TEMPLATE_NAME { $$ = $1; add_typename($$, TEMPLATE_NAME); }
 	;
 
 /*----------------------------------------------------------------------
@@ -1218,6 +1219,13 @@ type_id_list_opt:
 	;
 
 %%
+
+void add_typename(struct TreeNode *t, int cat) {
+	t->t->set_category(cat);
+	if(!ht_insert(t->t, cat)) {
+		yyerror("token already in hashmap");
+	}
+}
 
 struct TreeNode* alloc_tree(struct yyrule y, int num_kids, ...) {
 	va_list vakid;

@@ -33,7 +33,9 @@ LIT      \"(\\.|[^\\"])*\"
 #include "120gram.tab.h"
 #include "token.hh"
 #include "treenode.hh"
+#include "hashmap.hh"
 
+extern std::list<Token *> hash_table;
 extern YYSTYPE yylval;
 extern int yychar;
 extern Token *yytoken;
@@ -366,20 +368,7 @@ void handle_user_include_file()
 
 int check_identifier() {
 	/* refactoring the typename lookup table would clean this up */
-	int cat;
-	if(lookup_typename(yytext, CLASS_NAME)) {
-		cat = CLASS_NAME;
-	} else if(lookup_typename(yytext, ENUM_NAME)) {
-		cat = ENUM_NAME;
-	} else if(lookup_typename(yytext, NAMESPACE_NAME)) {
-		cat = NAMESPACE_NAME;
-	} else if(lookup_typename(yytext, TYPEDEF_NAME)) {
-		cat = TYPEDEF_NAME;
-	} else if(lookup_typename(yytext, TEMPLATE_NAME)) {
-		cat = TEMPLATE_NAME;
-	} else {
-		cat = IDENTIFIER;
-	}
+	int cat = ht_lookup(yytext) || IDENTIFIER;
 	create_token(cat);
 	return cat;
 }

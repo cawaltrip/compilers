@@ -20,8 +20,5 @@ struct TreeNode {
 };
 
 void print_tree(struct TreeNode *t, int depth = 0);
-void add_typename(struct TreeNode *t);
-bool lookup_typename(struct TreeNode *t);
-bool lookup_typename(std::string, int);
 
 #endif /* _TREENODE_HH_ */

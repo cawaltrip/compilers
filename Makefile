@@ -13,7 +13,7 @@ RM=-rm -f
 # Filename configurations #############
 #######################################
 BIN=120++
-CC_SOURCES=120++.cc token.cc treenode.cc
+CC_SOURCES=120++.cc token.cc treenode.cc hashmap.cc
 C_SOURCES=lex.yy.c 120gram.tab.c
 OBJECTS=$(CC_SOURCES:.cc=.o) $(C_SOURCES:.c=.o)
 #######################################
