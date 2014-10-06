@@ -2,7 +2,7 @@
 # Compiler Options ####################
 #######################################
 CPP=g++
-CPPFLAGS=-c -g -std=gnu++98 -x c++ -Wno-deprecated-register
+CPPFLAGS=-c -g -std=gnu++98 -x c++ -Wno-deprecated-register -I /usr/local/include
 LDFLAGS=
 LEX=flex
 YACC=/usr/local/Cellar/bison/3.0.2/bin/bison

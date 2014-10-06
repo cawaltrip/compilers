@@ -42,6 +42,7 @@ extern std::string yyfilename;
 void lexerr(std::string s);
 
 void handle_user_include_file();
+int check_identifier();
 
 void create_token(int cat, int line, std::string file, 
 			std::string text, std::string val = "");
@@ -315,7 +316,7 @@ std::list<std::string> include_stack;
 "std"			{ create_token(NAMESPACE_NAME); return NAMESPACE_NAME; }
 
   /* Identifiers */
-{L}({L}|{D})*           { create_token(IDENTIFIER); return IDENTIFIER; }
+{L}({L}|{D})*           { return check_identifier(); }
 
   /* End of File */
 <<EOF>>                 {
@@ -362,6 +363,26 @@ void handle_user_include_file()
 	}
 }
 
+int check_identifier() {
+	/* refactoring the typename lookup table would clean this up */
+	int cat;
+	if(lookup_typename(yytext, CLASS_NAME)) {
+		cat = CLASS_NAME;
+	} else if(lookup_typename(yytext, ENUM_NAME)) {
+		cat = ENUM_NAME;
+	} else if(lookup_typename(yytext, NAMESPACE_NAME)) {
+		cat = NAMESPACE_NAME;
+	} else if(lookup_typename(yytext, TYPEDEF_NAME)) {
+		cat = TYPEDEF_NAME;
+	} else if(lookup_typename(yytext, TEMPLATE_NAME)) {
+		cat = TEMPLATE_NAME;
+	} else {
+		cat = IDENTIFIER;
+	}
+	create_token(cat);
+	return cat;
+}
+
 void create_token(int cat, int line, std::string file,
 			std::string text, std::string val) {
 	
@@ -371,6 +392,7 @@ void create_token(int cat, int line, std::string file,
 	treeptr->prod_num = -1; /* or `cat`? */
 	treeptr->prod_text = ""; /* or `text`? */
 	yylval = treeptr;
+	//std::cout << "token: " << file << ":" << line << ":" << text << std::endl;
 }
 
 void create_token(int category) {

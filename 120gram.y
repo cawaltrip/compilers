@@ -75,6 +75,8 @@
 #include <string>
 #include <iostream>
 #include <cstdarg>
+#include <utility>
+
 #include "treenode.hh"
 #include "120rules.h"
 
@@ -83,10 +85,14 @@ extern int yylex();
 extern std::string yyfilename;
 extern std::string yytext;
 
+type_map map;
+
 struct TreeNode *root;
 struct TreeNode* alloc_tree(const struct yyrule y, int num_kids, ...);
+void add_typename(struct TreeNode *t);
+bool lookup_typename(struct TreeNode *t);
 
-static void yyerror(char *s);
+static void yyerror(std::string s);
 %}
 
 %define api.value.type { struct TreeNode* }
@@ -118,32 +124,32 @@ static void yyerror(char *s);
 
 typedef_name:
 	/* identifier */
-	TYPEDEF_NAME  { $$ = $1; }
+	TYPEDEF_NAME  { $$ = $1; add_typename($$); }
 	;
 
 namespace_name:
-	original_namespace_name  { $$ = $1; }
+	original_namespace_name  { $$ = $1; add_typename($$); }
 	;
 
 original_namespace_name:
 	/* identifier */
-	NAMESPACE_NAME { $$ = $1; }
+	NAMESPACE_NAME { $$ = $1; add_typename($$); }
 	;
 
 class_name:
 	/* identifier */
-	CLASS_NAME { $$ = $1; }
+	CLASS_NAME { $$ = $1; add_typename($$); }
 	| template_id { $$ = $1; }
 	;
 
 enum_name:
 	/* identifier */
-	ENUM_NAME { $$ = $1; }
+	ENUM_NAME { $$ = $1; add_typename($$); }
 	;
 
 template_name:
 	/* identifier */
-	TEMPLATE_NAME { $$ = $1; }
+	TEMPLATE_NAME { $$ = $1; add_typename($$); }
 	;
 
 /*----------------------------------------------------------------------
@@ -1241,9 +1247,10 @@ struct TreeNode* alloc_tree(struct yyrule y, int num_kids, ...) {
 }
 
 static void
-yyerror(char *s)
+yyerror(std::string s)
 {
    fprintf(stderr, "%s:%d: %s before '%s' token - token text: `%s`\n",
-	   yyfilename.c_str(), yylineno, s, yytext.c_str(),yylval->t->get_text().c_str());
+	   yyfilename.c_str(), yylineno, s.c_str(), 
+	   yytext.c_str(), yylval->t->get_text().c_str());
 }
 
