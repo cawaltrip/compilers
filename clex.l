@@ -340,6 +340,7 @@ void lexerr(std::string str)
 
 	errors++;
 	std::cerr << s.str();
+	exit(1);
 }
 
 void handle_user_include_file()

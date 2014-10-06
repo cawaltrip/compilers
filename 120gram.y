@@ -492,7 +492,7 @@ declaration_statement:
 
 declaration_seq:
 	declaration { $$ = $1; }
-	| declaration_seq declaration { $$ = alloc_tree(IDENTIFIER_1, 2, $1, $2); }
+	| declaration_seq declaration { $$ = alloc_tree(DECL_SEQ_2, 2, $1, $2); }
 	;
 
 declaration:
@@ -514,8 +514,8 @@ block_declaration:
 	;
 
 simple_declaration:
-	  decl_specifier_seq init_declarator_list ';' { $$ = alloc_tree(IDENTIFIER_1, 3, $1, $2, $3); }
-	|  decl_specifier_seq ';' { $$ = alloc_tree(IDENTIFIER_1, 2, $1, $2); }
+	  decl_specifier_seq init_declarator_list ';' { $$ = alloc_tree(SIMPLE_DECL_1, 3, $1, $2, $3); }
+	|  decl_specifier_seq ';' { $$ = alloc_tree(SIMPLE_DECL_2, 2, $1, $2); }
 	;
 
 decl_specifier:
@@ -528,7 +528,7 @@ decl_specifier:
 
 decl_specifier_seq:
 	  decl_specifier { $$ = $1; }
-	| decl_specifier_seq decl_specifier { $$ = alloc_tree(IDENTIFIER_1, 2, $1, $2); }
+	| decl_specifier_seq decl_specifier { $$ = alloc_tree(DECL_SPEC_SEQ_2, 2, $1, $2); }
 	;
 
 storage_class_specifier:
@@ -555,8 +555,8 @@ type_specifier:
 
 simple_type_specifier:
 	  type_name { $$ = $1; }
-	| nested_name_specifier type_name { $$ = alloc_tree(IDENTIFIER_1, 2, $1, $2); }
-	| COLONCOLON nested_name_specifier_opt type_name { $$ = alloc_tree(IDENTIFIER_1, 3, $1, $2, $3); }
+	| nested_name_specifier type_name { $$ = alloc_tree(SIMPLE_TYPE_SPEC_1, 2, $1, $2); }
+	| COLONCOLON nested_name_specifier_opt type_name { $$ = alloc_tree(SIMPLE_TYPE_SPEC_2, 3, $1, $2, $3); }
 	| CHAR { $$ = $1; }
 	| WCHAR_T { $$ = $1; }
 	| BOOL { $$ = $1; }
@@ -577,13 +577,13 @@ type_name:
 	;
 
 elaborated_type_specifier:
-	  class_key COLONCOLON nested_name_specifier identifier { $$ = alloc_tree(IDENTIFIER_1, 4, $1, $2, $3, $4); }
-	| class_key COLONCOLON identifier { $$ = alloc_tree(IDENTIFIER_1, 3, $1, $2, $3); }
-	| ENUM COLONCOLON nested_name_specifier identifier { $$ = alloc_tree(IDENTIFIER_1, 4, $1, $2, $3, $4); }
-	| ENUM COLONCOLON identifier { $$ = alloc_tree(IDENTIFIER_1, 3, $1, $2, $3); }
-	| ENUM nested_name_specifier identifier { $$ = alloc_tree(IDENTIFIER_1, 3, $1, $2, $3); }
-	| TYPENAME COLONCOLON_opt nested_name_specifier identifier { $$ = alloc_tree(IDENTIFIER_1, 4, $1, $2, $3, $4); }
-	| TYPENAME COLONCOLON_opt nested_name_specifier identifier '<' template_argument_list '>' { $$ = alloc_tree(IDENTIFIER_1, 7, $1, $2, $3, $4, $5, $6, $7); }
+	  class_key COLONCOLON nested_name_specifier identifier { $$ = alloc_tree(ELAB_TYPE_SPEC_1, 4, $1, $2, $3, $4); }
+	| class_key COLONCOLON identifier { $$ = alloc_tree(ELAB_TYPE_SPEC_2, 3, $1, $2, $3); }
+	| ENUM COLONCOLON nested_name_specifier identifier { $$ = alloc_tree(ELAB_TYPE_SPEC_3, 4, $1, $2, $3, $4); }
+	| ENUM COLONCOLON identifier { $$ = alloc_tree(ELAB_TYPE_SPEC_4, 3, $1, $2, $3); }
+	| ENUM nested_name_specifier identifier { $$ = alloc_tree(ELAB_TYPE_SPEC_5, 3, $1, $2, $3); }
+	| TYPENAME COLONCOLON_opt nested_name_specifier identifier { $$ = alloc_tree(ELAB_TYPE_SPEC_6, 4, $1, $2, $3, $4); }
+	| TYPENAME COLONCOLON_opt nested_name_specifier identifier '<' template_argument_list '>' { $$ = alloc_tree(ELAB_TYPE_SPEC_7, 7, $1, $2, $3, $4, $5, $6, $7); }
 	;
 
 /*
@@ -593,17 +593,17 @@ enum_name:
 */
 
 enum_specifier:
-	ENUM identifier '{' enumerator_list_opt '}' { $$ = alloc_tree(IDENTIFIER_1, 5, $1, $2, $3, $4, $5); }
+	ENUM identifier '{' enumerator_list_opt '}' { $$ = alloc_tree(ENUM_TYPE_SPEC_1, 5, $1, $2, $3, $4, $5); }
 	;
 
 enumerator_list:
 	enumerator_definition { $$ = $1; }
-	| enumerator_list ',' enumerator_definition { $$ = alloc_tree(IDENTIFIER_1, 3, $1, $2, $3); }
+	| enumerator_list ',' enumerator_definition { $$ = alloc_tree(ENUM_LIST_1, 3, $1, $2, $3); }
 	;
 
 enumerator_definition:
 	enumerator { $$ = $1; }
-	| enumerator '=' constant_expression { $$ = alloc_tree(IDENTIFIER_1, 3, $1, $2, $3); }
+	| enumerator '=' constant_expression { $$ = alloc_tree(ENUM_DEFINITION_1, 3, $1, $2, $3); }
 	;
 
 enumerator:
@@ -632,15 +632,15 @@ named_namespace_definition:
 	;
 
 original_namespace_definition:
-	NAMESPACE identifier '{' namespace_body '}' { $$ = alloc_tree(IDENTIFIER_1, 5, $1, $2, $3, $4, $5); }
+	NAMESPACE identifier '{' namespace_body '}' { $$ = alloc_tree(ORIG_NAMESPACE_DEF_1, 5, $1, $2, $3, $4, $5); }
 	;
 
 extension_namespace_definition:
-	NAMESPACE original_namespace_name '{' namespace_body '}' { $$ = alloc_tree(IDENTIFIER_1, 5, $1, $2, $3, $4, $5); }
+	NAMESPACE original_namespace_name '{' namespace_body '}' { $$ = alloc_tree(EXT_NAMESPACE_DEF_1, 5, $1, $2, $3, $4, $5); }
 	;
 
 unnamed_namespace_definition:
-	NAMESPACE '{' namespace_body '}' { $$ = alloc_tree(IDENTIFIER_1, 4, $1, $2, $3, $4); }
+	NAMESPACE '{' namespace_body '}' { $$ = alloc_tree(UNNAMED_NAMESPAE_DEF_1, 4, $1, $2, $3, $4); }
 	;
 
 namespace_body:
@@ -654,38 +654,38 @@ namespace_alias:
 */
 
 namespace_alias_definition:
-	NAMESPACE identifier '=' qualified_namespace_specifier ';' { $$ = alloc_tree(IDENTIFIER_1, 5, $1, $2, $3, $4, $5); }
+	NAMESPACE identifier '=' qualified_namespace_specifier ';' { $$ = alloc_tree(NAMESPACE_ALIAS_DEF_1, 5, $1, $2, $3, $4, $5); }
 	;
 
 qualified_namespace_specifier:
-	  COLONCOLON nested_name_specifier namespace_name { $$ = alloc_tree(IDENTIFIER_1, 3, $1, $2, $3); }
-	| COLONCOLON namespace_name { $$ = alloc_tree(IDENTIFIER_1, 2, $1, $2); }
-	| nested_name_specifier namespace_name { $$ = alloc_tree(IDENTIFIER_1, 2, $1, $2); }
+	  COLONCOLON nested_name_specifier namespace_name { $$ = alloc_tree(QUAL_NAMESPACE_SPEC_1, 3, $1, $2, $3); }
+	| COLONCOLON namespace_name { $$ = alloc_tree(QUAL_NAMESPACE_SPEC_2, 2, $1, $2); }
+	| nested_name_specifier namespace_name { $$ = alloc_tree(QUAL_NAMESPACE_SPEC_3, 2, $1, $2); }
 	| namespace_name { $$ = $1; }
 	;
 
 using_declaration:
-	  USING TYPENAME COLONCOLON nested_name_specifier unqualified_id ';' { $$ = alloc_tree(IDENTIFIER_1, 6, $1, $2, $3, $4, $5, $6); }
-	| USING TYPENAME nested_name_specifier unqualified_id ';' { $$ = alloc_tree(IDENTIFIER_1, 5, $1, $2, $3, $4, $5); }
-	| USING COLONCOLON nested_name_specifier unqualified_id ';' { $$ = alloc_tree(IDENTIFIER_1, 5, $1, $2, $3, $4, $5); }
-	| USING nested_name_specifier unqualified_id ';' { $$ = alloc_tree(IDENTIFIER_1, 4, $1, $2, $3, $4); }
-	| USING COLONCOLON unqualified_id ';' { $$ = alloc_tree(IDENTIFIER_1, 4, $1, $2, $3, $4); }
+	  USING TYPENAME COLONCOLON nested_name_specifier unqualified_id ';' { $$ = alloc_tree(USING_DECL_1, 6, $1, $2, $3, $4, $5, $6); }
+	| USING TYPENAME nested_name_specifier unqualified_id ';' { $$ = alloc_tree(USING_DECL_2, 5, $1, $2, $3, $4, $5); }
+	| USING COLONCOLON nested_name_specifier unqualified_id ';' { $$ = alloc_tree(USING_DECL_3, 5, $1, $2, $3, $4, $5); }
+	| USING nested_name_specifier unqualified_id ';' { $$ = alloc_tree(USING_DECL_4, 4, $1, $2, $3, $4); }
+	| USING COLONCOLON unqualified_id ';' { $$ = alloc_tree(USING_DECL_5, 4, $1, $2, $3, $4); }
 	;
 
 using_directive:
-	USING NAMESPACE COLONCOLON nested_name_specifier namespace_name ';' { $$ = alloc_tree(IDENTIFIER_1, 6, $1, $2, $3, $4, $5, $6); }
-	| USING NAMESPACE COLONCOLON namespace_name ';' { $$ = alloc_tree(IDENTIFIER_1, 5, $1, $2, $3, $4, $5); }
-	| USING NAMESPACE nested_name_specifier namespace_name ';' { $$ = alloc_tree(IDENTIFIER_1, 5, $1, $2, $3, $4, $5); }
-	| USING NAMESPACE namespace_name ';' { $$ = alloc_tree(IDENTIFIER_1, 4, $1, $2, $3, $4); }
+	USING NAMESPACE COLONCOLON nested_name_specifier namespace_name ';' { $$ = alloc_tree(USING_DIRECTIVE_1, 6, $1, $2, $3, $4, $5, $6); }
+	| USING NAMESPACE COLONCOLON namespace_name ';' { $$ = alloc_tree(USING_DIRECTIVE_2, 5, $1, $2, $3, $4, $5); }
+	| USING NAMESPACE nested_name_specifier namespace_name ';' { $$ = alloc_tree(USING_DIRECTIVE_3, 5, $1, $2, $3, $4, $5); }
+	| USING NAMESPACE namespace_name ';' { $$ = alloc_tree(USING_DIRECTIVE_4, 4, $1, $2, $3, $4); }
 	;
 
 asm_definition:
-	ASM '(' string_literal ')' ';' { $$ = alloc_tree(IDENTIFIER_1, 5, $1, $2, $3, $4, $5); }
+	ASM '(' string_literal ')' ';' { $$ = alloc_tree(ASM_DEF_1, 5, $1, $2, $3, $4, $5); }
 	;
 
 linkage_specification:
-	EXTERN string_literal '{' declaration_seq_opt '}' { $$ = alloc_tree(IDENTIFIER_1, 5, $1, $2, $3, $4, $5); }
-	| EXTERN string_literal declaration { $$ = alloc_tree(IDENTIFIER_1, 3, $1, $2, $3); }
+	EXTERN string_literal '{' declaration_seq_opt '}' { $$ = alloc_tree(LINKAGE_SPEC_1, 5, $1, $2, $3, $4, $5); }
+	| EXTERN string_literal declaration { $$ = alloc_tree(LINKAGE_SPEC_2, 3, $1, $2, $3); }
 	;
 
 /*----------------------------------------------------------------------
@@ -1252,5 +1252,6 @@ yyerror(std::string s)
    fprintf(stderr, "%s:%d: %s before '%s' token - token text: `%s`\n",
 	   yyfilename.c_str(), yylineno, s.c_str(), 
 	   yytext.c_str(), yylval->t->get_text().c_str());
+   exit(2);
 }
 
