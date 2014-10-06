@@ -1,7 +1,7 @@
 #include <iostream>
 using namespace std;
 
-double myfunc(double, double);
+double myfunc(double xxxxxxxxxx, double y);
 double goof(double);
 
 
@@ -15,10 +15,10 @@ double x, y;
 }
 
 
-double myfunc(double x, double y)
+double myfunc(double xxxxxxxxxx, double yyyyyyyyyy)
 {
-	x = goof(2.0);
-	return x;
+	xxxxxxxxxx = goof(2.0);
+	return xxxxxxxxxx;
 }
 
 double goof(double branflakes)

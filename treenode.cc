@@ -1,5 +1,6 @@
 #include <string>
 #include <iostream>
+#include <sstream>
 #include "treenode.hh"
 
 /* Stolen and modified from Dr. J's CS-445 HW2 Notes:
@@ -7,9 +8,18 @@
  */
 void print_tree(struct TreeNode *t, int depth)
 {
+	std::stringstream s;
 	std::string spaces = std::string(depth*2, ' ');
-	std::cout << spaces << t->prod_text << ": " << t->prod_num 
-		<< " (" << t->num_kids << " kids)" << std::endl;
+	
+	s << spaces;
+	if(t->num_kids == 0) {
+		s << "TOKEN (" << t->t->get_category() << "): ";
+		s << t->t->get_text();
+	} else {
+		s << t->prod_text << ": " << t->prod_num;
+		s << " (" << t->num_kids << " kids)";
+	}
+	std::cout << s.str() << std::endl;
 
 	for(int i=0; i<t->num_kids; ++i)
 		print_tree(t->kids[i], depth+1);

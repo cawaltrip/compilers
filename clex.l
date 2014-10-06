@@ -367,6 +367,9 @@ void create_token(int cat, int line, std::string file,
 	
 	struct TreeNode* treeptr = (TreeNode*) calloc(1,sizeof(TreeNode));
 	treeptr->t = new Token(cat, line, file, text, val);
+	treeptr->num_kids = 0;
+	treeptr->prod_num = -1; /* or `cat`? */
+	treeptr->prod_text = ""; /* or `text`? */
 	yylval = treeptr;
 }
 

@@ -56,48 +56,49 @@ const struct yyrule NESTED_NAME_2(18002,"Nested name: Namespace 1");
 const struct yyrule NESTED_NAME_3(18003,"Nested name: Class 2");
 const struct yyrule NESTED_NAME_4(18004,"Nested name: Namespace 2");
 
-const struct yyrule POSTFIX_EXP_1(19001,"Postix Expr: 1");
-const struct yyrule POSTFIX_EXP_2(19002,"Postix Expr: 2");
-const struct yyrule POSTFIX_EXP_3(19003,"Postix Expr: 3");
-const struct yyrule POSTFIX_EXP_4(19004,"Postix Expr: 4");
-const struct yyrule POSTFIX_EXP_5(19005,"Postix Expr: 5");
-const struct yyrule POSTFIX_EXP_6(19006,"Postix Expr: 6");
-const struct yyrule POSTFIX_EXP_7(19007,"Postix Expr: 7");
-const struct yyrule POSTFIX_EXP_8(19008,"Postix Expr: 8");
-const struct yyrule POSTFIX_EXP_9(19009,"Postix Expr: 9");
-const struct yyrule POSTFIX_EXP_10(19000,"Postix Expr: 10");
-const struct yyrule POSTFIX_EXP_11(19001,"Postix Expr: 11");
-const struct yyrule POSTFIX_EXP_12(19002,"Postix Expr: 12");
-const struct yyrule POSTFIX_EXP_13(19003,"Postix Expr: 13");
-const struct yyrule POSTFIX_EXP_14(19004,"Postix Expr: 14");
-const struct yyrule POSTFIX_EXP_15(19005,"Postix Expr: 15");
-const struct yyrule POSTFIX_EXP_16(19006,"Postix Expr: 16");
-const struct yyrule POSTFIX_EXP_17(19007,"Postix Expr: 17");
-const struct yyrule POSTFIX_EXP_18(19008,"Postix Expr: 18");
+const struct yyrule POSTFIX_EXPR_1(19001,"Postix Expr: 1");
+const struct yyrule POSTFIX_EXPR_2(19002,"Postix Expr: 2");
+const struct yyrule POSTFIX_EXPR_3(19003,"Postix Expr: 3");
+const struct yyrule POSTFIX_EXPR_4(19004,"Postix Expr: 4");
+const struct yyrule POSTFIX_EXPR_5(19005,"Postix Expr: 5");
+const struct yyrule POSTFIX_EXPR_6(19006,"Postix Expr: 6");
+const struct yyrule POSTFIX_EXPR_7(19007,"Postix Expr: 7");
+const struct yyrule POSTFIX_EXPR_8(19008,"Postix Expr: 8");
+const struct yyrule POSTFIX_EXPR_9(19009,"Postix Expr: 9");
+const struct yyrule POSTFIX_EXPR_10(19010,"Postix Expr: 10");
+const struct yyrule POSTFIX_EXPR_11(19011,"Postix Expr: 11");
+const struct yyrule POSTFIX_EXPR_12(19012,"Postix Expr: 12");
+const struct yyrule POSTFIX_EXPR_13(19013,"Postix Expr: 13");
+const struct yyrule POSTFIX_EXPR_14(19014,"Postix Expr: 14");
+const struct yyrule POSTFIX_EXPR_15(19015,"Postix Expr: 15");
+const struct yyrule POSTFIX_EXPR_16(19016,"Postix Expr: 16");
+const struct yyrule POSTFIX_EXPR_17(19017,"Postix Expr: 17");
+const struct yyrule POSTFIX_EXPR_18(19018,"Postix Expr: 18");
+const struct yyrule POSTFIX_EXPR_19(19018,"Postix Expr: 19");
 
-const struct yyrule EXP_LIST_1(20001,"Placeholder");
-const struct yyrule EXP_LIST_2(20002,"Placeholder");
+const struct yyrule EXPR_LIST_1(20001,"Placeholder");
+const struct yyrule EXPR_LIST_2(20002,"Placeholder");
 
-const struct yyrule UNARY_EXP_1(21001,"Placeholder");
-const struct yyrule UNARY_EXP_2(21002,"Placeholder");
-const struct yyrule UNARY_EXP_3(21003,"Placeholder");
-const struct yyrule UNARY_EXP_4(21004,"Placeholder");
-const struct yyrule UNARY_EXP_5(21005,"Placeholder");
-const struct yyrule UNARY_EXP_6(21006,"Placeholder");
-const struct yyrule UNARY_EXP_7(21007,"Placeholder");
-const struct yyrule UNARY_EXP_8(21008,"Placeholder");
-const struct yyrule UNARY_EXP_9(21009,"Placeholder");
-const struct yyrule UNARY_EXP_10(21010,"Placeholder");
+const struct yyrule UNARY_EXPR_1(21001,"Placeholder");
+const struct yyrule UNARY_EXPR_2(21002,"Placeholder");
+const struct yyrule UNARY_EXPR_3(21003,"Placeholder");
+const struct yyrule UNARY_EXPR_4(21004,"Placeholder");
+const struct yyrule UNARY_EXPR_5(21005,"Placeholder");
+const struct yyrule UNARY_EXPR_6(21006,"Placeholder");
+const struct yyrule UNARY_EXPR_7(21007,"Placeholder");
+const struct yyrule UNARY_EXPR_8(21008,"Placeholder");
+const struct yyrule UNARY_EXPR_9(21009,"Placeholder");
+const struct yyrule UNARY_EXPR_10(21010,"Placeholder");
 
 const struct yyrule UNARY_OP_1(22001,"Placeholder");
 const struct yyrule UNARY_OP_2(22002,"Placeholder");
 const struct yyrule UNARY_OP_3(22003,"Placeholder");
 const struct yyrule UNARY_OP_4(22004,"Placeholder");
 
-const struct yyrule NEW_EXP_1(23001,"Placeholder");
-const struct yyrule NEW_EXP_2(23002,"Placeholder");
-const struct yyrule NEW_EXP_3(23003,"Placeholder");
-const struct yyrule NEW_EXP_4(23004,"Placeholder");
+const struct yyrule NEW_EXPR_1(23001,"Placeholder");
+const struct yyrule NEW_EXPR_2(23002,"Placeholder");
+const struct yyrule NEW_EXPR_3(23003,"Placeholder");
+const struct yyrule NEW_EXPR_4(23004,"Placeholder");
 
 const struct yyrule NEW_PLACEMENT_1(24001,"Placeholder");
 
@@ -111,62 +112,62 @@ const struct yyrule DIRECT_NEW_DECL_2(27002,"Placeholder");
 
 const struct yyrule NEW_INIT_1(28001,"Placeholder");
 
-const struct yyrule DELETE_EXP_1(29001,"Placeholder");
-const struct yyrule DELETE_EXP_2(29002,"Placeholder");
-const struct yyrule DELETE_EXP_3(29003,"Placeholder");
-const struct yyrule DELETE_EXP_4(29004,"Placeholder");
+const struct yyrule DELETE_EXPR_1(29001,"Placeholder");
+const struct yyrule DELETE_EXPR_2(29002,"Placeholder");
+const struct yyrule DELETE_EXPR_3(29003,"Placeholder");
+const struct yyrule DELETE_EXPR_4(29004,"Placeholder");
 
-const struct yyrule CAST_EXP_1(30001,"Placeholder");
-const struct yyrule CAST_EXP_2(30002,"Placeholder");
+const struct yyrule CAST_EXPR_1(30001,"Placeholder");
+const struct yyrule CAST_EXPR_2(30002,"Placeholder");
 
-const struct yyrule PM_EXP_1(31001,"Placeholder");
-const struct yyrule PM_EXP_2(31002,"Placeholder");
-const struct yyrule PM_EXP_3(31003,"Placeholder");
+const struct yyrule PM_EXPR_1(31001,"Placeholder");
+const struct yyrule PM_EXPR_2(31002,"Placeholder");
+const struct yyrule PM_EXPR_3(31003,"Placeholder");
 
-const struct yyrule MULT_EXP_1(32001,"Placeholder");
-const struct yyrule MULT_EXP_2(32002,"Placeholder");
-const struct yyrule MULT_EXP_3(32003,"Placeholder");
-const struct yyrule MULT_EXP_4(32004,"Placeholder");
+const struct yyrule MULT_EXPR_1(32001,"Placeholder");
+const struct yyrule MULT_EXPR_2(32002,"Placeholder");
+const struct yyrule MULT_EXPR_3(32003,"Placeholder");
+const struct yyrule MULT_EXPR_4(32004,"Placeholder");
 
-const struct yyrule ADD_EXP_1(33001,"Placeholder");
-const struct yyrule ADD_EXP_2(33002,"Placeholder");
-const struct yyrule ADD_EXP_3(33003,"Placeholder");
+const struct yyrule ADD_EXPR_1(33001,"Placeholder");
+const struct yyrule ADD_EXPR_2(33002,"Placeholder");
+const struct yyrule ADD_EXPR_3(33003,"Placeholder");
 
-const struct yyrule SHIFT_EXP_1(34001,"Placeholder");
-const struct yyrule SHIFT_EXP_2(34002,"Placeholder");
-const struct yyrule SHIFT_EXP_3(34003,"Placeholder");
+const struct yyrule SHIFT_EXPR_1(34001,"Placeholder");
+const struct yyrule SHIFT_EXPR_2(34002,"Placeholder");
+const struct yyrule SHIFT_EXPR_3(34003,"Placeholder");
 
-const struct yyrule RELATIONAL_EXP_1(35001,"Placeholder");
-const struct yyrule RELATIONAL_EXP_2(35002,"Placeholder");
-const struct yyrule RELATIONAL_EXP_3(35003,"Placeholder");
-const struct yyrule RELATIONAL_EXP_4(35004,"Placeholder");
-const struct yyrule RELATIONAL_EXP_5(35005,"Placeholder");
+const struct yyrule RELATIONAL_EXPR_1(35001,"Placeholder");
+const struct yyrule RELATIONAL_EXPR_2(35002,"Placeholder");
+const struct yyrule RELATIONAL_EXPR_3(35003,"Placeholder");
+const struct yyrule RELATIONAL_EXPR_4(35004,"Placeholder");
+const struct yyrule RELATIONAL_EXPR_5(35005,"Placeholder");
 
-const struct yyrule EQ_EXP_1(36001,"Placeholder");
-const struct yyrule EQ_EXP_2(36002,"Placeholder");
-const struct yyrule EQ_EXP_3(36003,"Placeholder");
+const struct yyrule EQ_EXPR_1(36001,"Placeholder");
+const struct yyrule EQ_EXPR_2(36002,"Placeholder");
+const struct yyrule EQ_EXPR_3(36003,"Placeholder");
 
-const struct yyrule AND_EXP_1(37001,"Placeholder");
-const struct yyrule AND_EXP_2(37002,"Placeholder");
+const struct yyrule AND_EXPR_1(37001,"Placeholder");
+const struct yyrule AND_EXPR_2(37002,"Placeholder");
 
-const struct yyrule XOR_EXP_1(38001,"Placeholder");
-const struct yyrule XOR_EXP_2(38002,"Placeholder");
+const struct yyrule XOR_EXPR_1(38001,"Placeholder");
+const struct yyrule XOR_EXPR_2(38002,"Placeholder");
 
-const struct yyrule OR_EXP_1(39001,"Placeholder");
-const struct yyrule OR_EXP_2(39002,"Placeholder");
+const struct yyrule OR_EXPR_1(39001,"Placeholder");
+const struct yyrule OR_EXPR_2(39002,"Placeholder");
 
-const struct yyrule LOGICAL_AND_EXP_1(40001,"Placeholder");
-const struct yyrule LOGICAL_AND_EXP_2(40002,"Placeholder");
+const struct yyrule LOGICAL_AND_EXPR_1(40001,"Placeholder");
+const struct yyrule LOGICAL_AND_EXPR_2(40002,"Placeholder");
 
-const struct yyrule LOGICAL_OR_EXP_1(41001,"Placeholder");
-const struct yyrule LOGICAL_OR_EXP_2(41002,"Placeholder");
+const struct yyrule LOGICAL_OR_EXPR_1(41001,"Placeholder");
+const struct yyrule LOGICAL_OR_EXPR_2(41002,"Placeholder");
 
-const struct yyrule CONDITIONAL_EXP_1(42001,"Placeholder");
-const struct yyrule CONDITIONAL_EXP_2(42002,"Placeholder");
+const struct yyrule CONDITIONAL_EXPR_1(42001,"Placeholder");
+const struct yyrule CONDITIONAL_EXPR_2(42002,"Placeholder");
 
-const struct yyrule ASSIGN_EXP_1(43001,"Placeholder");
-const struct yyrule ASSIGN_EXP_2(43002,"Placeholder");
-const struct yyrule ASSIGN_EXP_3(43003,"Placeholder");
+const struct yyrule ASSIGN_EXPR_1(43001,"Placeholder");
+const struct yyrule ASSIGN_EXPR_2(43002,"Placeholder");
+const struct yyrule ASSIGN_EXPR_3(43003,"Placeholder");
 
 const struct yyrule ASSIGN_OP_1(44001,"Placeholder");
 const struct yyrule ASSIGN_OP_2(44002,"Placeholder");
@@ -231,6 +232,10 @@ const struct yyrule DECL_STMT_1(57001,"Placeholder");
 
 /* Declarations */
 
+/* NEED TO INSERT!!!!! */
+
+/* Declarators */
+
 const struct yyrule INIT_DECL_LIST_1(58001,"Placeholder");
 const struct yyrule INIT_DECL_LIST_2(58002,"Placeholder");
 
@@ -267,7 +272,7 @@ const struct yyrule DECL_ID_4(65004,"Placeholder");
 
 const struct yyrule TYPE_ID_1(66001,"Placeholder");
 
-const struct yyrule TYPE_SPECIFIER_SEQ_1(67001,"Placeholder");
+const struct yyrule TYPE_SPEC_SEQ_1(67001,"Placeholder");
 
 const struct yyrule ABSTRACT_DECL_1(68001,"Placeholder");
 const struct yyrule ABSTRACT_DECL_2(68002,"Placeholder");
@@ -300,15 +305,15 @@ const struct yyrule FUNC_DEF_4(73004,"Placeholder");
 
 const struct yyrule FUNC_BODY_1(74001,"Placeholder");
 
-const struct yyrule INITIALIZOR_1(75001,"Placeholder");
-const struct yyrule INITIALIZOR_2(75002,"Placeholder");
+const struct yyrule INITIALIZER_1(75001,"Placeholder");
+const struct yyrule INITIALIZER_2(75002,"Placeholder");
 
-const struct yyrule INITIALIZOR_CLAUSE_1(76001,"Placeholder");
-const struct yyrule INITIALIZOR_CLAUSE_2(76002,"Placeholder");
-const struct yyrule INITIALIZOR_CLAUSE_3(76003,"Placeholder");
+const struct yyrule INITIALIZER_CLAUSE_1(76001,"Placeholder");
+const struct yyrule INITIALIZER_CLAUSE_2(76002,"Placeholder");
+const struct yyrule INITIALIZER_CLAUSE_3(76003,"Placeholder");
 
-const struct yyrule INITIALIZOR_LIST_1(77001,"Placeholder");
-const struct yyrule INITIALIZOR_LIST_2(77002,"Placeholder");
+const struct yyrule INITIALIZER_LIST_1(77001,"Placeholder");
+const struct yyrule INITIALIZER_LIST_2(77002,"Placeholder");
 
 /* Classes */
 
@@ -326,14 +331,14 @@ const struct yyrule CLASS_KEY_3(80003,"Placeholder");
 const struct yyrule MEMBER_SPEC_1(81001,"Placeholder");
 const struct yyrule MEMBER_SPEC_2(81002,"Placeholder");
 
-const struct yyrule MEMBER_DECLARATION_1(82001,"Placeholder");
-const struct yyrule MEMBER_DECLARATION_2(82002,"Placeholder");
-const struct yyrule MEMBER_DECLARATION_3(82003,"Placeholder");
-const struct yyrule MEMBER_DECLARATION_4(82004,"Placeholder");
-const struct yyrule MEMBER_DECLARATION_5(82005,"Placeholder");
-const struct yyrule MEMBER_DECLARATION_6(82006,"Placeholder");
-const struct yyrule MEMBER_DECLARATION_7(82007,"Placeholder");
-const struct yyrule MEMBER_DECLARATION_8(82008,"Placeholder");
+const struct yyrule MEMBER_DECL_1(82001,"Placeholder");
+const struct yyrule MEMBER_DECL_2(82002,"Placeholder");
+const struct yyrule MEMBER_DECL_3(82003,"Placeholder");
+const struct yyrule MEMBER_DECL_4(82004,"Placeholder");
+const struct yyrule MEMBER_DECL_5(82005,"Placeholder");
+const struct yyrule MEMBER_DECL_6(82006,"Placeholder");
+const struct yyrule MEMBER_DECL_7(82007,"Placeholder");
+const struct yyrule MEMBER_DECL_8(82008,"Placeholder");
 
 const struct yyrule MEMBER_DECL_LIST_1(83001,"Placeholder");
 const struct yyrule MEMBER_DECL_LIST_2(83002,"Placeholder");
@@ -345,7 +350,7 @@ const struct yyrule MEMBER_DECLARATOR_4(84004,"Placeholder");
 
 const struct yyrule PURE_SPECIFIER_1(85001,"Placeholder");
 
-const struct yyrule CONST_INITIALIZOR_1(86001,"Placeholder");
+const struct yyrule CONST_INITIALIZER_1(86001,"Placeholder");
 
 /* Derived Classes */
 
@@ -379,7 +384,7 @@ const struct yyrule CONV_TYPE_ID_1(92001,"Placeholder");
 
 const struct yyrule CONV_DECLARATOR_1(93001,"Placeholder");
 
-const struct yyrule CTOR_INIT_(94001,"Placeholder");
+const struct yyrule CTOR_INIT_1(94001,"Placeholder");
 
 const struct yyrule MEM_INIT_LIST_1(95001,"Placeholder");
 const struct yyrule MEM_INIT_LIST_2(95002,"Placeholder");
@@ -454,7 +459,6 @@ const struct yyrule TYPE_PARAM_3(103003,"Placeholder");
 const struct yyrule TYPE_PARAM_4(103004,"Placeholder");
 const struct yyrule TYPE_PARAM_5(103005,"Placeholder");
 const struct yyrule TYPE_PARAM_6(103006,"Placeholder");
-const struct yyrule TYPE_PARAM_7(103007,"Placeholder");
 
 const struct yyrule TEMPLATE_ID_1(104001,"Placeholder");
 
