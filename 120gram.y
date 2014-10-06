@@ -1222,9 +1222,9 @@ type_id_list_opt:
 
 void add_typename(struct TreeNode *t, int cat) {
 	t->t->set_category(cat);
-	if(!ht_insert(t->t, cat)) {
-		yyerror("token already in hashmap");
-	}
+	//if(!ht_insert(t->t, cat)) {
+	//	yyerror("token already in hashmap");
+	//}
 }
 
 struct TreeNode* alloc_tree(struct yyrule y, int num_kids, ...) {

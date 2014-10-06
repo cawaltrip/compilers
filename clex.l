@@ -368,7 +368,8 @@ void handle_user_include_file()
 
 int check_identifier() {
 	/* refactoring the typename lookup table would clean this up */
-	int cat = ht_lookup(yytext) || IDENTIFIER;
+	//int cat = ht_lookup(yytext) || IDENTIFIER;
+	int cat = IDENTIFIER;
 	create_token(cat);
 	return cat;
 }

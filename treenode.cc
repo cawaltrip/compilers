@@ -13,8 +13,7 @@ void print_tree(struct TreeNode *t, int depth)
 
 	s << spaces;
 	if(t->num_kids == 0) {
-		s << "TOKEN (" << t->t->get_category() << "): ";
-		s << t->t->get_text();
+		s << t->t->get_category() << ": " << t->t->get_text();
 	} else {
 		s << t->prod_text << ": " << t->prod_num;
 		s << " (" << t->num_kids << " kids)";
