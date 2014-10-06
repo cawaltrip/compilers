@@ -10,7 +10,9 @@ void print_tree(struct TreeNode *t, int depth)
 {
 	std::stringstream s;
 	std::string spaces = std::string(depth*2, ' ');
+
 	
+
 	s << spaces;
 	if(t->num_kids == 0) {
 		s << "TOKEN (" << t->t->get_category() << "): ";
@@ -22,5 +24,6 @@ void print_tree(struct TreeNode *t, int depth)
 	std::cout << s.str() << std::endl;
 
 	for(int i=0; i<t->num_kids; ++i)
-		print_tree(t->kids[i], depth+1);
+		if(t->kids[i] != NULL)
+			print_tree(t->kids[i], depth+1);
 }
