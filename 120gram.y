@@ -640,7 +640,7 @@ extension_namespace_definition:
 	;
 
 unnamed_namespace_definition:
-	NAMESPACE '{' namespace_body '}' { $$ = alloc_tree(UNNAMED_NAMESPAE_DEF_1, 4, $1, $2, $3, $4); }
+	NAMESPACE '{' namespace_body '}' { $$ = alloc_tree(UNNAMED_NAMESPACE_DEF_1, 4, $1, $2, $3, $4); }
 	;
 
 namespace_body:
@@ -855,7 +855,7 @@ member_declarator_list:
 	;
 
 member_declarator:
-	| declarator { $$ = $1; }
+	declarator { $$ = $1; }
 	| declarator pure_specifier { $$ = alloc_tree(MEMBER_DECLARATOR_2, 2, $1, $2); }
 	| declarator constant_initializer { $$ = alloc_tree(MEMBER_DECLARATOR_3, 2, $1, $2); }
 	| identifier ':' constant_expression { $$ = alloc_tree(MEMBER_DECLARATOR_4, 3, $1, $2, $3); }

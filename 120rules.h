@@ -356,7 +356,7 @@ const struct yyrule DIRECT_ABSTRACT_DECL_2(69002,"dir-abst-decl");
 const struct yyrule DIRECT_ABSTRACT_DECL_3(69003,"dir-abst-decl");
 const struct yyrule DIRECT_ABSTRACT_DECL_4(69004,"dir-abst-decl");
 const struct yyrule DIRECT_ABSTRACT_DECL_5(69005,"dir-abst-decl");
-const struct yyrule DIRECT_ABSTRACT_DECL_6(69006,"dirparam-decl-clause);
+const struct yyrule DIRECT_ABSTRACT_DECL_6(69006,"dir-abst-decl");
 
 const struct yyrule PARAM_DECL_CLAUSE_1(70001,"param-decl-clause");
 const struct yyrule PARAM_DECL_CLAUSE_2(70002,"param-decl-clause");
