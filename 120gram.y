@@ -220,7 +220,7 @@ qualified_id:
 
 nested_name_specifier:
 	class_name COLONCOLON nested_name_specifier { $$ = alloc_tree(IDENTIFIER_1, 3, $1, $2, $3); }
-	namespace_name COLONCOLON nested_name_specifier { $$ = alloc_tree(IDENTIFIER_1, 3, $1, $2, $3); }
+	| namespace_name COLONCOLON nested_name_specifier { $$ = alloc_tree(IDENTIFIER_1, 3, $1, $2, $3); }
 	| class_name COLONCOLON { $$ = alloc_tree(IDENTIFIER_1, 2, $1, $2); }
 	| namespace_name COLONCOLON { $$ = alloc_tree(IDENTIFIER_1, 2, $1, $2); }
 	;
@@ -1215,7 +1215,7 @@ struct TreeNode* alloc_tree(struct yyrule y, int num_kids, ...) {
 	va_list vakid;
 	/* TODO: Need to alloc size of kids seperately */
 	struct TreeNode *t = (struct TreeNode*) calloc(1, 
-				sizeof(struct TreeNode));
+				sizeof(struct TreeNode) + 10*sizeof(TreeNode*));
 	if(!t) {
 		std::cerr << "TreeNode: Cannot allocate memory." << std::endl;
 		exit(1);
