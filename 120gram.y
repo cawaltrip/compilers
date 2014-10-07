@@ -73,6 +73,7 @@
 %{
 #include <stdio.h>
 #include <string>
+#include <sstream>
 #include <iostream>
 #include <cstdarg>
 #include <utility>
@@ -1254,12 +1255,13 @@ struct TreeNode* alloc_tree(struct yyrule y, int num_kids, ...) {
 	return t;
 }
 
-static void
-yyerror(std::string s)
-{
-   fprintf(stderr, "%s:%d: %s before '%s' token - token text: `%s`\n",
-	   yyfilename.c_str(), yylineno, s.c_str(), 
-	   yytext.c_str(), yylval->t->get_text().c_str());
-   exit(2);
+static void yyerror(std::string str) {
+	std::stringstream s;
+	s << yyfilename << ":" << yylineno << ": ";
+	s << str << " before '" << yylval->t->get_text() << "' token"; 
+	s << std::endl;
+
+	std::cerr << s.str();
+	exit(2);
 }
 

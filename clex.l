@@ -36,7 +36,6 @@ LIT      \"(\\.|[^\\"])*\"
 #include "hashmap.hh"
 
 extern std::list<Token *> hash_table;
-extern YYSTYPE yylval;
 extern int yychar;
 extern Token *yytoken;
 extern std::string yyfilename;
