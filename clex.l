@@ -380,7 +380,7 @@ void create_token(int cat, int line, std::string file,
 	treeptr->t = new Token(cat, line, file, text, val);
 	treeptr->num_kids = 0;
 	treeptr->prod_num = -1; /* or `cat`? */
-	treeptr->prod_text = ""; /* or `text`? */
+	treeptr->prod_text = NULL; /* or `text`? */
 	yylval = treeptr;
 	//std::cout << "token: " << file << ":" << line << ":" << text << std::endl;
 }

@@ -1242,7 +1242,7 @@ struct TreeNode* alloc_tree(struct yyrule y, int num_kids, ...) {
 		exit(1);
 	}
 	t->prod_num = y.num;
-	t->prod_text = y.text;
+	t->prod_text = new std::string(y.text);
 	t->num_kids = num_kids;
 
 	va_start(vakid, num_kids);
