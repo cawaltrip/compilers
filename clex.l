@@ -376,7 +376,7 @@ int check_identifier() {
 void create_token(int cat, int line, std::string file,
 			std::string text, std::string val) {
 	
-	struct TreeNode* treeptr = (TreeNode*) calloc(1,sizeof(TreeNode));
+	struct TreeNode* treeptr = new struct TreeNode();
 	treeptr->t = new Token(cat, line, file, text, val);
 	treeptr->num_kids = 0;
 	treeptr->prod_num = -1; /* or `cat`? */
