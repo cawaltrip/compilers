@@ -1,7 +1,7 @@
 #######################################
 # Compiler Options ####################
 #######################################
-CPP=g++
+CPP=clang++
 CPPFLAGS=-c -g -std=gnu++98 -x c++ -Wno-deprecated-register -I /usr/local/include
 #CPPFLAGS=-c -g -std=gnu++98 -x c++ -I /usr/local/include
 LDFLAGS=
