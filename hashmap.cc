@@ -1,6 +1,8 @@
 #include <list>
 #include <string>
 #include <iostream>
+#include <cstdlib>
+#include <cstring>
 #include "token.hh"
 #include "hashmap.hh"
 

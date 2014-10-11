@@ -1234,15 +1234,13 @@ struct TreeNode* alloc_tree(struct yyrule y, int num_kids, ...) {
 	 * TODO: Need to alloc size of kids seperately (causes a segfault
 	 * when printing if not handled there).
 	 */
-	struct TreeNode *t = (struct TreeNode*) calloc(1, 
-				sizeof(struct TreeNode) + 
-				10 * sizeof(TreeNode*));
+	struct TreeNode *t = new struct TreeNode();
 	if(!t) {
 		std::cerr << "TreeNode: Cannot allocate memory." << std::endl;
 		exit(1);
 	}
 	t->prod_num = y.num;
-	t->prod_text = new std::string(y.text);
+	t->prod_text = y.text;
 	t->num_kids = num_kids;
 
 	va_start(vakid, num_kids);

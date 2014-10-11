@@ -6,8 +6,8 @@ CPPFLAGS=-c -g -std=gnu++98 -x c++ -Wno-deprecated-register -I /usr/local/includ
 #CPPFLAGS=-c -g -std=gnu++98 -x c++ -I /usr/local/include
 LDFLAGS=
 LEX=flex
-YACC=/usr/local/Cellar/bison/3.0.2/bin/bison
-#YACC=bison
+#YACC=/usr/local/Cellar/bison/3.0.2/bin/bison
+YACC=bison
 RM=-rm -f
 #######################################
 # Filename configurations #############
