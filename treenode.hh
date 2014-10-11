@@ -13,7 +13,7 @@ typedef type_map::const_iterator map_iter;
 
 struct TreeNode {
 	int prod_num;
-	std::string *prod_text;
+	std::string prod_text;
 	int num_kids;
 	struct TreeNode *kids[10];
 	Token *t;
