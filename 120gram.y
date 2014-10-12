@@ -82,7 +82,6 @@
 #include "hashmap.hh"
 #include "120rules.hh"
 
-extern std::list<Token *> hash_table;
 extern int yylineno;
 extern int yylex();
 extern std::string yyfilename;

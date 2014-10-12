@@ -2,13 +2,23 @@
 # Compiler Options ####################
 #######################################
 CPP=clang++
-CPPFLAGS=-c -g -std=c++11 -x c++ -Wno-deprecated-register -I /usr/local/include
-#CPPFLAGS=-c -g -std=gnu++98 -x c++ -I /usr/local/include
+CPPFLAGS=-c -g -std=c++98 -x c++ 
 LDFLAGS=
 LEX=flex
-YACC=/usr/local/Cellar/bison/3.0.2/bin/bison
-#YACC=bison
+YACC=bison
 RM=-rm -f
+
+#######################################
+# Operating System Specific Options ###
+#######################################
+# Modified from StackOverflow answer:
+# http://stackoverflow.com/a/12099167/2592570
+UNAME_S := $(shell uname -s)
+ifeq ($(UNAME_S),Darwin)
+	CPPFLAGS += -Wno-deprecated-register
+	YACC=/usr/local/Cellar/bison/3.0.2/bin/bison
+endif
+
 #######################################
 # Filename configurations #############
 #######################################
