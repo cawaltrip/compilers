@@ -44,28 +44,10 @@
 /*
  * TODO:
  *
- * Resolve matters regarding type names and the need to return different 
- *	terminal symbol codes for "identifier" regular expressions, 
- * 	depending on syntactic context.
  * For every production rule in the grammar:
  *	if the production rule is not legal in 120++, add 
  *		a semantic_error("C++ operation not supported") and 
  *		set $$ = NULL.
- *	if the production rule is legal in 120++ and the right hand side 
- *		has > 1 children, add a semantic action to construct a 
- *		construct a tree node and assign $$ to point at it
- *	if the production rule is legal in 120++ and the right hand side 
- *		has 0 or 1 children, add a semantic action to set $$ to
- *		NULL (0 children) or to the child (if there is 1 child) 
- * Place a pointer to your token in a yylval field on each call 
- *	to yylex(), and ensure that those tokens get inserted as 
- *	leaves into your syntax tree.
- * If the parse succeeds, assign the root of the tree to a global 
- *	variable from the semantic action associated with your start symbol.
- * Revise the main() procedure from HW#1 to call yyparse() and 
- *	use its return value and/or global variables to ascertain 
- *	whether the parse succeeded.
- * If the parse succeeded, traverse/print your syntax tree as described below.
  */
 
 
@@ -93,6 +75,7 @@ struct TreeNode *root;
 struct TreeNode* alloc_tree(const struct yyrule y, int num_kids, ...);
 void add_typename(struct TreeNode *t, int cat);
 
+static void unsupported_feature(std::string str = "");
 static void yyerror(std::string s);
 %}
 
@@ -129,12 +112,12 @@ typedef_name:
 	;
 
 namespace_name:
-	original_namespace_name  { $$ = $1; }
+	original_namespace_name  { $$ = NULL; unsupported_feature(); }
 	;
 
 original_namespace_name:
 	/* identifier */
-	NAMESPACE_NAME { $$ = $1; }
+	NAMESPACE_NAME { $$ = NULL; unsupported_feature(); }
 	;
 
 class_name:
@@ -145,7 +128,7 @@ class_name:
 
 enum_name:
 	/* identifier */
-	ENUM_NAME { $$ = $1; }
+	ENUM_NAME { $$ = NULL; unsupported_feature(); }
 	;
 
 template_name:
@@ -238,12 +221,12 @@ postfix_expression:
 	primary_expression { $$ = $1; }
 	| postfix_expression '[' expression ']' { $$ = alloc_tree(POSTFIX_EXPR_2, 4, $1, $2, $3, $4); }
 	| postfix_expression '(' expression_list_opt ')' { $$ = alloc_tree(POSTFIX_EXPR_3, 4, $1, $2, $3, $4); }
-	| postfix_expression '.' TEMPLATE COLONCOLON id_expression { $$ = alloc_tree(POSTFIX_EXPR_4, 5, $1, $2, $3, $4, $5); }
-	| postfix_expression '.' TEMPLATE id_expression { $$ = alloc_tree(POSTFIX_EXPR_5, 4, $1, $2, $3, $4); }
+	| postfix_expression '.' TEMPLATE COLONCOLON id_expression { $$ = NULL; unsupported_feature(); }
+	| postfix_expression '.' TEMPLATE id_expression { $$ = NULL; unsupported_feature(); }
 	| postfix_expression '.' COLONCOLON id_expression { $$ = alloc_tree(POSTFIX_EXPR_6, 4, $1, $2, $3, $4); }
 	| postfix_expression '.' id_expression { $$ = alloc_tree(POSTFIX_EXPR_7, 3, $1, $2, $3); }
-	| postfix_expression ARROW TEMPLATE COLONCOLON id_expression { $$ = alloc_tree(POSTFIX_EXPR_8, 5, $1, $2, $3, $4, $5); }
-	| postfix_expression ARROW TEMPLATE id_expression { $$ = alloc_tree(POSTFIX_EXPR_9, 4, $1, $2, $3, $4); }
+	| postfix_expression ARROW TEMPLATE COLONCOLON id_expression { $$ = NULL; unsupported_feature(); }
+	| postfix_expression ARROW TEMPLATE id_expression { $$ = NULL; unsupported_feature(); }
 	| postfix_expression ARROW COLONCOLON id_expression { $$ = alloc_tree(POSTFIX_EXPR_10, 4, $1, $2, $3, $4); }
 	| postfix_expression ARROW id_expression { $$ = alloc_tree(POSTFIX_EXPR_11, 3, $1, $2, $3); }
 	| postfix_expression PLUSPLUS { $$ = alloc_tree(POSTFIX_EXPR_12, 2, $1, $2); }
@@ -432,7 +415,7 @@ statement:
 	| iteration_statement { $$ = $1; }
 	| jump_statement { $$ = $1; }
 	| declaration_statement { $$ = $1; }
-	| try_block { $$ = $1; }
+	| try_block { $$ = NULL; unsupported_feature(); }
 	;
 
 labeled_statement:
@@ -466,8 +449,8 @@ condition:
 	;
 
 iteration_statement:
-	WHILE '(' condition ')' statement { $$ = alloc_tree(ITER_STMT_1, 5, $1, $2, $3, $4, $5); }
-	| DO statement WHILE '(' expression ')' ';' { $$ = alloc_tree(ITER_STMT_2, 7, $1, $2, $3, $4, $5, $6, $7); }
+	WHILE '(' condition ')' statement { $$ = NULL; unsupported_feature(); }
+	| DO statement WHILE '(' expression ')' ';' { $$ = NULL; unsupported_feature(); }
 	| FOR '(' for_init_statement condition_opt ';' expression_opt ')' statement { $$ = alloc_tree(ITER_STMT_3, 8, $1, $2, $3, $4, $5, $6, $7, $8); }
 	;
 
@@ -480,7 +463,7 @@ jump_statement:
 	BREAK ';' { $$ = alloc_tree(JUMP_STMT_1, 2, $1, $2); }
 	| CONTINUE ';' { $$ = alloc_tree(JUMP_STMT_2, 2, $1, $2); }
 	| RETURN expression_opt ';' { $$ = alloc_tree(JUMP_STMT_3, 3, $1, $2, $3); }
-	| GOTO identifier ';' { $$ = alloc_tree(JUMP_STMT_4, 3, $1, $2, $3); }
+	| GOTO identifier ';' { $$ = NULL; unsupported_feature(); }
 	;
 
 declaration_statement:
@@ -533,17 +516,17 @@ decl_specifier_seq:
 	;
 
 storage_class_specifier:
-	AUTO { $$ = $1; }
-	| REGISTER { $$ = $1; }
+	AUTO { $$ = NULL; unsupported_feature(); }
+	| REGISTER { $$ = NULL; unsupported_feature(); }
 	| STATIC { $$ = $1; }
-	| EXTERN { $$ = $1; }
-	| MUTABLE { $$ = $1; }
+	| EXTERN { $$ = NULL; unsupported_feature(); }
+	| MUTABLE { $$ = NULL; unsupported_feature(); }
 	;
 
 function_specifier:
-	INLINE { $$ = $1; }
-	| VIRTUAL { $$ = $1; }
-	| EXPLICIT { $$ = $1; }
+	INLINE { $$ = NULL; unsupported_feature(); }
+	| VIRTUAL { $$ = NULL; unsupported_feature(); }
+	| EXPLICIT { $$ = NULL; unsupported_feature(); }
 	;
 
 type_specifier:
@@ -573,90 +556,73 @@ simple_type_specifier:
 
 type_name:
 	class_name { $$ = $1; }
-	| enum_name { $$ = $1; }
+	| enum_name { $$ = NULL; unsupported_feature(); }
 	| typedef_name { $$ = $1; }
 	;
 
 elaborated_type_specifier:
 	  class_key COLONCOLON nested_name_specifier identifier { $$ = alloc_tree(ELAB_TYPE_SPEC_1, 4, $1, $2, $3, $4); }
 	| class_key COLONCOLON identifier { $$ = alloc_tree(ELAB_TYPE_SPEC_2, 3, $1, $2, $3); }
-	| ENUM COLONCOLON nested_name_specifier identifier { $$ = alloc_tree(ELAB_TYPE_SPEC_3, 4, $1, $2, $3, $4); }
-	| ENUM COLONCOLON identifier { $$ = alloc_tree(ELAB_TYPE_SPEC_4, 3, $1, $2, $3); }
-	| ENUM nested_name_specifier identifier { $$ = alloc_tree(ELAB_TYPE_SPEC_5, 3, $1, $2, $3); }
+	| ENUM COLONCOLON nested_name_specifier identifier { $$ = NULL; unsupported_feature(); }
+	| ENUM COLONCOLON identifier { $$ = NULL; unsupported_feature(); }
+	| ENUM nested_name_specifier identifier { $$ = NULL; unsupported_feature(); }
 	| TYPENAME COLONCOLON_opt nested_name_specifier identifier { $$ = alloc_tree(ELAB_TYPE_SPEC_6, 4, $1, $2, $3, $4); }
-	| TYPENAME COLONCOLON_opt nested_name_specifier identifier '<' template_argument_list '>' { $$ = alloc_tree(ELAB_TYPE_SPEC_7, 7, $1, $2, $3, $4, $5, $6, $7); }
+	| TYPENAME COLONCOLON_opt nested_name_specifier identifier '<' template_argument_list '>' { $$ = NULL; unsupported_feature(); }
 	;
 
 enum_specifier:
-	ENUM identifier '{' enumerator_list_opt '}' { $$ = alloc_tree(ENUM_TYPE_SPEC_1, 5, $1, $2, $3, $4, $5); add_typename($2, ENUM_NAME); }
+	ENUM identifier '{' enumerator_list_opt '}' { $$ = NULL; unsupported_feature(); }
 	;
 
 enumerator_list:
 	enumerator_definition { $$ = $1; }
-	| enumerator_list ',' enumerator_definition { $$ = alloc_tree(ENUM_LIST_1, 3, $1, $2, $3); }
+	| enumerator_list ',' enumerator_definition { $$ = NULL; unsupported_feature(); }
 	;
 
 enumerator_definition:
-	enumerator { $$ = $1; }
-	| enumerator '=' constant_expression { $$ = alloc_tree(ENUM_DEFINITION_1, 3, $1, $2, $3); }
+	enumerator { $$ = NULL; unsupported_feature(); }
+	| enumerator '=' constant_expression { $$ = NULL; unsupported_feature(); }
 	;
 
 enumerator:
-	identifier { $$ = $1; }
+	identifier { $$ = NULL; unsupported_feature(); }
 	;
-
-/*
-namespace_name:
-	original_namespace_name { $$ = $1; }
-	| namespace_alias { $$ = $1; }
-	;
-
-original_namespace_name:
-	identifier { $$ = $1; }
-	;
-*/
 
 namespace_definition:
-	named_namespace_definition { $$ = $1; }
-	| unnamed_namespace_definition { $$ = $1; }
+	named_namespace_definition { $$ = NULL; unsupported_feature(); }
+	| unnamed_namespace_definition { $$ = NULL; unsupported_feature(); }
 	;
 
 named_namespace_definition:
-	original_namespace_definition { $$ = $1; }
-	| extension_namespace_definition { $$ = $1; }
+	original_namespace_definition { $$ = NULL; unsupported_feature(); }
+	| extension_namespace_definition { $$ = NULL; unsupported_feature(); }
 	;
 
 original_namespace_definition:
-	NAMESPACE identifier '{' namespace_body '}' { $$ = alloc_tree(ORIG_NAMESPACE_DEF_1, 5, $1, $2, $3, $4, $5); add_typename($2, NAMESPACE_NAME); }
+	NAMESPACE identifier '{' namespace_body '}' { $$ = NULL; unsupported_feature(); }
 	;
 
 extension_namespace_definition:
-	NAMESPACE original_namespace_name '{' namespace_body '}' { $$ = alloc_tree(EXT_NAMESPACE_DEF_1, 5, $1, $2, $3, $4, $5); }
+	NAMESPACE original_namespace_name '{' namespace_body '}' { $$ = NULL; unsupported_feature(); }
 	;
 
 unnamed_namespace_definition:
-	NAMESPACE '{' namespace_body '}' { $$ = alloc_tree(UNNAMED_NAMESPACE_DEF_1, 4, $1, $2, $3, $4); }
+	NAMESPACE '{' namespace_body '}' { $$ = NULL; unsupported_feature(); }
 	;
 
 namespace_body:
-	declaration_seq_opt { $$ = $1; }
+	declaration_seq_opt { $$ = NULL; unsupported_feature(); }
 	;
-
-/*
-namespace_alias:
-	identifier { $$ = $1; }
-	;
-*/
 
 namespace_alias_definition:
-	NAMESPACE identifier '=' qualified_namespace_specifier ';' { $$ = alloc_tree(NAMESPACE_ALIAS_DEF_1, 5, $1, $2, $3, $4, $5); }
+	NAMESPACE identifier '=' qualified_namespace_specifier ';' { $$ = NULL; unsupported_feature(); }
 	;
 
 qualified_namespace_specifier:
-	  COLONCOLON nested_name_specifier namespace_name { $$ = alloc_tree(QUAL_NAMESPACE_SPEC_1, 3, $1, $2, $3); }
-	| COLONCOLON namespace_name { $$ = alloc_tree(QUAL_NAMESPACE_SPEC_2, 2, $1, $2); }
-	| nested_name_specifier namespace_name { $$ = alloc_tree(QUAL_NAMESPACE_SPEC_3, 2, $1, $2); }
-	| namespace_name { $$ = $1; }
+	  COLONCOLON nested_name_specifier namespace_name { $$ = NULL; unsupported_feature(); }
+	| COLONCOLON namespace_name { $$ = NULL; unsupported_feature(); }
+	| nested_name_specifier namespace_name { $$ = NULL; unsupported_feature(); }
+	| namespace_name { $$ = NULL; unsupported_feature(); }
 	;
 
 using_declaration:
@@ -668,19 +634,19 @@ using_declaration:
 	;
 
 using_directive:
-	USING NAMESPACE COLONCOLON nested_name_specifier namespace_name ';' { $$ = alloc_tree(USING_DIRECTIVE_1, 6, $1, $2, $3, $4, $5, $6); }
-	| USING NAMESPACE COLONCOLON namespace_name ';' { $$ = alloc_tree(USING_DIRECTIVE_2, 5, $1, $2, $3, $4, $5); }
-	| USING NAMESPACE nested_name_specifier namespace_name ';' { $$ = alloc_tree(USING_DIRECTIVE_3, 5, $1, $2, $3, $4, $5); }
-	| USING NAMESPACE namespace_name ';' { $$ = alloc_tree(USING_DIRECTIVE_4, 4, $1, $2, $3, $4); }
+	USING NAMESPACE COLONCOLON nested_name_specifier namespace_name ';' { $$ = NULL; unsupported_feature(); }
+	| USING NAMESPACE COLONCOLON namespace_name ';' { $$ = NULL; unsupported_feature(); }
+	| USING NAMESPACE nested_name_specifier namespace_name ';' { $$ = NULL; unsupported_feature(); }
+	| USING NAMESPACE namespace_name ';' { $$ = NULL; unsupported_feature(); }
 	;
 
 asm_definition:
-	ASM '(' string_literal ')' ';' { $$ = alloc_tree(ASM_DEF_1, 5, $1, $2, $3, $4, $5); }
+	ASM '(' string_literal ')' ';' { $$ = NULL; unsupported_feature(); }
 	;
 
 linkage_specification:
-	EXTERN string_literal '{' declaration_seq_opt '}' { $$ = alloc_tree(LINKAGE_SPEC_1, 5, $1, $2, $3, $4, $5); }
-	| EXTERN string_literal declaration { $$ = alloc_tree(LINKAGE_SPEC_2, 3, $1, $2, $3); }
+	EXTERN string_literal '{' declaration_seq_opt '}' { $$ = NULL; unsupported_feature(); }
+	| EXTERN string_literal declaration { $$ = NULL; unsupported_feature(); }
 	;
 
 /*----------------------------------------------------------------------
@@ -728,7 +694,7 @@ cv_qualifier_seq:
 
 cv_qualifier:
 	CONST { $$ = $1; }
-	| VOLATILE { $$ = $1; }
+	| VOLATILE { $$ = NULL; unsupported_feature(); }
 	;
 
 declarator_id:
@@ -761,11 +727,11 @@ direct_abstract_declarator:
 	;
 
 parameter_declaration_clause:
-	  parameter_declaration_list ELLIPSIS { $$ = alloc_tree(PARAM_DECL_CLAUSE_1, 2, $1, $2); }
+	  parameter_declaration_list ELLIPSIS { $$ = NULL; unsupported_feature(); }
 	| parameter_declaration_list { $$ = $1; }
-	| ELLIPSIS { $$ = $1; }
+	| ELLIPSIS { $$ = NULL; unsupported_feature(); }
 	| %empty { $$ = NULL; } /* epsilon */
-	| parameter_declaration_list ',' ELLIPSIS { $$ = alloc_tree(PARAM_DECL_CLAUSE_5, 3, $1, $2, $3); }
+	| parameter_declaration_list ',' ELLIPSIS { $$ = NULL; unsupported_feature(); }
 	;
 
 parameter_declaration_list:
@@ -825,7 +791,7 @@ class_head:
 class_key:
 	CLASS { $$ = $1; }
 	| STRUCT { $$ = $1; }
-	| UNION { $$ = $1; }
+	| UNION { $$ = $1; } /* TODO: Find out if we support unions. */
 	;
 
 member_specification:
@@ -887,10 +853,10 @@ base_specifier:
 	| COLONCOLON class_name { $$ = alloc_tree(BASE_SPECIFIER_2, 2, $1, $2); }
 	| nested_name_specifier class_name { $$ = alloc_tree(BASE_SPECIFIER_3, 2, $1, $2); }
 	| class_name { $$ = $1; }
-	| VIRTUAL access_specifier COLONCOLON nested_name_specifier_opt class_name { $$ = alloc_tree(BASE_SPECIFIER_5, 5, $1, $2, $3, $4, $5); }
-	| VIRTUAL access_specifier nested_name_specifier_opt class_name { $$ = alloc_tree(BASE_SPECIFIER_6, 4, $1, $2, $3, $4); }
-	| VIRTUAL COLONCOLON nested_name_specifier_opt class_name { $$ = alloc_tree(BASE_SPECIFIER_7, 4, $1, $2, $3, $4); }
-	| VIRTUAL nested_name_specifier_opt class_name { $$ = alloc_tree(BASE_SPECIFIER_8, 3, $1, $2, $3); }
+	| VIRTUAL access_specifier COLONCOLON nested_name_specifier_opt class_name { $$ = NULL; unsupported_feature(); }
+	| VIRTUAL access_specifier nested_name_specifier_opt class_name { $$ = NULL; unsupported_feature(); }
+	| VIRTUAL COLONCOLON nested_name_specifier_opt class_name { $$ = NULL; unsupported_feature(); }
+	| VIRTUAL nested_name_specifier_opt class_name { $$ = NULL; unsupported_feature(); }
 	| access_specifier VIRTUAL COLONCOLON nested_name_specifier_opt class_name { $$ = alloc_tree(BASE_SPECIFIER_9, 5, $1, $2, $3, $4, $5); }
 	| access_specifier VIRTUAL nested_name_specifier_opt class_name { $$ = alloc_tree(BASE_SPECIFIER_10, 4, $1, $2, $3, $4); }
 	| access_specifier COLONCOLON nested_name_specifier_opt class_name { $$ = alloc_tree(BASE_SPECIFIER_11, 4, $1, $2, $3, $4); }
@@ -899,7 +865,7 @@ base_specifier:
 
 access_specifier:
 	PRIVATE { $$ = $1; }
-	| PROTECTED { $$ = $1; }
+	| PROTECTED { $$ = NULL; unsupported_feature(); }
 	| PUBLIC { $$ = $1; }
 	;
 
@@ -998,17 +964,17 @@ operator:
  *----------------------------------------------------------------------*/
 
 template_declaration:
-	EXPORT_opt TEMPLATE '<' template_parameter_list '>' declaration { $$ = alloc_tree(TEMPLATE_DECL_1, 6, $1, $2, $3, $4, $5, $6); }
+	EXPORT_opt TEMPLATE '<' template_parameter_list '>' declaration { $$ = NULL; unsupported_feature(); }
 	;
 
 template_parameter_list:
-	template_parameter { $$ = $1; }
-	| template_parameter_list ',' template_parameter { $$ = alloc_tree(TEMPLATE_PARAM_LIST_2, 3, $1, $2, $3); }
+	template_parameter { $$ = NULL; unsupported_feature(); }
+	| template_parameter_list ',' template_parameter { $$ = NULL; unsupported_feature(); }
 	;
 
 template_parameter:
-	type_parameter { $$ = $1; }
-	| parameter_declaration { $$ = $1; }
+	type_parameter { $$ = NULL; unsupported_feature(); }
+	| parameter_declaration { $$ = NULL; unsupported_feature(); }
 	;
 
 type_parameter:
@@ -1016,31 +982,31 @@ type_parameter:
 	| CLASS identifier '=' type_id { $$ = alloc_tree(TYPE_PARAM_2, 4, $1, $2, $3, $4); }
 	| TYPENAME identifier { $$ = alloc_tree(TYPE_PARAM_3, 2, $1, $2); }
 	| TYPENAME identifier '=' type_id { $$ = alloc_tree(TYPE_PARAM_4, 4, $1, $2, $3, $4); }
-	| TEMPLATE '<' template_parameter_list '>' CLASS identifier { $$ = alloc_tree(TYPE_PARAM_5, 6, $1, $2, $3, $4, $5, $6); }
-	| TEMPLATE '<' template_parameter_list '>' CLASS identifier '=' template_name { $$ = alloc_tree(TYPE_PARAM_6, 8, $1, $2, $3, $4, $5, $6, $7, $8); }
+	| TEMPLATE '<' template_parameter_list '>' CLASS identifier { $$ = NULL; unsupported_feature(); }
+	| TEMPLATE '<' template_parameter_list '>' CLASS identifier '=' template_name { $$ = NULL; unsupported_feature(); }
 	;
 
 template_id:
-	template_name '<' template_argument_list '>' { $$ = alloc_tree(TEMPLATE_ID_1, 4, $1, $2, $3, $4); }
+	template_name '<' template_argument_list '>' { $$ = NULL; unsupported_feature(); }
 	;
 
 template_argument_list:
-	template_argument { $$ = $1; }
-	| template_argument_list ',' template_argument { $$ = alloc_tree(TEMPLATE_ARG_LIST_2, 3, $1, $2, $3); }
+	template_argument { $$ = NULL; unsupported_feature(); }
+	| template_argument_list ',' template_argument { $$ = NULL; unsupported_feature(); }
 	;
 
 template_argument:
-	assignment_expression { $$ = $1; }
-	| type_id { $$ = $1; }
-	| template_name { $$ = $1; }
+	assignment_expression { $$ = NULL; unsupported_feature(); }
+	| type_id { $$ = NULL; unsupported_feature(); }
+	| template_name { $$ = NULL; unsupported_feature(); }
 	;
 
 explicit_instantiation:
-	TEMPLATE declaration { $$ = alloc_tree(EXPLICIT_INSTANTIATION_1, 2, $1, $2); }
+	TEMPLATE declaration { $$ = NULL; unsupported_feature(); }
 	;
 
 explicit_specialization:
-	TEMPLATE '<' '>' declaration { $$ = alloc_tree(EXPLICIT_SPECIALIZATION_1, 4, $1, $2, $3, $4); }
+	TEMPLATE '<' '>' declaration { $$ = NULL; unsupported_feature(); }
 	;
 
 /*----------------------------------------------------------------------
@@ -1048,39 +1014,39 @@ explicit_specialization:
  *----------------------------------------------------------------------*/
 
 try_block:
-	TRY compound_statement handler_seq { $$ = alloc_tree(TRY_BLOCK_1, 3, $1, $2, $3); }
+	TRY compound_statement handler_seq { $$ = NULL; unsupported_feature(); }
 	;
 
 function_try_block:
-	TRY ctor_initializer_opt function_body handler_seq { $$ = alloc_tree(FUNC_TRY_BLOCK_1, 4, $1, $2, $3, $4); }
+	TRY ctor_initializer_opt function_body handler_seq { $$ = NULL; unsupported_feature(); }
 	;
 
 handler_seq:
-	handler handler_seq_opt { $$ = alloc_tree(HANDLER_SEQ_1, 2, $1, $2); }
+	handler handler_seq_opt { $$ = NULL; unsupported_feature(); }
 	;
 
 handler:
-	CATCH '(' exception_declaration ')' compound_statement { $$ = alloc_tree(HANDLER_1, 5, $1, $2, $3, $4, $5); }
+	CATCH '(' exception_declaration ')' compound_statement { $$ = NULL; unsupported_feature(); }
 	;
 
 exception_declaration:
-	type_specifier_seq declarator { $$ = alloc_tree(EXCEPTION_DECL_1, 2, $1, $2); }
-	| type_specifier_seq abstract_declarator { $$ = alloc_tree(EXCEPTION_DECL_2, 2, $1, $2); }
-	| type_specifier_seq { $$ = $1; }
-	| ELLIPSIS { $$ = $1; }
+	type_specifier_seq declarator { $$ = NULL; unsupported_feature(); }
+	| type_specifier_seq abstract_declarator { $$ = NULL; unsupported_feature(); }
+	| type_specifier_seq { $$ = NULL; unsupported_feature(); }
+	| ELLIPSIS { $$ = NULL; unsupported_feature(); }
 	;
 
 throw_expression:
-	THROW assignment_expression_opt { $$ = alloc_tree(THROW_EXPR_1, 2, $1, $2); }
+	THROW assignment_expression_opt { $$ = NULL; unsupported_feature(); }
 	;
 
 exception_specification:
-	THROW '(' type_id_list_opt ')' { $$ = alloc_tree(EXCEPTION_SPEC_1, 4, $1, $2, $3, $4); }
+	THROW '(' type_id_list_opt ')' { $$ = NULL; unsupported_feature(); }
 	;
 
 type_id_list:
 	type_id { $$ = $1; }
-	| type_id_list ',' type_id { $$ = alloc_tree(TYPE_ID_LIST_2, 3, $1, $2, $3); }
+	| type_id_list ',' type_id { $$ = NULL; unsupported_feature(); }
 	;
 
 /*----------------------------------------------------------------------
@@ -1243,6 +1209,19 @@ struct TreeNode* alloc_tree(struct yyrule y, int num_kids, ...) {
 	}
 	va_end(vakid);
 	return t;
+}
+
+static void unsupported_feature(std::string str) {
+	if(str.empty())
+		str = "C++ operation not supported in 120++";
+	std::stringstream s;
+	s << yyfilename << ":" << yylineno << ": ";
+	s << str << " before '" << yylval->t->get_text() << "' token";
+	s << std::endl;
+
+	std::cerr << s.str();
+	exit(3); /* return 3 is unsupported feature detected */
+
 }
 
 static void yyerror(std::string str) {
