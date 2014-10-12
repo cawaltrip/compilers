@@ -80,7 +80,7 @@
 
 #include "treenode.hh"
 #include "hashmap.hh"
-#include "120rules.h"
+#include "120rules.hh"
 
 extern std::list<Token *> hash_table;
 extern int yylineno;

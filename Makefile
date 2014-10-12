@@ -39,11 +39,11 @@ lex.yy.c: clex.l 120gram.tab.h
 	$(CPP) $(CPPFLAGS) 120gram.tab.c
 
 120gram.tab.c 120gram.tab.h: 120gram.y
-	$(YACC) -dtv -Wall 120gram.y
+	$(YACC) -dt -Wall 120gram.y
 
 # Remove created files
 clean:
 	$(RM) *.o *.a
-	$(RM) 120gram.tab.c 120gram.tab.h 
-	$(RM) lex.yy.c clex.h lex.yy.h
-	$(RM) $(BIN) $(OBJECTS)
+	$(RM) 120gram.tab.c 120gram.tab.h 120gram.output # bison
+	$(RM) lex.yy.c clex.h lex.yy.h # flex
+	$(RM) $(BIN) # 120++
