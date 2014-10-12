@@ -1,55 +1,45 @@
-#include <list>
+#include <deque>
 #include <string>
 #include <iostream>
 #include <cstdlib>
 #include <cstring>
-#include "token.hh"
 #include "hashmap.hh"
 
-std::list<Token *> hash_table[HASHTABLE_SIZE];
-
-int ht_hash(const char *str) {
+int HashTable::hash(std::string name) {
 	/* 
-	 * Modified from sdbm hash found at
-	 * http://www.cse.yorku.ca/~oz/hash.html
+	 * This code is based on a post from StackOverflow:
+	 * http://stackoverflow.com/a/107657/2592570
 	 */
-	 char *tmp = strdup(str);
-	 int hash = 0;
-	 int c;
-
-	 while (c = *str++)
-	 	hash = c + (hash << 6) + (hash << 16) - hash;
-
-	 free(tmp);
-	 /* Because I'm not good at bit-shifting, mod by table size */
-	 return hash % HASHTABLE_SIZE; 
-}
-
-bool ht_insert(Token *t, int cat) {
-	//std::cout << "inserting in hash table " << t->get_text() << std::endl;
-	int in_table = ht_lookup(t->get_text().c_str());
-	if(!in_table) {
-		//std::cout << "was not in table" << std::endl;
-		int h = ht_hash(t->get_text().c_str());
-		hash_table[h].push_back(t);
-		return true;
-	} else {
-		return false;
+	unsigned long hash = 0;
+	std::string::iterator i = name.begin();
+	while(i != name.end()) {
+		hash = hash * 101 + i++;
 	}
+	return hash % this->HASHTABLE_SIZE;
 }
 
-int ht_lookup(const char *str) {
-	//std::cout << "looking up in hash table " << str << std::endl;
-	std::list<Token *>::iterator hash_iter;
-	int h = ht_hash(str);
-
-	if(!hash_table[h].empty()) {
-		hash_iter = hash_table[h].begin();
-		for(hash_iter; hash_iter != hash_table[h].end(); ++hash_iter) {
-			if(!(*hash_iter)->get_text().compare(str)) {
-				return (*hash_iter)->get_category();
-			}
+bool HashTable::insert(std::string name, int category) {
+	/* 
+	 * If the item is not in the lookup table already then add it.
+	 * Return true if insert is successful and false otherwise.
+	 */
+	if(!this->lookup(name)) {
+		int h = this->hash(name);
+		this->bucket[h].insert(new HashBucket(name, category));
+		if(this->lookup(name)) { /* could check error code */
+			return true;
 		}
 	}
-	return 0;
+	return false;
+}
+int HashTable::lookup(std::string name) {
+	int h = this->hash(name);
+	int category = 0;
+	std::deque<HashBucket> b = this->bucket[h];
+	std::deque<HashBucket>::iterator i;
+	for(i = b.begin(); i != b.end(); ++i) {
+		if(!name.compare(i->name))
+			category = i->category();
+	}
+	return category;
 }

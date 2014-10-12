@@ -10,6 +10,9 @@
 *gram.tab.*
 *.output
 
+# OSX Files
+.DS_Store
+
 # Object files
 *.o
 *.ko
