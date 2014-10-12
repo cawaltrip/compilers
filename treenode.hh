@@ -2,14 +2,7 @@
 #define _TREENODE_HH_
 
 #include <string>
-#include <boost/functional/hash/hash.hpp>
-#include <boost/unordered_map.hpp>
 #include "token.hh"
-
-
-/* Typename lookup table */
-typedef boost::unordered_map<std::pair<std::string,int>,std::string> type_map;
-typedef type_map::const_iterator map_iter;
 
 struct TreeNode {
 	int prod_num;
