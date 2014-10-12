@@ -2,12 +2,12 @@
 # Compiler Options ####################
 #######################################
 CPP=clang++
-CPPFLAGS=-c -g -std=gnu++98 -x c++ -Wno-deprecated-register -I /usr/local/include
+CPPFLAGS=-c -g -std=c++11 -x c++ -Wno-deprecated-register -I /usr/local/include
 #CPPFLAGS=-c -g -std=gnu++98 -x c++ -I /usr/local/include
 LDFLAGS=
 LEX=flex
-#YACC=/usr/local/Cellar/bison/3.0.2/bin/bison
-YACC=bison
+YACC=/usr/local/Cellar/bison/3.0.2/bin/bison
+#YACC=bison
 RM=-rm -f
 #######################################
 # Filename configurations #############
@@ -39,7 +39,7 @@ lex.yy.c: clex.l 120gram.tab.h
 	$(CPP) $(CPPFLAGS) 120gram.tab.c
 
 120gram.tab.c 120gram.tab.h: 120gram.y
-	$(YACC) -dtv -Wall -Wno-empty-rule 120gram.y
+	$(YACC) -dtv -Wall 120gram.y
 
 # Remove created files
 clean:

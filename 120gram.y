@@ -88,7 +88,7 @@ extern int yylex();
 extern std::string yyfilename;
 extern std::string yytext;
 
-type_map map;
+HashTable ident_table;
 
 struct TreeNode *root;
 struct TreeNode* alloc_tree(const struct yyrule y, int num_kids, ...);
@@ -126,7 +126,7 @@ static void yyerror(std::string s);
 
 typedef_name:
 	/* identifier */
-	TYPEDEF_NAME  { $$ = $1; add_typename($$, TYPEDEF_NAME); }
+	TYPEDEF_NAME  { $$ = $1; }
 	;
 
 namespace_name:
@@ -135,23 +135,23 @@ namespace_name:
 
 original_namespace_name:
 	/* identifier */
-	NAMESPACE_NAME { $$ = $1; add_typename($$, NAMESPACE_NAME); }
+	NAMESPACE_NAME { $$ = $1; }
 	;
 
 class_name:
 	/* identifier */
-	CLASS_NAME { $$ = $1; add_typename($$, CLASS_NAME); }
+	CLASS_NAME { $$ = $1; }
 	| template_id { $$ = $1; }
 	;
 
 enum_name:
 	/* identifier */
-	ENUM_NAME { $$ = $1; add_typename($$, ENUM_NAME); }
+	ENUM_NAME { $$ = $1; }
 	;
 
 template_name:
 	/* identifier */
-	TEMPLATE_NAME { $$ = $1; add_typename($$, TEMPLATE_NAME); }
+	TEMPLATE_NAME { $$ = $1; }
 	;
 
 /*----------------------------------------------------------------------
@@ -588,14 +588,8 @@ elaborated_type_specifier:
 	| TYPENAME COLONCOLON_opt nested_name_specifier identifier '<' template_argument_list '>' { $$ = alloc_tree(ELAB_TYPE_SPEC_7, 7, $1, $2, $3, $4, $5, $6, $7); }
 	;
 
-/*
-enum_name:
-	identifier { $$ = $1; }
-	;
-*/
-
 enum_specifier:
-	ENUM identifier '{' enumerator_list_opt '}' { $$ = alloc_tree(ENUM_TYPE_SPEC_1, 5, $1, $2, $3, $4, $5); }
+	ENUM identifier '{' enumerator_list_opt '}' { $$ = alloc_tree(ENUM_TYPE_SPEC_1, 5, $1, $2, $3, $4, $5); add_typename($2, ENUM_NAME); }
 	;
 
 enumerator_list:
@@ -634,7 +628,7 @@ named_namespace_definition:
 	;
 
 original_namespace_definition:
-	NAMESPACE identifier '{' namespace_body '}' { $$ = alloc_tree(ORIG_NAMESPACE_DEF_1, 5, $1, $2, $3, $4, $5); }
+	NAMESPACE identifier '{' namespace_body '}' { $$ = alloc_tree(ORIG_NAMESPACE_DEF_1, 5, $1, $2, $3, $4, $5); add_typename($2, NAMESPACE_NAME); }
 	;
 
 extension_namespace_definition:
@@ -771,7 +765,7 @@ parameter_declaration_clause:
 	  parameter_declaration_list ELLIPSIS { $$ = alloc_tree(PARAM_DECL_CLAUSE_1, 2, $1, $2); }
 	| parameter_declaration_list { $$ = $1; }
 	| ELLIPSIS { $$ = $1; }
-	| { $$ = NULL; } /* epsilon */
+	| %empty { $$ = NULL; } /* epsilon */
 	| parameter_declaration_list ',' ELLIPSIS { $$ = alloc_tree(PARAM_DECL_CLAUSE_5, 3, $1, $2, $3); }
 	;
 
@@ -823,10 +817,10 @@ class_specifier:
 	;
 
 class_head:
-	  class_key identifier { $$ = alloc_tree(CLASS_HEAD_1, 2, $1, $2); }
-	| class_key identifier base_clause { $$ = alloc_tree(CLASS_HEAD_2, 3, $1, $2, $3); }
-	| class_key nested_name_specifier identifier { $$ = alloc_tree(CLASS_HEAD_3, 3, $1, $2, $3); }
-	| class_key nested_name_specifier identifier base_clause { $$ = alloc_tree(CLASS_HEAD_4, 4, $1, $2, $3, $4); }
+	  class_key identifier { $$ = alloc_tree(CLASS_HEAD_1, 2, $1, $2); add_typename($2, CLASS_NAME); }
+	| class_key identifier base_clause { $$ = alloc_tree(CLASS_HEAD_2, 3, $1, $2, $3); add_typename($2, CLASS_NAME); }
+	| class_key nested_name_specifier identifier { $$ = alloc_tree(CLASS_HEAD_3, 3, $1, $2, $3); add_typename($3, CLASS_NAME);  }
+	| class_key nested_name_specifier identifier base_clause { $$ = alloc_tree(CLASS_HEAD_4, 4, $1, $2, $3, $4); add_typename($3, CLASS_NAME); }
 	;
 
 class_key:
@@ -1095,137 +1089,136 @@ type_id_list:
  *----------------------------------------------------------------------*/
 
 declaration_seq_opt:
-	{ $$ = NULL; }/* epsilon */
+	%empty { $$ = NULL; }/* epsilon */
 	| declaration_seq { $$ = $1; }
 	;
 
 nested_name_specifier_opt:
-	{ $$ = NULL; }/* epsilon */
+	%empty { $$ = NULL; }/* epsilon */
 	| nested_name_specifier { $$ = $1; }
 	;
 
 expression_list_opt:
-	{ $$ = NULL; }/* epsilon */
+	%empty { $$ = NULL; }/* epsilon */
 	| expression_list { $$ = $1; }
 	;
 
 COLONCOLON_opt:
-	{ $$ = NULL; }/* epsilon */
+	%empty { $$ = NULL; }/* epsilon */
 	| COLONCOLON { $$ = $1; }
 	;
 
 new_placement_opt:
-	{ $$ = NULL; }/* epsilon */
+	%empty { $$ = NULL; }/* epsilon */
 	| new_placement { $$ = $1; }
 	;
 
 new_initializer_opt:
-	{ $$ = NULL; }/* epsilon */
+	%empty { $$ = NULL; }/* epsilon */
 	| new_initializer { $$ = $1; }
 	;
 
 new_declarator_opt:
-	{ $$ = NULL; }/* epsilon */
+	%empty { $$ = NULL; }/* epsilon */
 	| new_declarator { $$ = $1; }
 	;
 
 expression_opt:
-	{ $$ = NULL; }/* epsilon */
+	%empty { $$ = NULL; }/* epsilon */
 	| expression { $$ = $1; }
 	;
 
 statement_seq_opt:
-	{ $$ = NULL; }/* epsilon */
+	%empty { $$ = NULL; }/* epsilon */
 	| statement_seq { $$ = $1; }
 	;
 
 condition_opt:
-	{ $$ = NULL; }/* epsilon */
+	%empty { $$ = NULL; }/* epsilon */
 	| condition { $$ = $1; }
 	;
 
 enumerator_list_opt:
-	{ $$ = NULL; }/* epsilon */
+	%empty { $$ = NULL; }/* epsilon */
 	| enumerator_list { $$ = $1; }
 	;
 
 initializer_opt:
-	{ $$ = NULL; }/* epsilon */
+	%empty { $$ = NULL; }/* epsilon */
 	| initializer { $$ = $1; }
 	;
 
 constant_expression_opt:
-	{ $$ = NULL; }/* epsilon */
+	%empty { $$ = NULL; }/* epsilon */
 	| constant_expression { $$ = $1; }
 	;
 
 abstract_declarator_opt:
-	{ $$ = NULL; }/* epsilon */
+	%empty { $$ = NULL; }/* epsilon */
 	| abstract_declarator { $$ = $1; }
 	;
 
 type_specifier_seq_opt:
-	{ $$ = NULL; }/* epsilon */
+	%empty { $$ = NULL; }/* epsilon */
 	| type_specifier_seq { $$ = $1; }
 	;
 
 direct_abstract_declarator_opt:
-	{ $$ = NULL; }/* epsilon */
+	%empty { $$ = NULL; }/* epsilon */
 	| direct_abstract_declarator { $$ = $1; }
 	;
 
 ctor_initializer_opt:
-	{ $$ = NULL; }/* epsilon */
+	%empty { $$ = NULL; }/* epsilon */
 	| ctor_initializer { $$ = $1; }
 	;
 
 COMMA_opt:
-	{ $$ = NULL; }/* epsilon */
+	%empty { $$ = NULL; }/* epsilon */
 	| ',' { $$ = $1; }
 	;
 
 member_specification_opt:
-	{ $$ = NULL; }/* epsilon */
+	%empty { $$ = NULL; }/* epsilon */
 	| member_specification { $$ = $1; }
 	;
 
 SEMICOLON_opt:
-	{ $$ = NULL; }/* epsilon */
+	%empty { $$ = NULL; }/* epsilon */
 	| ';' { $$ = $1; }
 	;
 
 conversion_declarator_opt:
-	{ $$ = NULL; }/* epsilon */
+	%empty { $$ = NULL; }/* epsilon */
 	| conversion_declarator { $$ = $1; }
 	;
 
 EXPORT_opt:
-	{ $$ = NULL; }/* epsilon */
+	%empty { $$ = NULL; }/* epsilon */
 	| EXPORT { $$ = $1; }
 	;
 
 handler_seq_opt:
-	{ $$ = NULL; }/* epsilon */
+	%empty { $$ = NULL; }/* epsilon */
 	| handler_seq { $$ = $1; }
 	;
 
 assignment_expression_opt:
-	{ $$ = NULL; }/* epsilon */
+	%empty { $$ = NULL; }/* epsilon */
 	| assignment_expression { $$ = $1; }
 	;
 
 type_id_list_opt:
-	{ $$ = NULL; }/* epsilon */
+	%empty { $$ = NULL; }/* epsilon */
 	| type_id_list { $$ = $1; }
 	;
 
 %%
 
 void add_typename(struct TreeNode *t, int cat) {
-	t->t->set_category(cat);
-	//if(!ht_insert(t->t, cat)) {
-	//	yyerror("token already in hashmap");
-	//}
+	if(!ident_table.insert(t->t->get_text(), cat)) {
+		yyerror("token already in identifier lookup table");
+	}
 }
 
 struct TreeNode* alloc_tree(struct yyrule y, int num_kids, ...) {

@@ -4,13 +4,13 @@
 #include <deque>
 #include <string>
 
-#define HASHTABLE_SIZE 137
+//#define HASHTABLE_SIZE 137
 
-struct HashBucket {
+typedef struct HashBucket {
 	std::string name;
 	int category;
-	struct HashBucket(string n, int c) : name(n), category(s) { }
-};
+	HashBucket(std::string n, int c) : name(n), category(c) { }
+} HashBucket;
 
 class HashTable {
 private:

@@ -35,7 +35,7 @@ LIT      \"(\\.|[^\\"])*\"
 #include "treenode.hh"
 #include "hashmap.hh"
 
-extern std::list<Token *> hash_table;
+extern HashTable ident_table;
 extern int yychar;
 extern Token *yytoken;
 extern std::string yyfilename;
@@ -366,9 +366,9 @@ void handle_user_include_file()
 }
 
 int check_identifier() {
-	/* refactoring the typename lookup table would clean this up */
-	//int cat = ht_lookup(yytext) || IDENTIFIER;
-	int cat = IDENTIFIER;
+	int cat = ident_table.lookup(yytext);
+	if(!cat)
+		cat = IDENTIFIER;
 	create_token(cat);
 	return cat;
 }
