@@ -5,7 +5,6 @@ using namespace std;
 
 int main() {
 	class foo {};
-	class string {};
 	foo bar;
 
 	string mystring;
