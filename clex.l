@@ -42,8 +42,13 @@ extern std::string yyfilename;
 
 void lexerr(std::string s);
 
+void add_to_lookup(std::deque<std::string> filelist, int category);
+std::deque<std::string> get_sysinclude_fstream();
+std::deque<std::string> get_sysinclude_iostream();
+std::deque<std::string> get_sysinclude_string();
+
 void handle_user_include_file();
-int check_identifier();
+int check_identifier(std::string str);
 
 void create_token(int cat, int line, std::string file, 
 			std::string text, std::string val = "");
@@ -67,7 +72,7 @@ void pop_include_file();
 
 int errors = 0;
 
-/* include file flags */
+/* system include faking */
 int sysinclude_cmath = 0;
 int sysinclude_cstdlib = 0;
 int sysinclude_cstring = 0;
@@ -77,7 +82,10 @@ int sysinclude_iomanip = 0;
 int sysinclude_iostream = 0;
 int sysinclude_string = 0;
 
-/* strings for string matching */
+/* namespace faking */
+int namespace_std = 0;
+
+/* literal construction */
 std::string token_val;
 std::string token_text;
 
@@ -99,6 +107,10 @@ std::list<std::string> include_stack;
 	"*"+[^*/]*      { }
 	"*"+"/"         { BEGIN(INITIAL); }
 }
+
+  /* Standard Library Faking */
+  /* Match ; as well otherwise empty statement and syntax error */
+"using"{W}"namespace"{W}"std"{W}";"	{ namespace_std = 1; /* No token */ }
 
   /* Reserved Words */
 "asm"			{ create_token(ASM);		return ASM; }
@@ -174,10 +186,16 @@ std::list<std::string> include_stack;
 	"<cstdlib>"	{ sysinclude_cstdlib     = 1; BEGIN(INITIAL); }
 	"<cstring>"	{ sysinclude_cstring     = 1; BEGIN(INITIAL); }
 	"<ctime>"	{ sysinclude_ctime       = 1; BEGIN(INITIAL); }
-	"<fstream>"	{ sysinclude_fstream     = 1; BEGIN(INITIAL); }
+	"<fstream>"	{ sysinclude_fstream     = 1;
+			  add_to_lookup(get_sysinclude_fstream(), CLASS_NAME);
+			  BEGIN(INITIAL); }
 	"<iomanip>"	{ sysinclude_iomanip     = 1; BEGIN(INITIAL); }
-	"<iostream>"	{ sysinclude_iostream    = 1; BEGIN(INITIAL); }
-	"<string>"	{ sysinclude_string      = 1; BEGIN(INITIAL); }
+	"<iostream>"	{ sysinclude_iostream    = 1; 
+			  add_to_lookup(get_sysinclude_iostream(), IDENTIFIER);
+			  BEGIN(INITIAL); }
+	"<string>"	{ sysinclude_string      = 1; 
+			  add_to_lookup(get_sysinclude_string(), CLASS_NAME);
+			  BEGIN(INITIAL); }
 	\"[^\\"]+\"	{ handle_user_include_file(); BEGIN(INITIAL); }
 	"<"[^<>]*">"	{ lexerr("Unknown system include file"); }
 	<<EOF>>		{ lexerr("EOF reached unexpectedly from include"); }
@@ -313,11 +331,8 @@ std::list<std::string> include_stack;
 {FP}{E}?{FS}?		{ create_token(FLOATING);	return FLOATING; }
 {D}+{E}{FS}?		{ create_token(FLOATING);	return FLOATING; }
 
-  /* Standard namespace temporary faking */
-"std"			{ create_token(NAMESPACE_NAME); return NAMESPACE_NAME; }
-
   /* Identifiers */
-{L}({L}|{D})*           { return check_identifier(); }
+{L}({L}|{D})*           { return check_identifier(yytext); }
 
   /* End of File */
 <<EOF>>                 {
@@ -343,6 +358,31 @@ void lexerr(std::string str)
 	std::cerr << s.str();
 	exit(1);
 }
+void add_to_lookup(std::deque<std::string> filelist, int category) {
+	for(int i = 0; i < filelist.size(); ++i)
+		ident_table.insert(filelist[i], category, true);
+}
+std::deque<std::string> get_sysinclude_fstream() {
+	std::deque<std::string> s;
+	s.push_back("ifstream");
+	s.push_back("ofstream");
+	s.push_back("fstream");
+	return s;
+}
+std::deque<std::string> get_sysinclude_iostream() {
+	std::deque<std::string> s;
+	s.push_back("cin");
+	s.push_back("cout");
+	s.push_back("cerr");
+	s.push_back("clog");
+	return s;
+}
+std::deque<std::string> get_sysinclude_string() {
+	std::deque<std::string> s;
+	s.push_back("string");
+	return s;
+}
+
 
 void handle_user_include_file()
 {
@@ -365,10 +405,16 @@ void handle_user_include_file()
 	}
 }
 
-int check_identifier() {
-	int cat = ident_table.lookup(yytext);
+int check_identifier(std::string str) {
+	std::pair<int,bool> lookup = ident_table.lookup_pair(yytext);
+	int cat = lookup.first;
+	bool namespace_req = lookup.second;
 	if(!cat)
 		cat = IDENTIFIER;
+	if(namespace_req) {
+		if(!namespace_std)
+			lexerr("'using namespace std' required in 120++");
+	}
 	create_token(cat);
 	return cat;
 }
@@ -382,7 +428,6 @@ void create_token(int cat, int line, std::string file,
 	treeptr->prod_num = -1; /* or `cat`? */
 	treeptr->prod_text.clear(); /* or `text`? */
 	yylval = treeptr;
-	//std::cout << "token: " << file << ":" << line << ":" << text << std::endl;
 }
 
 void create_token(int category) {

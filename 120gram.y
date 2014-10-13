@@ -41,14 +41,7 @@
  * Based on the ISO C++ draft standard of December '96.
  */
 
-/*
- * TODO:
- *
- * For every production rule in the grammar:
- *	if the production rule is not legal in 120++, add 
- *		a semantic_error("C++ operation not supported") and 
- *		set $$ = NULL.
- */
+/* TODO: Improve output, especially for error reporting */
 
 
 

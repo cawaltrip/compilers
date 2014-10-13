@@ -17,38 +17,33 @@ int HashTable::hash(std::string name) {
 }
 
 
-bool HashTable::insert(std::string name, int category) {
+bool HashTable::insert(std::string name, int category, bool namespace_req) {
 	/* 
 	 * If the item is not in the lookup table already then add it.
 	 * Return true if insert is successful and false otherwise.
 	 */
-	std::cout << "Starting Insert for: " << name << std::endl;
 	if(!this->lookup(name)) {
-		std::cout << "  lookup not found - inserting." << std::endl;
 		int h = this->hash(name);
-		std::cout << "  hash: " << h << std::endl;
-		HashBucket item(name, category);
+		HashBucket item(name, category, namespace_req);
 		this->bucket[h].push_back(item);
-		std::cout << "  item added to bucket" << std::endl;
-		if(this->lookup(name)) { /* could check error code */
-			std::cout << "  lookup found after add" << std::endl;
+		if(this->lookup(name)) /* could check error code */
 			return true;
-		} else {
-			std::cout << "  lookup FAILED after add" << std::endl;
-		}
-	} else {
-		std::cout << "  lookup FAILED" << std::endl;
 	}
 	return false;
 }
 int HashTable::lookup(std::string name) {
+	return this->lookup_pair(name).first;
+}
+std::pair<int,bool> HashTable::lookup_pair(std::string name) {
 	int h = this->hash(name);
-	int category = 0;
+	std::pair<int,bool> pair = std::make_pair(0,false);
 	std::deque<HashBucket> b = this->bucket[h];
 	std::deque<HashBucket>::iterator i;
 	for(i = b.begin(); i != b.end(); ++i) {
-		if(!name.compare(i->name))
-			category = i->category;
+		if(!name.compare(i->name)) {
+			pair.first = i->category;
+			pair.second = i->namespace_req;
+		}
 	}
-	return category;
+	return pair;
 }

@@ -9,7 +9,12 @@
 typedef struct HashBucket {
 	std::string name;
 	int category;
-	HashBucket(std::string n, int c) : name(n), category(c) { }
+	bool namespace_req;
+	HashBucket(std::string n, int c, bool b = false) {
+		name = n;
+		category = c;
+		namespace_req = b;
+	}
 } HashBucket;
 
 class HashTable {
@@ -18,8 +23,9 @@ private:
 	std::deque<HashBucket> bucket[HASHTABLE_SIZE];
 	int hash(std::string name);
 public:
-	bool insert(std::string name, int category);
+	bool insert(std::string name, int category, bool nspace = false);
 	int lookup(std::string name);
+	std::pair<int,bool> lookup_pair(std::string name);
 };
 
 #endif /* _HASHMAP_HH_ */
