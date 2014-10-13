@@ -54,6 +54,6 @@ lex.yy.c: clex.l 120gram.tab.h
 # Remove created files
 clean:
 	$(RM) *.o *.a
-	$(RM) 120gram.tab.c 120gram.tab.h 120gram.output # bison
-	$(RM) lex.yy.c clex.h lex.yy.h # flex
-	$(RM) $(BIN) # 120++
+	$(RM) 120gram.tab.c 120gram.tab.h 120gram.output
+	$(RM) lex.yy.c clex.h lex.yy.h
+	$(RM) $(BIN)
