@@ -26,12 +26,11 @@ string yyfilename;
  * Then, populate the input file list and loop through it, adding the 
  * tokens to a linked list that is printed to the screen.  This is the list 
  * that will become a tree in the next stage.
+ *
+ *
+ * TODO:
+ *   - Error checking/handling
  */
-
- /*
-  * TODO:
-  *   - Error checking/handling
-  */
 
 int main(int argc, char *argv[])
 {   
@@ -74,10 +73,10 @@ int main(int argc, char *argv[])
 	    		yylineno = 1;
 
 	    		if(!ret) {
-	    			cout << yyfilename << ": parse successful";
-	    			cout << " - tree below:" << endl;
 	    			print_tree(root);
 	    			cout << endl;
+	    			//print_symbol(root);
+	    			//cout << endl;
 	    		}
 		
 		} else {

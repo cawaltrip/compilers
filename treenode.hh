@@ -13,5 +13,6 @@ struct TreeNode {
 };
 
 void print_tree(struct TreeNode *t, int depth = 0);
+void print_symbol(struct TreeNode *t);
 
 #endif /* _TREENODE_HH_ */
