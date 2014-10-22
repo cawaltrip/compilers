@@ -16,3 +16,8 @@ Parsing assignment using `bison`.
 
 # HW3
 Type checking the parse trees
+
+## Notes
+ *  Type checking for functions will need to know that a default constructor or an self-defined empty constructors are valid.
+ *  At end of file, run through and delete the tree that was created.
+ *  Allow, but ignore const.

@@ -5,6 +5,7 @@
 
 /* Stolen and modified from Dr. J's CS-445 HW2 Notes:
  * 	http://www2.cs.uidaho.edu/~jeffery/courses/445/hw2.html
+ * If the node has no kids then it's a leaf and leaf nodes are just tokens.
  */
 void print_tree(struct TreeNode *t, int depth)
 {

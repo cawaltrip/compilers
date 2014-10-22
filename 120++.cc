@@ -44,9 +44,6 @@ int main(int argc, char *argv[])
     	FILE *fp;
 
     	/* Find valid files from the command line */
-    	/* TODO: Don't pre-push files to the file stack or else
-    	 * only one parse tree will be created.
-    	 */
 	for (int i = 1; i < argc; ++i) {
 		string filename = realpath(argv[i], NULL);
 		if(filename.empty()) {

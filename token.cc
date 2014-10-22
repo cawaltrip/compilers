@@ -7,11 +7,6 @@
 #include "120gram.tab.h"
 #include "token.hh"
 
-/*
-Token::Token() {
-	this->category = -1;
-}
-*/
 Token::Token(int category, int lineno, std::string filename,
 				std::string text, std::string sval) {
 	this->category = category;

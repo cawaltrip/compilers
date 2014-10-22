@@ -1,3 +1,9 @@
+/* hashmap.cc
+ * HashTable and HashBucket class implementation for 
+ * UIdaho CS445 120++ Compiler
+ * author: Chris Waltrip <walt2178@vandals.uidaho.edu>
+ */
+
 #include <deque>
 #include <string>
 #include <iostream>
@@ -31,9 +37,17 @@ bool HashTable::insert(std::string name, int category, bool namespace_req) {
 	}
 	return false;
 }
+/* 
+ * Use this function when we only care about the category and
+ * not whether the namespace matters
+ */
 int HashTable::lookup(std::string name) {
 	return this->lookup_pair(name).first;
 }
+/* 
+ * Return both the category and whether this identifier requires
+ * the standard namespace.
+ */
 std::pair<int,bool> HashTable::lookup_pair(std::string name) {
 	int h = this->hash(name);
 	std::pair<int,bool> pair = std::make_pair(0,false);
