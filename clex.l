@@ -35,7 +35,7 @@ LIT      \"(\\.|[^\\"])*\"
 #include "treenode.hh"
 #include "hashmap.hh"
 
-extern HashTable ident_table;
+extern LookupTable ident_table;
 extern int yychar;
 extern Token *yytoken;
 extern std::string yyfilename;

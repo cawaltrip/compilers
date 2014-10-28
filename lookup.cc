@@ -1,5 +1,5 @@
 /* hashmap.cc
- * HashTable and HashBucket class implementation for 
+ * LookupTable and LookupBucket class implementation for 
  * UIdaho CS445 120++ Compiler
  * author: Chris Waltrip <walt2178@vandals.uidaho.edu>
  */
@@ -9,7 +9,7 @@
 #include <iostream>
 #include "hashmap.hh"
 
-int HashTable::hash(std::string name) {
+int LookupTable::hash(std::string name) {
 	/* 
 	 * This code is based on a post from StackOverflow:
 	 * http://stackoverflow.com/a/107657/2592570
@@ -23,14 +23,14 @@ int HashTable::hash(std::string name) {
 }
 
 
-bool HashTable::insert(std::string name, int category, bool namespace_req) {
+bool LookupTable::insert(std::string name, int category, bool namespace_req) {
 	/* 
 	 * If the item is not in the lookup table already then add it.
 	 * Return true if insert is successful and false otherwise.
 	 */
 	if(!this->lookup(name)) {
 		int h = this->hash(name);
-		HashBucket item(name, category, namespace_req);
+		LookupBucket item(name, category, namespace_req);
 		this->bucket[h].push_back(item);
 		if(this->lookup(name)) /* could check error code */
 			return true;
@@ -41,18 +41,18 @@ bool HashTable::insert(std::string name, int category, bool namespace_req) {
  * Use this function when we only care about the category and
  * not whether the namespace matters
  */
-int HashTable::lookup(std::string name) {
+int LookupTable::lookup(std::string name) {
 	return this->lookup_pair(name).first;
 }
 /* 
  * Return both the category and whether this identifier requires
  * the standard namespace.
  */
-std::pair<int,bool> HashTable::lookup_pair(std::string name) {
+std::pair<int,bool> LookupTable::lookup_pair(std::string name) {
 	int h = this->hash(name);
 	std::pair<int,bool> pair = std::make_pair(0,false);
-	std::deque<HashBucket> b = this->bucket[h];
-	std::deque<HashBucket>::iterator i;
+	std::deque<LookupBucket> b = this->bucket[h];
+	std::deque<LookupBucket>::iterator i;
 	for(i = b.begin(); i != b.end(); ++i) {
 		if(!name.compare(i->name)) {
 			pair.first = i->category;

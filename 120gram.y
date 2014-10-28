@@ -62,7 +62,7 @@ extern int yylex();
 extern std::string yyfilename;
 extern std::string yytext;
 
-HashTable ident_table;
+LookupTable ident_table;
 
 struct TreeNode *root;
 struct TreeNode* alloc_tree(const struct yyrule y, int num_kids, ...);

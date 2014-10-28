@@ -6,21 +6,21 @@
 
 //#define HASHTABLE_SIZE 137
 
-typedef struct HashBucket {
+typedef struct LookupBucket {
 	std::string name;
 	int category;
 	bool namespace_req;
-	HashBucket(std::string n, int c, bool b = false) {
+	LookupBucket(std::string n, int c, bool b = false) {
 		name = n;
 		category = c;
 		namespace_req = b;
 	}
-} HashBucket;
+} LookupBucket;
 
-class HashTable {
+class LookupTable {
 private:
 	static const int HASHTABLE_SIZE = 137;
-	std::deque<HashBucket> bucket[HASHTABLE_SIZE];
+	std::deque<LookupBucket> bucket[HASHTABLE_SIZE];
 	int hash(std::string name);
 public:
 	bool insert(std::string name, int category, bool nspace = false);
