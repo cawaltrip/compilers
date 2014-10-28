@@ -54,7 +54,7 @@
 #include <utility>
 
 #include "treenode.hh"
-#include "hashmap.hh"
+#include "lookup.hh"
 #include "120rules.hh"
 
 extern int yylineno;

@@ -33,7 +33,7 @@ LIT      \"(\\.|[^\\"])*\"
 #include "120gram.tab.h"
 #include "token.hh"
 #include "treenode.hh"
-#include "hashmap.hh"
+#include "lookup.hh"
 
 extern LookupTable ident_table;
 extern int yychar;
