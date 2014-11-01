@@ -7,11 +7,11 @@
 typedef struct TypenameEntry {
 	std::string name;
 	int category;
-	bool namespace_req;
-	TypenameEntry(std::string n, int c, bool b = false) {
-		name = n;
-		category = c;
-		namespace_req = b;
+	std::string nspace;
+	TypenameEntry(std::string name, int cat, std::string nspace = "") {
+		this->name = name;
+		this->category = cat;
+		this->nspace = nspace;
 	}
 } TypenameEntry;
 
@@ -21,9 +21,9 @@ private:
 	std::deque<TypenameEntry> bucket[HASHTABLE_SIZE];
 	int hash(std::string name);
 public:
-	bool insert(std::string name, int category, bool nspace = false);
+	bool insert(std::string name, int cat, std::string nspace = "");
 	int lookup(std::string name);
-	std::pair<int,bool> lookup_pair(std::string name);
+	std::pair<int,std::string> lookup_namespace(std::string name);
 };
 
 #endif /* _HASHMAP_HH_ */

@@ -360,7 +360,7 @@ void lexerr(std::string str)
 }
 void add_to_lookup(std::deque<std::string> filelist, int category) {
 	for(int i = 0; i < filelist.size(); ++i)
-		ident_table.insert(filelist[i], category, true);
+		ident_table.insert(filelist[i], category, "std");
 }
 std::deque<std::string> get_sysinclude_fstream() {
 	std::deque<std::string> s;
@@ -406,12 +406,13 @@ void handle_user_include_file()
 }
 
 int check_identifier(std::string str) {
-	std::pair<int,bool> lookup = ident_table.lookup_pair(yytext);
+	std::pair<int,std::string> lookup = ident_table.lookup_namespace(
+								yytext);
 	int cat = lookup.first;
-	bool namespace_req = lookup.second;
+	std::string nspace = lookup.second;
 	if(!cat)
 		cat = IDENTIFIER;
-	if(namespace_req) {
+	if(nspace == "std") {
 		if(!namespace_std)
 			lexerr("'using namespace std' required in 120++");
 	}

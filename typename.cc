@@ -23,14 +23,14 @@ int TypenameTable::hash(std::string name) {
 }
 
 
-bool TypenameTable::insert(std::string name, int category, bool namespace_req) {
+bool TypenameTable::insert(std::string name, int cat, std::string nspace) {
 	/* 
 	 * If the item is not in the lookup table already then add it.
 	 * Return true if insert is successful and false otherwise.
 	 */
 	if(!this->lookup(name)) {
 		int h = this->hash(name);
-		TypenameEntry item(name, category, namespace_req);
+		TypenameEntry item(name, cat, nspace);
 		this->bucket[h].push_back(item);
 		if(this->lookup(name)) /* could check error code */
 			return true;
@@ -42,21 +42,21 @@ bool TypenameTable::insert(std::string name, int category, bool namespace_req) {
  * not whether the namespace matters
  */
 int TypenameTable::lookup(std::string name) {
-	return this->lookup_pair(name).first;
+	return this->lookup_namespace(name).first;
 }
 /* 
  * Return both the category and whether this identifier requires
  * the standard namespace.
  */
-std::pair<int,bool> TypenameTable::lookup_pair(std::string name) {
+std::pair<int,std::string> TypenameTable::lookup_namespace(std::string name) {
 	int h = this->hash(name);
-	std::pair<int,bool> pair = std::make_pair(0,false);
+	std::pair<int,std::string> pair = std::make_pair(0,"");
 	std::deque<TypenameEntry> b = this->bucket[h];
 	std::deque<TypenameEntry>::iterator i;
 	for(i = b.begin(); i != b.end(); ++i) {
 		if(!name.compare(i->name)) {
 			pair.first = i->category;
-			pair.second = i->namespace_req;
+			pair.second = i->nspace;
 		}
 	}
 	return pair;
