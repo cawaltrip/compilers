@@ -8,12 +8,26 @@ typedef struct TypenameEntry {
 	std::string name;
 	int category;
 	std::string nspace;
+
 	TypenameEntry(std::string name, int cat, std::string nspace = "") {
 		this->name = name;
 		this->category = cat;
 		this->nspace = nspace;
 	}
 } TypenameEntry;
+
+inline bool operator==(const TypenameEntry& lhs, const std::string& rhs) { 
+	return (lhs.name == rhs);
+}
+inline bool operator!=(const TypenameEntry& lhs, const std::string& rhs) { 
+	return (lhs.name != rhs);
+}
+inline bool operator==(const TypenameEntry& lhs, const TypenameEntry& rhs) { 
+	return (lhs == rhs.name);
+}
+inline bool operator!=(const TypenameEntry& lhs, const TypenameEntry& rhs) { 
+	return !(lhs == rhs.name);
+}
 
 class TypenameTable {
 private:
@@ -24,6 +38,7 @@ public:
 	bool insert(std::string name, int cat, std::string nspace = "");
 	int lookup(std::string name);
 	std::pair<int,std::string> lookup_namespace(std::string name);
+	TypenameEntry get_entry(std::string name);
 };
 
 #endif /* _HASHMAP_HH_ */

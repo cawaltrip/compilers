@@ -8,6 +8,7 @@
 #include <string>
 #include <iostream>
 #include "typename.hh"
+#include "exception.hh"
 
 int TypenameTable::hash(std::string name) {
 	/* 
@@ -39,7 +40,9 @@ bool TypenameTable::insert(std::string name, int cat, std::string nspace) {
 }
 /* 
  * Use this function when we only care about the category and
- * not whether the namespace matters
+ * not whether the namespace matters.
+ *
+ * TODO: Rename to lookup_category()
  */
 int TypenameTable::lookup(std::string name) {
 	return this->lookup_namespace(name).first;
@@ -49,15 +52,26 @@ int TypenameTable::lookup(std::string name) {
  * the standard namespace.
  */
 std::pair<int,std::string> TypenameTable::lookup_namespace(std::string name) {
-	int h = this->hash(name);
-	std::pair<int,std::string> pair = std::make_pair(0,"");
-	std::deque<TypenameEntry> b = this->bucket[h];
-	std::deque<TypenameEntry>::iterator i;
-	for(i = b.begin(); i != b.end(); ++i) {
-		if(!name.compare(i->name)) {
-			pair.first = i->category;
-			pair.second = i->nspace;
-		}
+	std::pair<int, std::string> pair;
+	try {
+		TypenameEntry te = this->get_entry(name);
+		pair = std::make_pair(te.category, te.nspace);
+
+	} catch(EBadTypenameEntry e) {
+		pair = std::make_pair(0,"");
 	}
 	return pair;
+}
+
+TypenameEntry TypenameTable::get_entry(std::string name) {
+	size_t h = this->hash(name);
+	std::deque<TypenameEntry> b = this->bucket[h];
+	std::deque<TypenameEntry>::iterator it;
+	for(it = b.begin(); it != b.end(); ++it) {
+		size_t i = it - b.begin();
+		if(b[i] == name) {
+			return b[i];
+		}
+	}
+	throw EBadTypenameEntry();
 }

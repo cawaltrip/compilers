@@ -2,7 +2,7 @@
 # Compiler Options ####################
 #######################################
 CPP=clang++
-CPPFLAGS=-c -g -std=c++98 -x c++ 
+CPPFLAGS=-c -g -std=c++98 -x c++
 LDFLAGS=
 LEX=flex
 YACC=bison
@@ -15,7 +15,7 @@ RM=-rm -f
 # http://stackoverflow.com/a/12099167/2592570
 UNAME_S := $(shell uname -s)
 ifeq ($(UNAME_S),Darwin)
-	CPPFLAGS += -Wno-deprecated-register
+	CPPFLAGS += -Wno-deprecated-register -I /usr/local/include
 	YACC=/usr/local/Cellar/bison/3.0.2/bin/bison
 endif
 
@@ -23,7 +23,7 @@ endif
 # Filename configurations #############
 #######################################
 BIN=120++
-CC_SOURCES=120++.cc token.cc treenode.cc typename.cc
+CC_SOURCES=120++.cc token.cc treenode.cc typename.cc symbols.cc
 C_SOURCES=lex.yy.c 120gram.tab.c
 OBJECTS=$(CC_SOURCES:.cc=.o) $(C_SOURCES:.c=.o)
 #######################################
