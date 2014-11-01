@@ -23,7 +23,7 @@ endif
 # Filename configurations #############
 #######################################
 BIN=120++
-CC_SOURCES=120++.cc token.cc treenode.cc lookup.cc
+CC_SOURCES=120++.cc token.cc treenode.cc typename.cc
 C_SOURCES=lex.yy.c 120gram.tab.c
 OBJECTS=$(CC_SOURCES:.cc=.o) $(C_SOURCES:.c=.o)
 #######################################
