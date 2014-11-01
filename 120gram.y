@@ -54,7 +54,7 @@
 #include <utility>
 
 #include "treenode.hh"
-#include "lookup.hh"
+#include "typename.hh"
 #include "120rules.hh"
 
 extern int yylineno;
@@ -62,7 +62,7 @@ extern int yylex();
 extern std::string yyfilename;
 extern std::string yytext;
 
-LookupTable ident_table;
+TypenameTable ident_table;
 
 struct TreeNode *root;
 struct TreeNode* alloc_tree(const struct yyrule y, int num_kids, ...);

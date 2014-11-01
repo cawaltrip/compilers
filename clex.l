@@ -33,9 +33,9 @@ LIT      \"(\\.|[^\\"])*\"
 #include "120gram.tab.h"
 #include "token.hh"
 #include "treenode.hh"
-#include "lookup.hh"
+#include "typename.hh"
 
-extern LookupTable ident_table;
+extern TypenameTable ident_table;
 extern int yychar;
 extern Token *yytoken;
 extern std::string yyfilename;

@@ -1,5 +1,5 @@
-/* hashmap.cc
- * LookupTable and LookupBucket class implementation for 
+/* typename.cc
+ * TypenameTable and TypenameBucket class implementation for 
  * UIdaho CS445 120++ Compiler
  * author: Chris Waltrip <walt2178@vandals.uidaho.edu>
  */
@@ -7,9 +7,9 @@
 #include <deque>
 #include <string>
 #include <iostream>
-#include "hashmap.hh"
+#include "typename.hh"
 
-int LookupTable::hash(std::string name) {
+int TypenameTable::hash(std::string name) {
 	/* 
 	 * This code is based on a post from StackOverflow:
 	 * http://stackoverflow.com/a/107657/2592570
@@ -23,14 +23,14 @@ int LookupTable::hash(std::string name) {
 }
 
 
-bool LookupTable::insert(std::string name, int category, bool namespace_req) {
+bool TypenameTable::insert(std::string name, int category, bool namespace_req) {
 	/* 
 	 * If the item is not in the lookup table already then add it.
 	 * Return true if insert is successful and false otherwise.
 	 */
 	if(!this->lookup(name)) {
 		int h = this->hash(name);
-		LookupBucket item(name, category, namespace_req);
+		TypenameBucket item(name, category, namespace_req);
 		this->bucket[h].push_back(item);
 		if(this->lookup(name)) /* could check error code */
 			return true;
@@ -41,18 +41,18 @@ bool LookupTable::insert(std::string name, int category, bool namespace_req) {
  * Use this function when we only care about the category and
  * not whether the namespace matters
  */
-int LookupTable::lookup(std::string name) {
+int TypenameTable::lookup(std::string name) {
 	return this->lookup_pair(name).first;
 }
 /* 
  * Return both the category and whether this identifier requires
  * the standard namespace.
  */
-std::pair<int,bool> LookupTable::lookup_pair(std::string name) {
+std::pair<int,bool> TypenameTable::lookup_pair(std::string name) {
 	int h = this->hash(name);
 	std::pair<int,bool> pair = std::make_pair(0,false);
-	std::deque<LookupBucket> b = this->bucket[h];
-	std::deque<LookupBucket>::iterator i;
+	std::deque<TypenameBucket> b = this->bucket[h];
+	std::deque<TypenameBucket>::iterator i;
 	for(i = b.begin(); i != b.end(); ++i) {
 		if(!name.compare(i->name)) {
 			pair.first = i->category;
