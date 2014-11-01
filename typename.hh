@@ -4,21 +4,21 @@
 #include <deque>
 #include <string>
 
-typedef struct TypenameBucket {
+typedef struct TypenameEntry {
 	std::string name;
 	int category;
 	bool namespace_req;
-	TypenameBucket(std::string n, int c, bool b = false) {
+	TypenameEntry(std::string n, int c, bool b = false) {
 		name = n;
 		category = c;
 		namespace_req = b;
 	}
-} TypenameBucket;
+} TypenameEntry;
 
 class TypenameTable {
 private:
 	static const int HASHTABLE_SIZE = 137;
-	std::deque<TypenameBucket> bucket[HASHTABLE_SIZE];
+	std::deque<TypenameEntry> bucket[HASHTABLE_SIZE];
 	int hash(std::string name);
 public:
 	bool insert(std::string name, int category, bool nspace = false);

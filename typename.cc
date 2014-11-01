@@ -1,5 +1,5 @@
 /* typename.cc
- * TypenameTable and TypenameBucket class implementation for 
+ * TypenameTable and TypenameEntry class implementation for 
  * UIdaho CS445 120++ Compiler
  * author: Chris Waltrip <walt2178@vandals.uidaho.edu>
  */
@@ -30,7 +30,7 @@ bool TypenameTable::insert(std::string name, int category, bool namespace_req) {
 	 */
 	if(!this->lookup(name)) {
 		int h = this->hash(name);
-		TypenameBucket item(name, category, namespace_req);
+		TypenameEntry item(name, category, namespace_req);
 		this->bucket[h].push_back(item);
 		if(this->lookup(name)) /* could check error code */
 			return true;
@@ -51,8 +51,8 @@ int TypenameTable::lookup(std::string name) {
 std::pair<int,bool> TypenameTable::lookup_pair(std::string name) {
 	int h = this->hash(name);
 	std::pair<int,bool> pair = std::make_pair(0,false);
-	std::deque<TypenameBucket> b = this->bucket[h];
-	std::deque<TypenameBucket>::iterator i;
+	std::deque<TypenameEntry> b = this->bucket[h];
+	std::deque<TypenameEntry>::iterator i;
 	for(i = b.begin(); i != b.end(); ++i) {
 		if(!name.compare(i->name)) {
 			pair.first = i->category;
