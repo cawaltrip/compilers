@@ -4,6 +4,7 @@
 #include <cstddef>
 #include <deque>
 #include <string>
+#include <utility>
 
 typedef struct TypenameEntry {
 	std::string name;

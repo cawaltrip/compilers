@@ -2,10 +2,11 @@
 #ifndef YY_PRODUCTION_RULES
 #define YY_PRODUCTION_RULES
 
+#include <cstddef>
 #include <string>
 
 typedef struct yyrule { 
-	int num;
+	const std::size_t num;
 	std::string text;
 	yyrule(int n, std::string s) : num(n), text(s) { }
 } yyrule;

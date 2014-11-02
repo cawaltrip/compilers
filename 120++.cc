@@ -11,6 +11,9 @@
 #include "token.hh"
 #include "120gram.tab.h"
 #include "treenode.hh"
+#include "semantic.hh"
+
+#include "120rules.hh"
 
 extern int yyparse();
 extern int yydebug;
@@ -33,16 +36,16 @@ string yyfilename;
  */
 
 int main(int argc, char *argv[])
-{   
+{
 	list<Token *> token_list;
 	list<Token *>::iterator iter;
 
 	list<string> file_list;
 	list<string>::iterator f_iter;
 
-    	FILE *fp;
+	FILE *fp;
 
-    	/* Find valid files from the command line */
+	/* Find valid files from the command line */
 	for (int i = 1; i < argc; ++i) {
 		string filename = realpath(argv[i], NULL);
 		if(filename.empty()) {
@@ -65,23 +68,22 @@ int main(int argc, char *argv[])
 
 		if ((fp = fopen(yyfilename.c_str(), "r"))!= NULL) {
 			yyin = fp;
-	    		yypush_buffer_state(yy_create_buffer(yyin, 
-	    						YY_BUF_SIZE));
-	    		yydebug=0;
-	    		int ret = yyparse();
-	    		fclose(fp);
-	    		yylineno = 1;
+			yypush_buffer_state(yy_create_buffer(yyin, 
+							YY_BUF_SIZE));
+			yydebug=0;
+			int ret = yyparse();
+			fclose(fp);
+			yylineno = 1;
 
-	    		if(!ret) {
-	    			print_tree(root);
-	    			cout << endl;
-	    		}
+			if(!ret) {
+				print_tree(root);
+				cout << endl;
+			}
 		
 		} else {
 			cout << "Cannot find include file '" << yyfilename;
 		}
 	}
 
-
-    return(0);
+	return(0);
 }
