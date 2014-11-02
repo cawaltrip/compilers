@@ -1,6 +1,7 @@
 #ifndef _TYPENAME_HH_
 #define _TYPENAME_HH_
 
+#include <cstddef>
 #include <deque>
 #include <string>
 
@@ -20,7 +21,7 @@ inline bool operator==(const TypenameEntry& lhs, const std::string& rhs) {
 	return (lhs.name == rhs);
 }
 inline bool operator!=(const TypenameEntry& lhs, const std::string& rhs) { 
-	return (lhs.name != rhs);
+	return !(lhs.name == rhs);
 }
 inline bool operator==(const TypenameEntry& lhs, const TypenameEntry& rhs) { 
 	return (lhs == rhs.name);
@@ -31,9 +32,9 @@ inline bool operator!=(const TypenameEntry& lhs, const TypenameEntry& rhs) {
 
 class TypenameTable {
 private:
-	static const int HASHTABLE_SIZE = 137;
+	static const size_t HASHTABLE_SIZE = 137;
 	std::deque<TypenameEntry> bucket[HASHTABLE_SIZE];
-	int hash(std::string name);
+	std::size_t hash(std::string name);
 public:
 	bool insert(std::string name, int cat, std::string nspace = "");
 	int lookup(std::string name);

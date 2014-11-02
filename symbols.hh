@@ -8,35 +8,29 @@
 #ifndef _SYMBOLS_HH_
 #define _SYMBOLS_HH_
 
+#include <cstddef>
 #include <string>
 #include <boost/variant.hpp>
 
 #include "typename.hh"
 
 typedef struct BasicSymbol {
-
-} BSymb;
+	bool pointer;
+} BasicSymbol;
 
 typedef struct ClassSymbol {
 
-} CSymb;
+} ClassSymbol;
 
-typedef struct FunctionSymbol {
-
-} FSymb;
+typedef struct FuncSymbol {
+	bool pointer;
+	bool definition_needed;
+} FuncSymbol;
 
 typedef struct ArraySymbol {
-
-} ASymb;
-
-class Symbol {
-private:
-	TypenameEntry entry;
-	boost::variant<BSymb, CSymb, FSymb, ASymb> symb;
-public:
-	Symbol(TypenameEntry e, boost::variant<BSymb, CSymb, FSymb, ASymb> s);
-	std::string name;
-};
+	bool pointer;
+	size_t max_elements;
+} ArraySymbol;
 
 
 

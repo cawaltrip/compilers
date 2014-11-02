@@ -75,8 +75,6 @@ int main(int argc, char *argv[])
 	    		if(!ret) {
 	    			print_tree(root);
 	    			cout << endl;
-	    			//print_symbol(root);
-	    			//cout << endl;
 	    		}
 		
 		} else {

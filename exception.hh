@@ -27,9 +27,14 @@ public:
 	}
 };
 
-class EBadTypenameEntry : public Exception {
+class ENoTypenameEntry : public Exception {
 public:
-	EBadTypenameEntry() : Exception("Typename Entry not found") {}
+	ENoTypenameEntry() : Exception("Typename Entry not found") {}
+};
+
+class ENoSymbolEntry : public Exception {
+public:
+	ENoSymbolEntry() : Exception("Symbol Entry not found") {}
 };
 
 #endif /* _EXCEPTION_HH_ */

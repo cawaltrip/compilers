@@ -4,23 +4,22 @@
  * author: Chris Waltrip <walt2178@vandals.uidaho.edu>
  */
 
-#include <deque>
-#include <string>
 #include <iostream>
+
 #include "typename.hh"
 #include "exception.hh"
 
-int TypenameTable::hash(std::string name) {
+std::size_t TypenameTable::hash(std::string name) {
 	/* 
 	 * This code is based on a post from StackOverflow:
 	 * http://stackoverflow.com/a/107657/2592570
 	 */
-	unsigned int hash = 0;
+	std::size_t hash = 0;
 	const char* s = name.c_str();
 	while(*s) {
 		hash = hash * 101 + *s++;
 	}
-	return hash % HASHTABLE_SIZE;
+	return hash % this->HASHTABLE_SIZE;
 }
 
 
@@ -57,21 +56,21 @@ std::pair<int,std::string> TypenameTable::lookup_namespace(std::string name) {
 		TypenameEntry te = this->get_entry(name);
 		pair = std::make_pair(te.category, te.nspace);
 
-	} catch(EBadTypenameEntry e) {
+	} catch(ENoTypenameEntry e) {
 		pair = std::make_pair(0,"");
 	}
 	return pair;
 }
 
 TypenameEntry TypenameTable::get_entry(std::string name) {
-	size_t h = this->hash(name);
+	std::size_t h = this->hash(name);
 	std::deque<TypenameEntry> b = this->bucket[h];
 	std::deque<TypenameEntry>::iterator it;
 	for(it = b.begin(); it != b.end(); ++it) {
-		size_t i = it - b.begin();
+		std::size_t i = it - b.begin();
 		if(b[i] == name) {
 			return b[i];
 		}
 	}
-	throw EBadTypenameEntry();
+	throw ENoTypenameEntry();
 }
