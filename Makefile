@@ -61,6 +61,6 @@ semantic:
 # Remove created files
 clean:
 	$(RM) *.o *.a
-	$(RM) 120gram.tab.c 120gram.tab.h 120gram.output
+	$(RM) *.tab.c *.tab.h *gram.output
 	$(RM) lex.yy.c clex.h lex.yy.h
 	$(RM) $(BIN)

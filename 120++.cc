@@ -6,7 +6,9 @@
 #include <list>
 #include <unistd.h> /* chdir() */
 #include <libgen.h> /* dirname and basename */
+#include <boost/program_options.hpp> /* command line arguments parser */
 
+#include "globals.hh"
 #include "lex.yy.h"
 #include "token.hh"
 #include "120gram.tab.h"
@@ -18,16 +20,19 @@ extern int yydebug;
 extern TreeNode *root;
 
 using namespace std;
+using namespace boost;
+namespace po = boost::program_options;
 
 Token *yytoken;
 string yyfilename;
 
 /*
- * First create the lists for storing both the filenames and the tokens.
- * Then, populate the input file list and loop through it, adding the 
- * tokens to a linked list that is printed to the screen.  This is the list 
- * that will become a tree in the next stage.
- *
+ * The main driver of the compiler.  Parses the command line for all 
+ * options and files to compile.  Then iterates through each of the
+ * input files, creating parse trees and symbols tables for each.  Then
+ * the compiler will perform any necessary type checking and will eventually
+ * make its way to the intermediate code generation and final code generation
+ * stages.
  *
  * TODO:
  *   - Error checking/handling
@@ -74,8 +79,10 @@ int main(int argc, char *argv[])
 			yylineno = 1;
 
 			if(!ret) {
-				print_tree(root);
-				cout << endl;
+				if(PRINT_PARSE_TREES) {
+					print_tree(root);
+					cout << endl;
+				}
 			}
 		
 		} else {

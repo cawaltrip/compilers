@@ -14,6 +14,9 @@
 *gram.tab.*
 *.output
 
+# Verbose Parse Tree
+120fullgram.y
+
 # OSX Files
 .DS_Store
 
