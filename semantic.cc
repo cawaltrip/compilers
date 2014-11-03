@@ -39,3 +39,22 @@ void SemanticAnalyzer::generate_all_tables() {
 void SemanticAnalyzer::generate_table(TreeNode &t, SymbolTable &s) {
 
 }
+
+/*
+ * Contains the different cases for what the production rule could be and
+ * creates the symbol(s) for the symbol table.  Because the production rule
+ * numbers and text are contained in individual structs instead of statically
+ * declared, if-else-if statements need to be used instead of a switch
+ * statement.  It would be a good idea to change how this is done.
+ */
+void SemanticAnalyzer::symbolize_node(TreeNode &t, SymbolTable &s) {
+	
+
+	switch(t.prod_num) {
+		case START_RULE:
+			std::cout << "Start rule seen??" << std::endl;
+			break;
+		default:
+			break;
+	}
+}

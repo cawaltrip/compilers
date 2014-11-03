@@ -1,2 +1,1 @@
-int x;
-double y;
+int ;

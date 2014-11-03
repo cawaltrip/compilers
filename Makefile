@@ -52,6 +52,12 @@ lex.yy.c: clex.l 120gram.tab.h
 120gram.tab.c 120gram.tab.h: 120gram.y
 	$(YACC) -dt -Wall 120gram.y
 
+# Semantic Testing
+semantic:
+	$(MAKE) clean
+	$(MAKE) all
+	./$(BIN) stubs/*
+
 # Remove created files
 clean:
 	$(RM) *.o *.a

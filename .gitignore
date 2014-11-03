@@ -1,3 +1,7 @@
+# 120++ Executable
+120++
+120
+
 # Flex files
 *.yy.cc
 *.yy.c
@@ -12,6 +16,9 @@
 
 # OSX Files
 .DS_Store
+
+# New sample code
+stubs/
 
 # Object files
 *.o
@@ -36,4 +43,3 @@
 *.i*86
 *.x86_64
 *.hex
-120++

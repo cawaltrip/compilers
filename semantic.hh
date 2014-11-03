@@ -24,6 +24,7 @@ class SemanticAnalyzer {
 private:
 	std::deque< std::pair<TreeNode,SymbolTable> > pairs;
 	void generate_table(TreeNode &t, SymbolTable &s); /* Driver for creating the individual table */
+	void symbolize_node(TreeNode &t, SymbolTable &s); /* Performs actions based on what production rule is seen. */
 public:
 	void add_tree(TreeNode root); /* Instanciates an empty gst with it? */
 	void generate_all_tables(); /* Iterates through all pairs to populate all tables */

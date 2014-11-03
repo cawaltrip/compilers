@@ -65,7 +65,7 @@ extern std::string yytext;
 TypenameTable ident_table;
 
 struct TreeNode *root;
-struct TreeNode* alloc_tree(const struct yyrule y, int num_kids, ...);
+struct TreeNode* alloc_tree(yyrule y, int num_kids, ...);
 void add_typename(struct TreeNode *t, int cat);
 
 static void unsupported_feature(std::string str = "");
@@ -1700,7 +1700,7 @@ void add_typename(struct TreeNode *t, int cat) {
 	}
 }
 
-struct TreeNode* alloc_tree(struct yyrule y, int num_kids, ...) {
+struct TreeNode* alloc_tree(yyrule y, int num_kids, ...) {
 	va_list vakid;
 	/* 
 	 * TODO: Need to alloc size of kids seperately (causes a segfault
@@ -1711,8 +1711,8 @@ struct TreeNode* alloc_tree(struct yyrule y, int num_kids, ...) {
 		std::cerr << "TreeNode: Cannot allocate memory." << std::endl;
 		exit(1);
 	}
-	t->prod_num = y.num;
-	t->prod_text = y.text;
+	t->prod_num = y;
+	t->prod_text = get_production_text(y);
 	t->num_kids = num_kids;
 
 	va_start(vakid, num_kids);

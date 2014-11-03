@@ -13,8 +13,6 @@
 #include "treenode.hh"
 #include "semantic.hh"
 
-#include "120rules.hh"
-
 extern int yyparse();
 extern int yydebug;
 extern TreeNode *root;
