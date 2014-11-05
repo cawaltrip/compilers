@@ -14,6 +14,7 @@
 #include "120gram.tab.h"
 #include "treenode.hh"
 #include "semantic.hh"
+#include "typename.hh"
 
 extern int yyparse();
 extern int yydebug;
@@ -21,10 +22,10 @@ extern TreeNode *root;
 
 using namespace std;
 using namespace boost;
-namespace po = boost::program_options;
 
 Token *yytoken;
 string yyfilename;
+TypenameTable ident_table;
 
 /*
  * The main driver of the compiler.  Parses the command line for all 
@@ -83,6 +84,8 @@ int main(int argc, char *argv[])
 					print_tree(root);
 					cout << endl;
 				}
+			SemanticAnalyzer sa;
+			sa.add_tree(root, ident_table);
 			}
 		
 		} else {

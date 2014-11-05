@@ -18,6 +18,22 @@ typedef struct TypenameEntry {
 	}
 } TypenameEntry;
 
+class TypenameTable {
+private:
+	static const size_t HASHTABLE_SIZE = 137;
+	std::deque<TypenameEntry> bucket[HASHTABLE_SIZE];
+	std::size_t hash(std::string name);
+public:
+	bool insert(std::string name, int cat, std::string nspace = "");
+	int lookup(std::string name);
+	std::pair<int,std::string> lookup_namespace(std::string name);
+	TypenameEntry get_entry(std::string name);
+};
+
+/*
+ * Direct comparison operators for between TypenameEntry objects and either 
+ * other TypenameEntry objects or std::strings directly.
+ */
 inline bool operator==(const TypenameEntry& lhs, const std::string& rhs) { 
 	return (lhs.name == rhs);
 }
@@ -31,16 +47,6 @@ inline bool operator!=(const TypenameEntry& lhs, const TypenameEntry& rhs) {
 	return !(lhs == rhs.name);
 }
 
-class TypenameTable {
-private:
-	static const size_t HASHTABLE_SIZE = 137;
-	std::deque<TypenameEntry> bucket[HASHTABLE_SIZE];
-	std::size_t hash(std::string name);
-public:
-	bool insert(std::string name, int cat, std::string nspace = "");
-	int lookup(std::string name);
-	std::pair<int,std::string> lookup_namespace(std::string name);
-	TypenameEntry get_entry(std::string name);
-};
 
-#endif /* _HASHMAP_HH_ */
+
+#endif /* _TYPENAME_HH_ */

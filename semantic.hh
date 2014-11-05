@@ -11,7 +11,7 @@
 #define _SEMANTIC_HH_
 
 #include <deque>
-#include <utility>
+#include <boost/tuple/tuple.hpp>
 
 #include "symtable.hh"
 #include "treenode.hh"
@@ -22,11 +22,11 @@
  */
 class SemanticAnalyzer {
 private:
-	std::deque< std::pair<TreeNode,SymbolTable> > pairs;
-	void generate_table(TreeNode &t, SymbolTable &s); /* Driver for creating the individual table */
-	void symbolize_node(TreeNode &t, SymbolTable &s); /* Performs actions based on what production rule is seen. */
+	std::deque< boost::tuple<TreeNode*,SymbolTable,TypenameTable> > tuples;
+	void generate_table(TreeNode *t, SymbolTable &s, TypenameTable &e); /* Driver for creating the individual table */
+	void symbolize_node(TreeNode *t, SymbolTable &s, TypenameTable &e); /* Performs actions based on what production rule is seen. */
 public:
-	void add_tree(TreeNode root); /* Instanciates an empty gst with it? */
+	void add_tree(TreeNode *root, TypenameTable table); /* Instanciates an empty gst with it? */
 	void generate_all_tables(); /* Iterates through all pairs to populate all tables */
 };
 

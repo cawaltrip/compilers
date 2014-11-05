@@ -62,8 +62,8 @@ extern int yylineno;
 extern int yylex();
 extern std::string yyfilename;
 extern std::string yytext;
+extern TypenameTable ident_table;
 
-TypenameTable ident_table;
 struct TreeNode *root;
 
 struct TreeNode* alloc_tree(yyrule y, int num_kids, ...);

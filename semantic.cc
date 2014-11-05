@@ -12,8 +12,8 @@
 #include "120rules.hh"
 #include "semantic.hh"
 
-void SemanticAnalyzer::add_tree(TreeNode r) {
-	this->pairs.push_back(std::make_pair(r,SymbolTable()));
+void SemanticAnalyzer::add_tree(TreeNode *r, TypenameTable e) {
+	this->tuples.push_back(boost::make_tuple(r,SymbolTable(),e));
 }
 
 /* 
@@ -21,14 +21,16 @@ void SemanticAnalyzer::add_tree(TreeNode r) {
  * parse tree and creating a symbol table from it.
  */
 void SemanticAnalyzer::generate_all_tables() {
-	std::deque< std::pair<TreeNode,SymbolTable> >::iterator it;
-	for(it = this->pairs.begin(); it != this->pairs.end(); ++it) {
-		std::size_t i = it - this->pairs.begin();
-		//std::pair<TreeNode,SymbolTable> &p(this->pairs[i]);
-		TreeNode &t(this->pairs[i].first);
-		SymbolTable &s(this->pairs[i].second);
+	std::deque< 
+		boost::tuple<TreeNode*,SymbolTable,TypenameTable> 
+		>::iterator it;
+	for(it = this->tuples.begin(); it != this->tuples.end(); ++it) {
+		std::size_t i = it - this->tuples.begin();
 
-		this->generate_table(t,s);
+		TreeNode *t(this->tuples[i].get<0>());
+		SymbolTable &s(this->tuples[i].get<1>());
+		TypenameTable &e(this->tuples[i].get<2>());
+		this->generate_table(t,s,e);
 	}
 }
 
@@ -36,17 +38,20 @@ void SemanticAnalyzer::generate_all_tables() {
  * Parse the parse tree in a pre-order traversal, identifying and creating
  * all symbols along the way and populating the proper symbol table.
  */
-void SemanticAnalyzer::generate_table(TreeNode &t, SymbolTable &s) {
-
+void SemanticAnalyzer::generate_table(TreeNode *t, SymbolTable &s,
+					TypenameTable &e) {
+	switch(t->prod_num) {
+		/* Basic Symbols */
+		case SIMPLE_DECL_1:
+			break;
+	}
 }
 
 /*
  * Contains the different cases for what the production rule could be and
  * creates the symbol(s) for the symbol table.
  */
-void SemanticAnalyzer::symbolize_node(TreeNode &t, SymbolTable &s) {
-	switch(t.prod_num) {
-		/* Basic Symbols */
-		
-	}
+void SemanticAnalyzer::symbolize_node(TreeNode *t, SymbolTable &s,
+					TypenameTable &e) {
+
 }
