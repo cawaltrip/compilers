@@ -26,6 +26,7 @@ using namespace boost;
 Token *yytoken;
 string yyfilename;
 TypenameTable ident_table;
+SemanticAnalyzer sa;
 
 /*
  * The main driver of the compiler.  Parses the command line for all 
@@ -84,13 +85,15 @@ int main(int argc, char *argv[])
 					print_tree(root);
 					cout << endl;
 				}
-			SemanticAnalyzer sa;
 			sa.add_tree(root, ident_table);
 			}
 		
 		} else {
 			cout << "Cannot find include file '" << yyfilename;
 		}
+	}
+	if(!FULL_PARSE_TREES) {
+		sa.generate_all_tables();
 	}
 
 	return(0);

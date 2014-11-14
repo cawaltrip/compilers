@@ -10,17 +10,26 @@
 #include "symtable.hh"
 #include "exception.hh"
 
+/*
 AbstractSymbol::AbstractSymbol(std::string n, TypenameEntry t) 
-			: name(n), type(t) {
-	//this->&name = this->entry.name;
-	//this->entry = e; /* Should be redundant */
-	//this->symb = s;
+			: name(n), type(t) { }
+*/
+AbstractSymbol::AbstractSymbol(std::string n, std::string t)
+			: name(n), type_string(t) { }
 
-	std::cout << "Symbol Created:" << std::endl;
-	std::cout << "Name: " << this->name << std::endl;
-	std::cout << "Entry: " << this->type.name << " " << 
-			this->type.category << std::endl;
-	std::cout << "Symbol: Something will go here" << std::endl;
+/* The only time that SymbolTable's parent will be NULL is the Global Symbol
+ * Table.  Given this and the n-ary tree (represented using std::deque),
+ * resolving scope should be relatively simple.
+ */
+SymbolTable::SymbolTable(SymbolTable *p) {
+	this->parent = p;
+}
+
+/*
+ * Just a wrapper function for nesting scopes.
+ */
+void SymbolTable::add_sub_table(SymbolTable *k) {
+	this->kids.push_back(k);
 }
 /* 
  * This hashing method is identical to the Typename Table hash method.
@@ -69,3 +78,6 @@ bool SymbolTable::symbol_exists(std::string name) {
 	}
 	return true;
 }
+
+BasicSymbol::BasicSymbol(std::string n, std::string t, bool p)
+				: AbstractSymbol(n,t), pointer(p) { }

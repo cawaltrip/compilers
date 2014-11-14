@@ -22,9 +22,9 @@
  */
 class SemanticAnalyzer {
 private:
-	std::deque< boost::tuple<TreeNode*,SymbolTable,TypenameTable> > tuples;
-	void generate_table(TreeNode *t, SymbolTable &s, TypenameTable &e); /* Driver for creating the individual table */
-	void symbolize_node(TreeNode *t, SymbolTable &s, TypenameTable &e); /* Performs actions based on what production rule is seen. */
+	std::deque< boost::tuple<TreeNode*,SymbolTable*,TypenameTable> > tuples;
+	void generate_table(TreeNode *t, SymbolTable *s, TypenameTable &e); /* Driver for creating the individual table */
+	void add_basic_symbol(TreeNode *t, std::string str, SymbolTable *s);
 public:
 	void add_tree(TreeNode *root, TypenameTable table); /* Instanciates an empty gst with it? */
 	void generate_all_tables(); /* Iterates through all pairs to populate all tables */

@@ -25,8 +25,10 @@
 class AbstractSymbol {
 public:
 	std::string name;
-	TypenameEntry type;
-	explicit AbstractSymbol(std::string n, TypenameEntry t);
+	std::string type_string;
+	//TypenameEntry type;
+	//explicit AbstractSymbol(std::string n, TypenameEntry t);
+	explicit AbstractSymbol(std::string n, std::string t);
 };
 
 /*
@@ -59,9 +61,11 @@ private:
 	std::deque<AbstractSymbol> bucket[HASHTABLE_SIZE];
 	std::size_t hash(std::string name);
 	bool symbol_exists(std::string n);
-	std::deque<SymbolTable*> kids;
 	SymbolTable *parent;
 public:
+	SymbolTable(SymbolTable *p = NULL);
+	std::deque<SymbolTable*> kids;
+	void add_sub_table(SymbolTable *k);
 	bool insert(std::string n, AbstractSymbol s);
 	AbstractSymbol search(std::string n);
 	AbstractSymbol get_symbol(std::string n);
@@ -74,7 +78,7 @@ public:
 class BasicSymbol : public AbstractSymbol {
 public:
 	bool pointer;
-	BasicSymbol(std::string n, TypenameEntry t, bool p = false);
+	BasicSymbol(std::string n, std::string t, bool p = false);
 };
 
 /*
@@ -83,8 +87,8 @@ public:
 class ClassSymbol : public AbstractSymbol {
 	SymbolTable priv;
 	SymbolTable pub;
-	ClassSymbol(std::string n, TypenameEntry t);
-	ClassSymbol(std::string n, TypenameEntry t,
+	ClassSymbol(std::string n, std::string t);
+	ClassSymbol(std::string n, std::string t,
 				SymbolTable pr, SymbolTable pu);
 };
 
@@ -96,9 +100,9 @@ class FunctionSymbol : public AbstractSymbol {
 	bool def_needed;
 	SymbolTable params;
 	SymbolTable locals;
-	FunctionSymbol(std::string n, TypenameEntry t,
+	FunctionSymbol(std::string n, std::string t,
 				bool ptr = false, bool def = false);
-	FunctionSymbol(std::string n, TypenameEntry t,
+	FunctionSymbol(std::string n, std::string t,
 				SymbolTable par, SymbolTable loc,
 				bool ptr = false, bool def = false);
 };
@@ -109,7 +113,7 @@ class FunctionSymbol : public AbstractSymbol {
 class ArraySymbol : public AbstractSymbol {
 	bool pointer;
 	std::size_t max_elements;
-	ArraySymbol(std::string n, TypenameEntry t,
+	ArraySymbol(std::string n, std::string t,
 				bool p = false, std::size_t e = 1);
 };
 
