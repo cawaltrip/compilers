@@ -1,6 +1,5 @@
-int x;
-int y;
-int z;
+int x, y, z;
+int a;
 int x;
 
 /*

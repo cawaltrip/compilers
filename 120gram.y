@@ -692,7 +692,7 @@ decl_specifier:
 	| function_specifier
 		{ $$ = alloc_tree(DECL_SPEC_3, 1, $1); }
 	| FRIEND
-		{ $$ = alloc_tree(DECL_SPEC_4, 1, $1); }
+		{ $$ = alloc_tree(DECL_SPEC_4, 1, $1); unsupported_feature(); }
 	| TYPEDEF
 		{ $$ = alloc_tree(DECL_SPEC_5, 1, $1); }
 	;

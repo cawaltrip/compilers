@@ -17,7 +17,8 @@ AbstractSymbol::AbstractSymbol(std::string n, TypenameEntry t)
 AbstractSymbol::AbstractSymbol(std::string n, std::string t)
 			: name(n), type_string(t) { }
 
-/* The only time that SymbolTable's parent will be NULL is the Global Symbol
+/* 
+ * The only time that SymbolTable's parent will be NULL is the Global Symbol
  * Table.  Given this and the n-ary tree (represented using std::deque),
  * resolving scope should be relatively simple.
  */

@@ -41,15 +41,20 @@ void SemanticAnalyzer::generate_all_tables() {
  */
 void SemanticAnalyzer::generate_table(TreeNode *t, SymbolTable *s,
 					TypenameTable &e) {
-	switch(t->prod_num) {
-		/* Basic Symbols */
-		case SIMPLE_DECL_1:
-			if(t->kids[1]->prod_num == INIT_DECL_1) {
-				TreeNode *n = t->kids[1]->kids[0];
-				std::string ts = t->kids[0]->t->get_text(); 
-				this->add_basic_symbol(n, ts, s);
-			}
+	/* 
+	 * Get each part of the production rule using integer division
+	 * and modulo.
+	 */
+	std::size_t base_rule = t->prod_num / 1000;
+	std::size_t rule_num = t->prod_num % 1000;
+
+	switch(base_rule) {
+		case SIMPLE_DECL_R:
+			this->symbolize_simple_decl(t, s);
 			break;
+		/* 
+		 * If no rule is matched, parse all of the children that exist.
+		 */
 		default:
 			if(t->num_kids > 0) {
 				for(int i = 0; i < t->num_kids; ++i) {
@@ -63,6 +68,8 @@ void SemanticAnalyzer::generate_table(TreeNode *t, SymbolTable *s,
 	}
 }
 
+
+
 /*
  * Check the current symbol table to make sure a symbol hasn't already been
  * declared and if not then create a new symbol and add it to the table.
@@ -72,12 +79,59 @@ void SemanticAnalyzer::add_basic_symbol(TreeNode *t, std::string str,
 	std::string n = t->t->get_text();
 	BasicSymbol basic(n, str);
 	if(s->insert(n, basic)) {
-		std::cout << "'" << n << "' (" << str 
+		std::clog << "'" << n << "' (" << str 
 			<< ") added to table!" << std::endl;
 	} else {
-		std::cout << "'" << n << 
-			"' already declared in the local scope" << std::endl;
+		std::cerr << "'" << n << 
+			"' has already been declared!" << std::endl;
 		exit(3);
 	}
 
+}
+
+/*
+ * Parse a simple declaration and find all symbols that need to be added
+ * and then add them to the symbol table.
+ */
+void SemanticAnalyzer::symbolize_simple_decl(TreeNode *t, SymbolTable *s) {
+	std::string ts;
+	switch(t->prod_num) {
+		case SIMPLE_DECL_1:
+			ts = t->kids[0]->t->get_text();
+			switch(t->kids[1]->prod_num) {
+				case INIT_DECL_1:
+					this->symbolize_init_decl(
+						t->kids[1]->kids[0], s, ts);
+					break;
+				case INIT_DECL_LIST_2:
+					this->symbolize_init_decl_list(
+						t->kids[1], s, ts);
+					break;
+			}
+			break;
+		case SIMPLE_DECL_2:
+			std::clog << "SIMPLE_DECL_2 ???" << std::endl;
+			break;
+		default:
+			break;
+	}
+}
+void SemanticAnalyzer::symbolize_init_decl(TreeNode *t, SymbolTable *s, 
+							std::string ident) {
+	this->add_basic_symbol(t, ident, s);
+}
+void SemanticAnalyzer::symbolize_init_decl_list(TreeNode *t, SymbolTable *s,
+							std::string ident) {
+	
+	/* Currently only adds the first of the list to the symbol table. */
+	if(t->kids[0] != NULL) {
+		if(t->kids[0]->prod_num == INIT_DECL_LIST_2) {
+			std::cout << "Symbolizing init decl list" << std::endl;
+			this->symbolize_init_decl_list(t->kids[0], s, ident);
+		} else if(t->kids[0]->prod_num == INIT_DECL_1) {
+			std::cout << "Symbolizing variable" << std::endl;
+			this->symbolize_init_decl(t->kids[0]->kids[0], 
+								s, ident);
+		}
+	}
 }
