@@ -12,6 +12,7 @@
 
 #include "120rules.hh"
 #include "semantic.hh"
+#include "treenode.hh"
 
 void SemanticAnalyzer::add_tree(TreeNode *r, TypenameTable e) {
 	this->tuples.push_back(boost::make_tuple(r,new SymbolTable(),e));
@@ -76,15 +77,21 @@ void SemanticAnalyzer::generate_table(TreeNode *t, SymbolTable *s,
  */
 void SemanticAnalyzer::add_basic_symbol(TreeNode *t, std::string str, 
 							SymbolTable *s) {
-	std::string n = t->t->get_text();
-	BasicSymbol basic(n, str);
-	if(s->insert(n, basic)) {
-		std::clog << "'" << n << "' (" << str 
-			<< ") added to table!" << std::endl;
+	if(t->t != NULL) {
+		std::string n = t->t->get_text();
+		BasicSymbol basic(n, str);
+		if(s->insert(n, basic)) {
+			std::clog << "'" << n << "' (" << str 
+				<< ") added to table!" << std::endl;
+		} else {
+			std::cerr << "'" << n << 
+				"' has already been declared!" << std::endl;
+			exit(3);
+		}
 	} else {
-		std::cerr << "'" << n << 
-			"' has already been declared!" << std::endl;
-		exit(3);
+		std::cerr << "Cannot add a non-terminal to symbol table." << std::endl;
+		std::cerr << t->prod_text << std::endl;
+		exit(-1);
 	}
 
 }
@@ -101,7 +108,7 @@ void SemanticAnalyzer::symbolize_simple_decl(TreeNode *t, SymbolTable *s) {
 			switch(t->kids[1]->prod_num) {
 				case INIT_DECL_1:
 					this->symbolize_init_decl(
-						t->kids[1]->kids[0], s, ts);
+						t->kids[1], s, ts);
 					break;
 				case INIT_DECL_LIST_2:
 					this->symbolize_init_decl_list(
@@ -118,20 +125,32 @@ void SemanticAnalyzer::symbolize_simple_decl(TreeNode *t, SymbolTable *s) {
 }
 void SemanticAnalyzer::symbolize_init_decl(TreeNode *t, SymbolTable *s, 
 							std::string ident) {
-	this->add_basic_symbol(t, ident, s);
+	this->add_basic_symbol(t->kids[0], ident, s); /* Only handles basic types */
+
+	/*
+	 * An init-decl-list can be either the variable name itself or could be
+	 * something like a function that we need to dig further down into.
+	 */
+
 }
 void SemanticAnalyzer::symbolize_init_decl_list(TreeNode *t, SymbolTable *s,
 							std::string ident) {
-	
-	/* Currently only adds the first of the list to the symbol table. */
-	if(t->kids[0] != NULL) {
-		if(t->kids[0]->prod_num == INIT_DECL_LIST_2) {
-			std::cout << "Symbolizing init decl list" << std::endl;
-			this->symbolize_init_decl_list(t->kids[0], s, ident);
-		} else if(t->kids[0]->prod_num == INIT_DECL_1) {
-			std::cout << "Symbolizing variable" << std::endl;
-			this->symbolize_init_decl(t->kids[0]->kids[0], 
-								s, ident);
+	for(int i = 0; i < t->num_kids; ++i) {
+		if(t->kids[i] != NULL) {
+			switch(t->kids[i]->prod_num) {
+				case INIT_DECL_LIST_2:
+					this->symbolize_init_decl_list(
+								t->kids[i],
+								s,
+								ident);
+					break;
+				case INIT_DECL_1:
+					this->symbolize_init_decl(
+								t->kids[i],
+								s,
+								ident);
+					break;
+			}
 		}
 	}
 }
