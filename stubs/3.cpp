@@ -1,4 +1,4 @@
-void foo(int s);
+void fnc1(int prm1);
 
 /*
 Results:
