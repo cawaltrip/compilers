@@ -20,9 +20,6 @@
 # Verbose Parse Tree
 120fullgram.y
 
-# Configuration files
-*.cfg
-
 # OSX Files
 .DS_Store
 
