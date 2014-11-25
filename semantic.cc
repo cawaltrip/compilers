@@ -29,6 +29,9 @@ void SemanticAnalyzer::generate_all_tables() {
 	for(it = this->tuples.begin(); it != this->tuples.end(); ++it) {
 		std::size_t i = it - this->tuples.begin();
 
+		std::clog << "Generating table number " << i << ": ";
+		std::clog << std::endl;
+
 		TreeNode *t(this->tuples[i].get<0>());
 		SymbolTable *s(this->tuples[i].get<1>());
 		TypenameTable &e(this->tuples[i].get<2>());
@@ -99,6 +102,9 @@ void SemanticAnalyzer::add_basic_symbol(TreeNode *t, std::string str,
 /*
  * Parse a simple declaration and find all symbols that need to be added
  * and then add them to the symbol table.
+ *
+ * A simple declarator will either be an initialization list or a
+ * class/function initialization.
  */
 void SemanticAnalyzer::symbolize_simple_decl(TreeNode *t, SymbolTable *s) {
 	std::string ts;

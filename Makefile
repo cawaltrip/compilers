@@ -1,7 +1,7 @@
 #######################################
 # Compiler Options ####################
 #######################################
-CPP=clang++
+CPP=g++
 CPPFLAGS=-c -g -std=c++98 -x c++
 LDFLAGS=
 LEX=flex
@@ -33,7 +33,7 @@ OBJECTS=$(CC_SOURCES:.cc=.o) $(C_SOURCES:.c=.o)
 all: $(BIN)
 
 $(BIN): $(OBJECTS)
-	$(CPP) $(LDFLAGS) $^ -o $@
+	$(CPP) -lboost_program_options $(LDFLAGS) $^ -o $@
 
 .c.o:
 	$(CPP) $(CPPFLAGS) -c $< -o $@

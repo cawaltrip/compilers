@@ -11,8 +11,8 @@
 #define _GLOBALS_HH_
 
 /* Read-only flags */
-static const bool FULL_PARSE_TREES = false;
-static const bool PRINT_PARSE_TREES = true;
+static bool FULL_PARSE_TREES = false;
+static bool PRINT_PARSE_TREES = true;
 
 /* Global writable flags */
 static bool PARSE_ERROR = false;

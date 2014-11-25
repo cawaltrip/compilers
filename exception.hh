@@ -27,6 +27,11 @@ public:
 	}
 };
 
+class EHaltCommandLineParse : public Exception {
+public:
+	EHaltCommandLineParse() : Exception("Stopped parsing command line") {}
+};
+
 class ENoTypenameEntry : public Exception {
 public:
 	ENoTypenameEntry() : Exception("Typename Entry not found") {}
