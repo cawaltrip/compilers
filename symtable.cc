@@ -90,6 +90,7 @@ AbstractSymbol SymbolTable::get_symbol(std::string name) {
 AbstractSymbol SymbolTable::get_scoped_symbol(std::string name) {
 	try {
 		AbstractSymbol symb = this->get_symbol(name);
+		return symb;
 	} catch(ENoSymbolEntry e) {
 		if(this->parent == NULL) {
 			throw ENoSymbolEntry();
@@ -97,7 +98,6 @@ AbstractSymbol SymbolTable::get_scoped_symbol(std::string name) {
 			this->parent->get_scoped_symbol(name);
 		}
 	}
-	return symb;
 }
 
 /*
