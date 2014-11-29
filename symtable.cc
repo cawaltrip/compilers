@@ -88,14 +88,13 @@ AbstractSymbol SymbolTable::get_symbol(std::string name) {
  * the symbol is found, it's returned.
  */
 AbstractSymbol SymbolTable::get_scoped_symbol(std::string name) {
-	AbstractSymbol symb;
 	try {
-		symb = this->get_symbol(n);
+		AbstractSymbol symb = this->get_symbol(name);
 	} catch(ENoSymbolEntry e) {
 		if(this->parent == NULL) {
 			throw ENoSymbolEntry();
 		} else {
-			this->parent->get_scoped_symbol(n);
+			this->parent->get_scoped_symbol(name);
 		}
 	}
 	return symb;
