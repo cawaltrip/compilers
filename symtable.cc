@@ -80,6 +80,28 @@ AbstractSymbol SymbolTable::get_symbol(std::string name) {
 }
 
 /*
+ * Tries to get the symbol from the current scope.  If get_symbol throws an
+ * ENoSymbolEntry, then the current scope doesn't have the symbol that is
+ * being search for.  If the parent symbol table is NULL then we have reached
+ * the global symbol table and the symbol doesn't exist so throw
+ * ENoSymbolEntry again and let the calling function handle the exception. If
+ * the symbol is found, it's returned.
+ */
+AbstractSymbol SymbolTable::get_scoped_symbol(std::string name) {
+	AbstractSymbol symb;
+	try {
+		symb = this->get_symbol(n);
+	} catch(ENoSymbolEntry e) {
+		if(this->parent == NULL) {
+			throw ENoSymbolEntry();
+		} else {
+			this->parent->get_scoped_symbol(n);
+		}
+	}
+	return symb;
+}
+
+/*
  * Will return true if a symbol is found.  If get_symbol throws
  * an ENoSymbolEntry exception, then the symbol isn't in the symbol
  * table.

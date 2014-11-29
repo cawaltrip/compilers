@@ -52,9 +52,6 @@ inline bool operator!=(const AbstractSymbol &lhs, const AbstractSymbol &rhs) {
 /*
  * The hash table for the symbols.  Uses deques as the buckets just like the
  * TypenameTable does.
- *
- * TODO: Combine SymbolTable and TypenameTable into a templated hash table if
- *	 possible.
  */
 class SymbolTable {
 private:
@@ -66,10 +63,11 @@ private:
 public:
 	SymbolTable(SymbolTable *p = NULL);
 	std::deque<SymbolTable*> kids;
-	void add_sub_table(SymbolTable *k);
+	void add_sub_table(SymbolTable *k); /* Remove eventually */
 	bool insert(std::string n, AbstractSymbol s);
 	AbstractSymbol search(std::string n);
 	AbstractSymbol get_symbol(std::string n);
+	AbstractSymbol get_scoped_symbol(std::string n);
 	bool remove(std::string n);
 	void print_table(std::size_t depth = 0); /* May want this private */
 	bool empty();
