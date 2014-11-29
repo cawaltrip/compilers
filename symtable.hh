@@ -25,10 +25,11 @@
 class AbstractSymbol {
 public:
 	std::string name;
-	std::string type_string;
+	std::string type;
 	//TypenameEntry type;
 	//explicit AbstractSymbol(std::string n, TypenameEntry t);
 	explicit AbstractSymbol(std::string n, std::string t);
+	virtual std::string to_string(std::size_t depth = 0);
 };
 
 /*
@@ -70,6 +71,9 @@ public:
 	AbstractSymbol search(std::string n);
 	AbstractSymbol get_symbol(std::string n);
 	bool remove(std::string n);
+	void print_table(std::size_t depth = 0); /* May want this private */
+	bool empty();
+	std::string to_string(std::size_t depth = 0);
 };
 
 /* 
@@ -85,6 +89,7 @@ public:
  * Class symbols are class definitions.
  */
 class ClassSymbol : public AbstractSymbol {
+public:
 	SymbolTable priv;
 	SymbolTable pub;
 	ClassSymbol(std::string n, std::string t);
@@ -96,21 +101,24 @@ class ClassSymbol : public AbstractSymbol {
  * Function prototype AND function definitions.
  */
 class FunctionSymbol : public AbstractSymbol {
+public:
 	bool pointer;
 	bool def_needed;
 	SymbolTable params;
 	SymbolTable locals;
 	FunctionSymbol(std::string n, std::string t,
-				bool ptr = false, bool def = false);
+				bool ptr = false, bool def_needed = true);
 	FunctionSymbol(std::string n, std::string t,
 				SymbolTable par, SymbolTable loc,
-				bool ptr = false, bool def = false);
+				bool ptr = false, bool def_needed = true);
+	std::string to_string(std::size_t depth = 0);
 };
 
 /*
  * Array declarations.
  */
 class ArraySymbol : public AbstractSymbol {
+public:
 	bool pointer;
 	std::size_t max_elements;
 	ArraySymbol(std::string n, std::string t,

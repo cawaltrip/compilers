@@ -5,6 +5,7 @@
 #include "token.hh"
 #include "120gram.tab.h"
 
+/* Simple wrapper functions for commonly checked node status */
 bool is_leaf(struct TreeNode *t) {
 	return !(t->num_kids);
 }

@@ -1709,7 +1709,7 @@ struct TreeNode* alloc_tree(yyrule y, int num_kids, ...) {
 	struct TreeNode *t = new struct TreeNode();
 	if(!t) {
 		std::cerr << "TreeNode: Cannot allocate memory." << std::endl;
-		exit(-1);
+		exit(EXIT_FAILURE);
 	}
 	t->prod_num = y;
 	t->prod_text = get_production_text(y);
@@ -1748,7 +1748,7 @@ static void unsupported_feature(std::string str) {
 	if(FULL_PARSE_TREES) { 
 		PARSE_ERROR = true;
 	} else {
-		exit(3); /* return 3 is unsupported feature detected */
+		exit(EXIT_UNSUPPORTED); /* return 3 is unsupported feature detected */
 	}
 }
 
@@ -1759,6 +1759,6 @@ static void yyerror(std::string str) {
 	s << std::endl;
 
 	std::cerr << s.str();
-	exit(2);
+	exit(EXIT_SYNTAX_ERROR);
 }
 

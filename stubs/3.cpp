@@ -1,18 +1,5 @@
-void fnc1(int prm1);
-
-/*
-Results:
-
-simple-decl-1 (152001,3)
-  353: void
-  init-decl-1 (174001,2)
-    direct-decl-5 (176005,4)
-      258: foo
-      40: (
-      param-decl-1 (187001,2)
-        322: int
-        258: s
-      41: )
-  59: ;
-
-*/
+int basic_symb;
+void noparamfunc();
+void parameterized_function_1(int prm1);
+void parameterized_function_3(int prm1, float prm2, char prm3);
+int second_basic_symbol;

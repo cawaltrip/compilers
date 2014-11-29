@@ -42,4 +42,9 @@ public:
 	ENoSymbolEntry() : Exception("Symbol Entry not found") {}
 };
 
+class EBadGrammarParse : public Exception {
+public:
+	EBadGrammarParse() : Exception("Unexpected grammar rule parse") {}
+};
+
 #endif /* _EXCEPTION_HH_ */

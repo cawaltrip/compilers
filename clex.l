@@ -31,6 +31,7 @@ LIT      \"(\\.|[^\\"])*\"
 #include <list>
 #include <libgen.h> /* dirname and basename */
 #include "120gram.tab.h"
+#include "globals.hh"
 #include "token.hh"
 #include "treenode.hh"
 #include "typename.hh"
@@ -356,7 +357,7 @@ void lexerr(std::string str)
 
 	errors++;
 	std::cerr << s.str();
-	exit(1);
+	exit(EXIT_LEXICAL_ERROR);
 }
 void add_to_lookup(std::deque<std::string> filelist, int category) {
 	for(int i = 0; i < filelist.size(); ++i)

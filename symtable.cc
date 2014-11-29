@@ -5,6 +5,7 @@
  * author: Chris Waltrip <walt2178@vandals.uidaho.edu>
  */
 #include <iostream>
+#include <sstream>
 #include <string>
 
 #include "symtable.hh"
@@ -15,7 +16,11 @@ AbstractSymbol::AbstractSymbol(std::string n, TypenameEntry t)
 			: name(n), type(t) { }
 */
 AbstractSymbol::AbstractSymbol(std::string n, std::string t)
-			: name(n), type_string(t) { }
+			: name(n), type(t) { }
+std::string AbstractSymbol::to_string(std::size_t depth) {
+	std::string spaces = std::string(depth, '>');
+	return(spaces + this->type + " " + this->name);
+}
 
 /* 
  * The only time that SymbolTable's parent will be NULL is the Global Symbol
@@ -53,6 +58,14 @@ bool SymbolTable::insert(std::string n, AbstractSymbol s) {
 	return false;
 }
 
+bool SymbolTable::empty() {
+	for(std::size_t i = 0; i < this->HASHTABLE_SIZE; ++i) {
+		if(!this->bucket[i].empty())
+			return false;
+	}
+	return true;
+}
+
 AbstractSymbol SymbolTable::get_symbol(std::string name) {
 	std::size_t h = this->hash(name);
 	std::deque<AbstractSymbol> b = this->bucket[h];
@@ -80,5 +93,35 @@ bool SymbolTable::symbol_exists(std::string name) {
 	return true;
 }
 
+void SymbolTable::print_table(std::size_t depth) {
+	std::clog << this->to_string(depth) << std::endl;
+}
+
+std::string SymbolTable::to_string(std::size_t depth) {
+	std::stringstream ss;
+	for(std::size_t i = 0; i < this->HASHTABLE_SIZE; ++i) {
+		std::deque<AbstractSymbol> b = this->bucket[i];
+		std::deque<AbstractSymbol>::iterator it;
+		for(it = b.begin(); it != b.end(); ++it) {
+			ss << it->to_string(depth) << std::endl;
+		}
+	}
+	return ss.str();
+}
+
+/* Basic Symbol constructor */
 BasicSymbol::BasicSymbol(std::string n, std::string t, bool p)
 				: AbstractSymbol(n,t), pointer(p) { }
+
+/* Function symbol constructor */
+FunctionSymbol::FunctionSymbol(std::string n, std::string t, bool p, bool d)
+				: AbstractSymbol(n,t), pointer(p),
+				def_needed(d) { }
+
+std::string FunctionSymbol::to_string(std::size_t depth) {
+	std::stringstream ss;
+	ss << AbstractSymbol::to_string(depth) << std::endl;
+	ss << this->params.to_string(depth+1) << std::endl;
+	ss << this->locals.to_string(depth+1) << std::endl;
+	return ss.str();
+}

@@ -4,6 +4,7 @@
 #include <string>
 #include "token.hh"
 
+/* TODO: Dynamically allocate kids */
 struct TreeNode {
 	int prod_num;
 	std::string prod_text;

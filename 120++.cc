@@ -3,7 +3,6 @@
 #include <fstream>
 #include <string>
 #include <sstream>
-#include <list>
 #include <unistd.h> /* chdir() */
 #include <libgen.h> /* dirname and basename */
 #include <boost/program_options.hpp> /* command line arguments parser */
@@ -63,8 +62,6 @@ int main(int argc, char *argv[])
 		return(EXIT_FAILURE);
 	}
 
-	cout << "Command line parsed successfully and has returned." << endl;
-
 	/* Parse files */
 	for(size_t i = 0; i < file_list.size(); ++i) {
 		char *tmp1 = strdup(file_list[i].c_str());
@@ -97,44 +94,10 @@ int main(int argc, char *argv[])
 	}
 	if(!FULL_PARSE_TREES) {
 		sa.generate_all_tables();
+		sa.print_all_tables();
 	}
 
 	return(EXIT_SUCCESS);
-
-	/*
-	for (f_iter = file_list.begin(); f_iter != file_list.end(); ++f_iter) {
-		char *tmp = strdup(f_iter->c_str());
-		char *tmp1 = strdup(tmp);
-		yyfilename.assign(basename(tmp));
-		chdir(dirname(tmp1));
-		free(tmp);
-		free(tmp1);
-
-		if ((fp = fopen(yyfilename.c_str(), "r"))!= NULL) {
-			yyin = fp;
-			yypush_buffer_state(yy_create_buffer(yyin, 
-							YY_BUF_SIZE));
-			yydebug=0;
-			int ret = yyparse();
-			fclose(fp);
-			yylineno = 1;
-
-			if(!ret) {
-				if(PRINT_PARSE_TREES) {
-					print_tree(root);
-					cout << endl;
-				}
-			sa.add_tree(root, ident_table);
-			}
-		
-		} else {
-			cout << "Cannot find include file '" << yyfilename;
-		}
-	}
-	if(!FULL_PARSE_TREES) {
-		sa.generate_all_tables();
-	}
-	*/
 }
 
 vector<string> parse_command_line(int argc, char *argv[]) {

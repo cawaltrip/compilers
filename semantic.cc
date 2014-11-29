@@ -11,6 +11,8 @@
 #include <iostream>
 
 #include "120rules.hh"
+#include "exception.hh"
+#include "globals.hh"
 #include "semantic.hh"
 #include "treenode.hh"
 
@@ -36,6 +38,26 @@ void SemanticAnalyzer::generate_all_tables() {
 		SymbolTable *s(this->tuples[i].get<1>());
 		TypenameTable &e(this->tuples[i].get<2>());
 		this->generate_table(t,s,e);
+	}
+}
+
+/*
+ * Iterate through each of the tuples and print the symbol tables from each
+ * of them.
+ */
+void SemanticAnalyzer::print_all_tables() {
+	std::deque< 
+		boost::tuple<TreeNode*,SymbolTable*,TypenameTable> 
+		>::iterator it;
+	for(it = this->tuples.begin(); it != this->tuples.end(); ++it) {
+		std::size_t i = it - this->tuples.begin();
+
+		std::clog << "Printing symbol table #" << i << std::endl;
+		std::clog << "===================================" << std::endl;
+
+		this->tuples[i].get<1>()->print_table();
+
+		std::clog << std::endl;
 	}
 }
 
@@ -78,23 +100,23 @@ void SemanticAnalyzer::generate_table(TreeNode *t, SymbolTable *s,
  * Check the current symbol table to make sure a symbol hasn't already been
  * declared and if not then create a new symbol and add it to the table.
  */
-void SemanticAnalyzer::add_basic_symbol(TreeNode *t, std::string str, 
-							SymbolTable *s) {
+void SemanticAnalyzer::add_basic_symbol(TreeNode *t, SymbolTable *s, 
+							std::string type) {
 	if(t->t != NULL) {
 		std::string n = t->t->get_text();
-		BasicSymbol basic(n, str);
+		BasicSymbol basic(n, type);
 		if(s->insert(n, basic)) {
-			std::clog << "'" << n << "' (" << str 
+			std::clog << "'" << n << "' (" << type
 				<< ") added to table!" << std::endl;
 		} else {
 			std::cerr << "'" << n << 
 				"' has already been declared!" << std::endl;
-			exit(3);
+			exit(EXIT_SEMANTIC_ERROR);
 		}
 	} else {
 		std::cerr << "Cannot add a non-terminal to symbol table." << std::endl;
 		std::cerr << t->prod_text << std::endl;
-		exit(-1);
+		exit(EXIT_SEMANTIC_ERROR);
 	}
 
 }
@@ -129,20 +151,38 @@ void SemanticAnalyzer::symbolize_simple_decl(TreeNode *t, SymbolTable *s) {
 			break;
 	}
 }
+/*
+ * Initialization declarations include basic variable declarations as well as
+ * function prototypes.  Parse the subtree and identify the type of declaration
+ * and add the necessary symbols to the symbol table.
+ */
 void SemanticAnalyzer::symbolize_init_decl(TreeNode *t, SymbolTable *s, 
 							std::string ident) {
-	this->add_basic_symbol(t->kids[0], ident, s); /* Only handles basic types */
+	
+	/* Basic types contain a leaf in the first child position */
+	if(is_token(t->kids[0])) {
+		this->add_basic_symbol(t->kids[0], s, ident);
+		return;
+	}
 
-	/*
-	 * An init-decl-list can be either the variable name itself or could be
-	 * something like a function that we need to dig further down into.
-	 */
+	/* Function prototypes */
+	if(t->kids[0]->prod_num == DIRECT_DECL_5) {
+		this->symbolize_function_prototype(t->kids[0], s, ident);
+		return;
+	}
 
+	/* Undefined parse reached */
+	throw EBadGrammarParse();
 }
+
+/*
+ * An init-decl-list can be either the variable name itself or could be
+ * something like a function that we need to dig further down into.
+ */
 void SemanticAnalyzer::symbolize_init_decl_list(TreeNode *t, SymbolTable *s,
 							std::string ident) {
-	for(int i = 0; i < t->num_kids; ++i) {
-		if(t->kids[i] != NULL) {
+	for(std::size_t i = 0; i < t->num_kids; ++i) {
+		if(node_exists(t->kids[i])) {
 			switch(t->kids[i]->prod_num) {
 				case INIT_DECL_LIST_2:
 					this->symbolize_init_decl_list(
@@ -158,5 +198,79 @@ void SemanticAnalyzer::symbolize_init_decl_list(TreeNode *t, SymbolTable *s,
 					break;
 			}
 		}
+	}
+}
+
+/*
+ * Parameter declarations are similar (if not identical) to initialization 
+ * declarations.
+ * 
+ * Is ident actually needed?  It should be because we never actually have a
+ * long list -- it's always individual variables.
+ */
+void SemanticAnalyzer::symbolize_param_decl(TreeNode *t, SymbolTable *s) {
+	this->add_basic_symbol(t->kids[1], s, t->kids[0]->t->get_text());
+}
+
+/*
+ * Parameter declaration lists are similar (if not identical) to initialization
+ * declaration lists.
+ */
+void SemanticAnalyzer::symbolize_param_decl_list(TreeNode *t, SymbolTable *s) {
+	for(std::size_t i = 0; i < t->num_kids; ++i) {
+		if(node_exists(t->kids[i])) {
+			switch(t->kids[i]->prod_num) {
+				case PARAM_DECL_LIST_2:
+					this->symbolize_param_decl_list(
+							t->kids[i], s);
+					break;
+				case PARAM_DECL_1:
+					this->symbolize_param_decl(
+							t->kids[i], s);
+					break;
+			}
+		}
+	}
+}
+
+/*
+ * Function prototypes are defined in DIRECT_DECL_5.  This also adds a function
+ * symbol to the symbol table.
+ *
+ * TODO: Move addition to symbol table to a separate function!
+ *
+ * kids[0] <-- function name
+ * kids[2] <-- possible parameter list
+ */
+void SemanticAnalyzer::symbolize_function_prototype(TreeNode *t, SymbolTable *s,
+							std::string ident) {
+
+	FunctionSymbol func(t->kids[0]->t->get_text(), ident);
+
+	/* Parse parameter list if it exists */
+	if(node_exists(t->kids[2])) {	
+		SymbolTable *p = new SymbolTable(s);
+		switch(t->kids[2]->prod_num) {
+			case PARAM_DECL_LIST_2:
+				this->symbolize_param_decl_list(t->kids[2], p);
+				break;
+			case PARAM_DECL_1:
+				this->symbolize_param_decl(t->kids[2], p);
+				break;
+			default:
+				throw EBadGrammarParse();
+				break;
+		}
+		func.params = p;
+		s->add_sub_table(p);
+	}
+	/* Add the FunctionSymbol to the SymbolTable */
+	if(s->insert(func.name, func)) {
+		std::clog << "'" << func.name << "' (" << func.type 
+				<< ") added to table!" << std::endl;
+	} else {
+		std::cerr << "'" << func.name << 
+				"' has already been declared!" << std::endl;
+		exit(EXIT_SEMANTIC_ERROR);
 	}
 }

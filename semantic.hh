@@ -10,6 +10,7 @@
 #ifndef _SEMANTIC_HH_
 #define _SEMANTIC_HH_
 
+#include <cstddef>
 #include <deque>
 #include <boost/tuple/tuple.hpp>
 
@@ -27,16 +28,22 @@ class SemanticAnalyzer {
 private:
 	std::deque< boost::tuple<TreeNode*,SymbolTable*,TypenameTable> > tuples;
 	void generate_table(TreeNode *t, SymbolTable *s, TypenameTable &e); /* Driver for creating the individual table */
-	void add_basic_symbol(TreeNode *t, std::string str, SymbolTable *s);
+	void add_basic_symbol(TreeNode *t, SymbolTable *s, std::string str);
+	void print_table(SymbolTable *s, std::size_t depth);
 
 	/* All of the different rule parsers */
 	void symbolize_simple_decl(TreeNode *t, SymbolTable *s);
 	void symbolize_init_decl(TreeNode *t, SymbolTable *s, std::string id);
 	void symbolize_init_decl_list(TreeNode *t, SymbolTable *s, 
 							std::string id);
+	void symbolize_function_prototype(TreeNode *t, SymbolTable *s,
+							std::string id);
+	void symbolize_param_decl(TreeNode *t, SymbolTable *s);
+	void symbolize_param_decl_list(TreeNode *t, SymbolTable *s);
 public:
 	void add_tree(TreeNode *root, TypenameTable table); /* Instanciates an empty gst with it? */
 	void generate_all_tables(); /* Iterates through all pairs to populate all tables */
+	void print_all_tables();
 };
 
 #endif /* _SEMANTIC_HH_ */
