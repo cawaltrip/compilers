@@ -276,14 +276,5 @@ void SemanticAnalyzer::symbolize_function_prototype(TreeNode *t, SymbolTable *s,
 	}
 	/* Add the FunctionSymbol to the SymbolTable */
 
-	try
-
-	if(s->insert(func.name, func)) {
-		std::clog << "'" << func.name << "' (" << func.type 
-				<< ") added to table!" << std::endl;
-	} else {
-		std::cerr << "'" << func.name << 
-				"' has already been declared!" << std::endl;
-		exit(EXIT_SEMANTIC_ERROR);
-	}
+	this->add_symbol(s,func);
 }
