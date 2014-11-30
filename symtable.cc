@@ -73,7 +73,7 @@ AbstractSymbol* SymbolTable::get_symbol(std::string name) {
 	std::deque<AbstractSymbol*>::iterator it;
 	for(it = b.begin(); it != b.end(); ++it) {
 		std::size_t i = it - b.begin();
-		if(b[i] == name) {
+		if(*(b[i]) == name) {
 			return b[i];
 		}
 	}
@@ -127,7 +127,7 @@ std::string SymbolTable::to_string(std::size_t depth) {
 		std::deque<AbstractSymbol*> b = this->bucket[i];
 		std::deque<AbstractSymbol*>::iterator it;
 		for(it = b.begin(); it != b.end(); ++it) {
-			ss << it->to_string(depth) << std::endl;
+			ss << (*it)->to_string(depth) << std::endl;
 		}
 	}
 	return ss.str();
