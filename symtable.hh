@@ -68,8 +68,8 @@ public:
 	void add_sub_table(SymbolTable *k); /* TODO: Remove eventually */
 	bool insert(std::string n, AbstractSymbol *s); /* TODO: Make void */
 	AbstractSymbol search(std::string n); /* May need to be pointers */
-	AbstractSymbol get_symbol(std::string n);
-	AbstractSymbol get_scoped_symbol(std::string n);
+	AbstractSymbol* get_symbol(std::string n);
+	AbstractSymbol* get_scoped_symbol(std::string n);
 	bool remove(std::string n);
 	void print_table(std::size_t depth = 0); /* May want this private */
 	bool empty();

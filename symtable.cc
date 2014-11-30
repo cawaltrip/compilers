@@ -124,8 +124,8 @@ void SymbolTable::print_table(std::size_t depth) {
 std::string SymbolTable::to_string(std::size_t depth) {
 	std::stringstream ss;
 	for(std::size_t i = 0; i < this->HASHTABLE_SIZE; ++i) {
-		std::deque<AbstractSymbol> b = this->bucket[i];
-		std::deque<AbstractSymbol>::iterator it;
+		std::deque<AbstractSymbol*> b = this->bucket[i];
+		std::deque<AbstractSymbol*>::iterator it;
 		for(it = b.begin(); it != b.end(); ++it) {
 			ss << it->to_string(depth) << std::endl;
 		}
