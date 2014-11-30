@@ -126,8 +126,10 @@ std::string SymbolTable::to_string(std::size_t depth) {
 	for(std::size_t i = 0; i < this->HASHTABLE_SIZE; ++i) {
 		std::deque<AbstractSymbol*> b = this->bucket[i];
 		std::deque<AbstractSymbol*>::iterator it;
-		for(it = b.begin(); it != b.end(); ++it) {
-			ss << (*it)->to_string(depth) << std::endl;
+		for(it = b.begin(); it != b.end(); ++it) {\
+			std::size_t index = it - b.begin();
+			ss << (*(b[i]))->to_string(depth) << std::endl;
+			//ss << (*it)->to_string(depth) << std::endl;
 		}
 	}
 	return ss.str();
