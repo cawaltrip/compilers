@@ -128,7 +128,7 @@ std::string SymbolTable::to_string(std::size_t depth) {
 		std::deque<AbstractSymbol*>::iterator it;
 		for(it = b.begin(); it != b.end(); ++it) {\
 			std::size_t index = it - b.begin();
-			ss << (*(b[i]))->to_string(depth) << std::endl;
+			ss << (*(b[i])).to_string(depth) << std::endl;
 			//ss << (*it)->to_string(depth) << std::endl;
 		}
 	}
