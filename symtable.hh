@@ -104,8 +104,8 @@ class FunctionSymbol : public AbstractSymbol {
 public:
 	bool pointer;
 	bool def_needed;
-	SymbolTable params;
-	SymbolTable locals;
+	SymbolTable *params;
+	SymbolTable *locals;
 	FunctionSymbol(std::string n, std::string t,
 				bool ptr = false, bool def_needed = true);
 	FunctionSymbol(std::string n, std::string t,
