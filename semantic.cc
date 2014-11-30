@@ -276,5 +276,5 @@ void SemanticAnalyzer::symbolize_function_prototype(TreeNode *t, SymbolTable *s,
 	}
 	/* Add the FunctionSymbol to the SymbolTable */
 
-	this->add_symbol(s,func);
+	this->add_symbol(func,s);
 }
