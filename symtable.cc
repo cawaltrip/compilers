@@ -147,7 +147,7 @@ FunctionSymbol::FunctionSymbol(std::string n, std::string t, bool p, bool d)
 std::string FunctionSymbol::to_string(std::size_t depth) {
 	std::stringstream ss;
 	ss << AbstractSymbol::to_string(depth) << std::endl;
-	ss << this->params.to_string(depth+1) << std::endl;
-	ss << this->locals.to_string(depth+1) << std::endl;
+	ss << this->params->to_string(depth+1) << std::endl;
+	ss << this->locals->to_string(depth+1) << std::endl;
 	return ss.str();
 }
