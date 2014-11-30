@@ -126,9 +126,9 @@ void SemanticAnalyzer::add_basic_symbol(TreeNode *t, SymbolTable *s,
 							std::string type) {
 	if(t->t != NULL) {
 		std::string n = t->t->get_text();
-		BasicSymbol basic(n, type);
+		BasicSymbol *basic = new BasicSymbol(n, type);
 
-		this->add_symbol(&basic, s);
+		this->add_symbol(basic, s);
 	} else {
 		std::stringstream ss;
 		ss << "Cannot add a non-terminal to symbol table (";
@@ -256,7 +256,8 @@ void SemanticAnalyzer::symbolize_param_decl_list(TreeNode *t, SymbolTable *s) {
 void SemanticAnalyzer::symbolize_function_prototype(TreeNode *t, SymbolTable *s,
 							std::string ident) {
 
-	FunctionSymbol func(t->kids[0]->t->get_text(), ident);
+	std::string n = t->kids[0]->t->get_text();
+	FunctionSymbol *func = new FunctionSymbol(n, ident);
 
 	/* Parse parameter list if it exists */
 	if(node_exists(t->kids[2])) {	
@@ -272,9 +273,9 @@ void SemanticAnalyzer::symbolize_function_prototype(TreeNode *t, SymbolTable *s,
 				throw EBadGrammarParse();
 				break;
 		}
-		func.params = p;
+		func->params = p;
 		s->add_sub_table(p);
 	}
 
-	this->add_symbol(&func,s);
+	this->add_symbol(func,s);
 }
