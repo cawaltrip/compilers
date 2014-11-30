@@ -28,7 +28,7 @@ class SemanticAnalyzer {
 private:
 	std::deque< boost::tuple<TreeNode*,SymbolTable*,TypenameTable> > tuples;
 	void generate_table(TreeNode *t, SymbolTable *s, TypenameTable &e); /* Driver for creating the individual table */
-	void add_symbol(AbstractSymbol a, SymbolTable *s);
+	void add_symbol(AbstractSymbol *a, SymbolTable *s);
 	void add_basic_symbol(TreeNode *t, SymbolTable *s, std::string str);
 	void print_table(SymbolTable *s, std::size_t depth);
 
