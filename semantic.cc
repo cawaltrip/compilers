@@ -16,6 +16,10 @@
 #include "semantic.hh"
 #include "treenode.hh"
 
+/* 
+ * TODO: Remove this -- won't be using list of nested symbol tables.  Will 
+ * instead iterate through symbol table.
+ */
 void SemanticAnalyzer::add_tree(TreeNode *r, TypenameTable e) {
 	this->tuples.push_back(boost::make_tuple(r,new SymbolTable(),e));
 }
@@ -247,8 +251,6 @@ void SemanticAnalyzer::symbolize_param_decl_list(TreeNode *t, SymbolTable *s) {
  * Function prototypes are defined in DIRECT_DECL_5.  This also adds a function
  * symbol to the symbol table.
  *
- * TODO: Move addition to symbol table to a separate function!
- *
  * kids[0] <-- function name
  * kids[2] <-- possible parameter list
  */
@@ -274,7 +276,6 @@ void SemanticAnalyzer::symbolize_function_prototype(TreeNode *t, SymbolTable *s,
 		func.params = p;
 		s->add_sub_table(p);
 	}
-	/* Add the FunctionSymbol to the SymbolTable */
 
 	this->add_symbol(func,s);
 }
