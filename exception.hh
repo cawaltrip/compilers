@@ -42,6 +42,11 @@ public:
 	ENoSymbolEntry() : Exception("Symbol Entry not found") {}
 };
 
+class EDuplicateSymbol : public Exception {
+public:
+	EDuplicateSymbol() : Exception("Symbol already exists") {}
+};
+
 class EBadGrammarParse : public Exception {
 public:
 	EBadGrammarParse() : Exception("Unexpected grammar rule parse") {}

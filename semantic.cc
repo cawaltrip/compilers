@@ -94,6 +94,25 @@ void SemanticAnalyzer::generate_table(TreeNode *t, SymbolTable *s,
 	}
 }
 
+/*
+ * After a symbol has been built, attempt to insert it into the symbol table.
+ * If the symbol already exists, EDuplicateSymbol is thrown.  Report an error
+ * an then throw the same exception if this occurs.  This allows the calling
+ * function to decide to keep running or exit on a per-case basis.  Right now, 
+ * this function exits the compiler before this throw happens because I don't
+ * have a case where I don't want to exit on a duplicate symbol.
+ */
+void SemanticAnalyzer::add_symbol(AbstractSymbol a, SymbolTable *s) {
+	try {
+		s->insert(a.name,a);
+	} catch (EDuplicateSymbol e) {
+		std::cerr << e.what() << ": " << a.name << std::endl;
+		exit(EXIT_SEMANTIC_ERROR);
+		throw EDuplicateSymbol(); /* Never reached, maybe future use */
+	}
+	std::clog << "'" << a.name << "' (" << a.type << ") added to table!";
+	std::clog << std::endl;
+}
 
 
 /*
@@ -105,20 +124,15 @@ void SemanticAnalyzer::add_basic_symbol(TreeNode *t, SymbolTable *s,
 	if(t->t != NULL) {
 		std::string n = t->t->get_text();
 		BasicSymbol basic(n, type);
-		if(s->insert(n, basic)) {
-			std::clog << "'" << n << "' (" << type
-				<< ") added to table!" << std::endl;
-		} else {
-			std::cerr << "'" << n << 
-				"' has already been declared!" << std::endl;
-			exit(EXIT_SEMANTIC_ERROR);
-		}
+
+		this->add_symbol(basic, s);
 	} else {
-		std::cerr << "Cannot add a non-terminal to symbol table." << std::endl;
-		std::cerr << t->prod_text << std::endl;
+		std::stringstream ss;
+		ss << "Cannot add a non-terminal to symbol table (";
+		ss << t->prod_text << ")";
+		std::cerr << ss.str() << std::endl;
 		exit(EXIT_SEMANTIC_ERROR);
 	}
-
 }
 
 /*
@@ -186,15 +200,11 @@ void SemanticAnalyzer::symbolize_init_decl_list(TreeNode *t, SymbolTable *s,
 			switch(t->kids[i]->prod_num) {
 				case INIT_DECL_LIST_2:
 					this->symbolize_init_decl_list(
-								t->kids[i],
-								s,
-								ident);
+							t->kids[i], s, ident);
 					break;
 				case INIT_DECL_1:
 					this->symbolize_init_decl(
-								t->kids[i],
-								s,
-								ident);
+							t->kids[i], s, ident);
 					break;
 			}
 		}
@@ -265,6 +275,9 @@ void SemanticAnalyzer::symbolize_function_prototype(TreeNode *t, SymbolTable *s,
 		s->add_sub_table(p);
 	}
 	/* Add the FunctionSymbol to the SymbolTable */
+
+	try
+
 	if(s->insert(func.name, func)) {
 		std::clog << "'" << func.name << "' (" << func.type 
 				<< ") added to table!" << std::endl;

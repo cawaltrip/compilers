@@ -55,7 +55,8 @@ bool SymbolTable::insert(std::string n, AbstractSymbol s) {
 		this->bucket[h].push_back(s);
 		return true;
 	}
-	return false;
+	throw EDuplicateSymbol();
+	return false; /* Remove after refactor */
 }
 
 bool SymbolTable::empty() {
