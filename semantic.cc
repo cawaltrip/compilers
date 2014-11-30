@@ -106,18 +106,17 @@ void SemanticAnalyzer::generate_table(TreeNode *t, SymbolTable *s,
  * this function exits the compiler before this throw happens because I don't
  * have a case where I don't want to exit on a duplicate symbol.
  */
-void SemanticAnalyzer::add_symbol(AbstractSymbol a, SymbolTable *s) {
+void SemanticAnalyzer::add_symbol(AbstractSymbol *a, SymbolTable *s) {
 	try {
-		s->insert(a.name,a);
+		s->insert(a->name,a);
 	} catch (EDuplicateSymbol e) {
-		std::cerr << e.what() << ": " << a.name << std::endl;
+		std::cerr << e.what() << ": " << a->name << std::endl;
 		exit(EXIT_SEMANTIC_ERROR);
 		throw EDuplicateSymbol(); /* Never reached, maybe future use */
 	}
-	std::clog << "'" << a.name << "' (" << a.type << ") added to table!";
+	std::clog << "'" << a->name << "' (" << a->type << ") added to table!";
 	std::clog << std::endl;
 }
-
 
 /*
  * Check the current symbol table to make sure a symbol hasn't already been
@@ -129,7 +128,7 @@ void SemanticAnalyzer::add_basic_symbol(TreeNode *t, SymbolTable *s,
 		std::string n = t->t->get_text();
 		BasicSymbol basic(n, type);
 
-		this->add_symbol(basic, s);
+		this->add_symbol(&basic, s);
 	} else {
 		std::stringstream ss;
 		ss << "Cannot add a non-terminal to symbol table (";
@@ -277,5 +276,5 @@ void SemanticAnalyzer::symbolize_function_prototype(TreeNode *t, SymbolTable *s,
 		s->add_sub_table(p);
 	}
 
-	this->add_symbol(func,s);
+	this->add_symbol(&func,s);
 }

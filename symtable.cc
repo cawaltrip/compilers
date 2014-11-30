@@ -49,7 +49,7 @@ std::size_t SymbolTable::hash(std::string name) {
 	return hash % this->HASHTABLE_SIZE;
 }
 
-bool SymbolTable::insert(std::string n, AbstractSymbol s) {
+bool SymbolTable::insert(std::string n, AbstractSymbol *s) {
 	if(!this->symbol_exists(n)) {
 		std::size_t h = this->hash(n);
 		this->bucket[h].push_back(s);
@@ -67,10 +67,10 @@ bool SymbolTable::empty() {
 	return true;
 }
 
-AbstractSymbol SymbolTable::get_symbol(std::string name) {
+AbstractSymbol* SymbolTable::get_symbol(std::string name) {
 	std::size_t h = this->hash(name);
-	std::deque<AbstractSymbol> b = this->bucket[h];
-	std::deque<AbstractSymbol>::iterator it;
+	std::deque<AbstractSymbol*> b = this->bucket[h];
+	std::deque<AbstractSymbol*>::iterator it;
 	for(it = b.begin(); it != b.end(); ++it) {
 		std::size_t i = it - b.begin();
 		if(b[i] == name) {
@@ -88,15 +88,17 @@ AbstractSymbol SymbolTable::get_symbol(std::string name) {
  * ENoSymbolEntry again and let the calling function handle the exception. If
  * the symbol is found, it's returned.
  */
-AbstractSymbol SymbolTable::get_scoped_symbol(std::string name) {
+AbstractSymbol* SymbolTable::get_scoped_symbol(std::string name) {
+	AbstractSymbol *symb;
 	try {
-		AbstractSymbol symb = this->get_symbol(name);
+		symb = this->get_symbol(name);
 		return symb;
 	} catch(ENoSymbolEntry e) {
 		if(this->parent == NULL) {
 			throw ENoSymbolEntry();
 		} else {
-			this->parent->get_scoped_symbol(name);
+			/* Will never be NULL because exception is thrown */
+			return this->parent->get_scoped_symbol(name);
 		}
 	}
 }
@@ -104,7 +106,7 @@ AbstractSymbol SymbolTable::get_scoped_symbol(std::string name) {
 /*
  * Will return true if a symbol is found.  If get_symbol throws
  * an ENoSymbolEntry exception, then the symbol isn't in the symbol
- * table.
+ * table.  This only checks for the existance in the local symbol table.
  */
 bool SymbolTable::symbol_exists(std::string name) {
 	try {

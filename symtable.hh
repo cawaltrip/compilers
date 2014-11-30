@@ -51,21 +51,23 @@ inline bool operator!=(const AbstractSymbol &lhs, const AbstractSymbol &rhs) {
 
 /*
  * The hash table for the symbols.  Uses deques as the buckets just like the
- * TypenameTable does.
+ * TypenameTable does.  The deque is of AbstractSymbol pointers because
+ * code slicing occurs when using polymorphism without pointers in C++.  With
+ * the use of pointers, the symbols can now be of any type.
  */
 class SymbolTable {
 private:
 	static const size_t HASHTABLE_SIZE = 137;
-	std::deque<AbstractSymbol> bucket[HASHTABLE_SIZE];
+	std::deque<AbstractSymbol*> bucket[HASHTABLE_SIZE];
 	std::size_t hash(std::string name);
 	bool symbol_exists(std::string n);
 	SymbolTable *parent;
 public:
-	SymbolTable(SymbolTable *p = NULL);
-	std::deque<SymbolTable*> kids;
-	void add_sub_table(SymbolTable *k); /* Remove eventually */
-	bool insert(std::string n, AbstractSymbol s);
-	AbstractSymbol search(std::string n);
+	SymbolTable(SymbolTable *p = NULL); /* Default to NULL parent */
+	std::deque<SymbolTable*> kids; /* TODO: Remove eventually */
+	void add_sub_table(SymbolTable *k); /* TODO: Remove eventually */
+	bool insert(std::string n, AbstractSymbol *s); /* TODO: Make void */
+	AbstractSymbol search(std::string n); /* May need to be pointers */
 	AbstractSymbol get_symbol(std::string n);
 	AbstractSymbol get_scoped_symbol(std::string n);
 	bool remove(std::string n);
