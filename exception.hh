@@ -52,4 +52,14 @@ public:
 	EBadGrammarParse() : Exception("Unexpected grammar rule parse") {}
 };
 
+class ENullTokenAccess : public Exception {
+public:
+	ENullTokenAccess() : Exception("Tree Node is not a leaf (no token)") {}
+};
+
+class ENullSymbolTableAccess : public Exception {
+public:
+	ENullSymbolTableAccess() : Exception("Symbol table does not exist") {}
+};
+
 #endif /* _EXCEPTION_HH_ */

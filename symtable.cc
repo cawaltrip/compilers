@@ -11,15 +11,15 @@
 #include "symtable.hh"
 #include "exception.hh"
 
-/*
-AbstractSymbol::AbstractSymbol(std::string n, TypenameEntry t) 
-			: name(n), type(t) { }
-*/
+/* Default construction of symbols */
 AbstractSymbol::AbstractSymbol(std::string n, std::string t)
 			: name(n), type(t) { }
+/* Default string representation of a symbol */
 std::string AbstractSymbol::to_string(std::size_t depth) {
 	std::string spaces = std::string(depth, '>');
-	return(spaces + this->type + " " + this->name);
+	std::stringstream ss;
+	ss << spaces << this->type << " " << this->name << std::endl;
+	return ss.str();
 }
 
 /* 
@@ -33,6 +33,8 @@ SymbolTable::SymbolTable(SymbolTable *p) {
 
 /*
  * Just a wrapper function for nesting scopes.
+ *
+ * TODO: Will remove!
  */
 void SymbolTable::add_sub_table(SymbolTable *k) {
 	this->kids.push_back(k);
@@ -118,7 +120,7 @@ bool SymbolTable::symbol_exists(std::string name) {
 }
 
 void SymbolTable::print_table(std::size_t depth) {
-	std::clog << this->to_string(depth) << std::endl;
+	std::clog << this->to_string(depth);
 }
 
 std::string SymbolTable::to_string(std::size_t depth) {
@@ -127,9 +129,7 @@ std::string SymbolTable::to_string(std::size_t depth) {
 		std::deque<AbstractSymbol*> b = this->bucket[i];
 		std::deque<AbstractSymbol*>::iterator it;
 		for(it = b.begin(); it != b.end(); ++it) {
-			std::size_t index = it - b.begin();
-			ss << (b[index])->to_string(depth) << std::endl;
-			//ss << (*it)->to_string(depth) << std::endl;
+			ss << (*it)->to_string(depth);
 		}
 	}
 	return ss.str();
@@ -142,12 +142,20 @@ BasicSymbol::BasicSymbol(std::string n, std::string t, bool p)
 /* Function symbol constructor */
 FunctionSymbol::FunctionSymbol(std::string n, std::string t, bool p, bool d)
 				: AbstractSymbol(n,t), pointer(p),
-				def_needed(d) { }
+				def_needed(d) { 
+	this->locals = new SymbolTable();
+	this->params = new SymbolTable(); 
+}
 
 std::string FunctionSymbol::to_string(std::size_t depth) {
 	std::stringstream ss;
-	ss << AbstractSymbol::to_string(depth) << std::endl;
-	ss << (this->params)->to_string(depth+1) << std::endl;
-	ss << this->locals->to_string(depth+1) << std::endl;
+	ss << AbstractSymbol::to_string(depth);
+	try {
+		ss << (this->params)->to_string(depth+1);
+		ss << this->locals->to_string(depth+1);	
+	} catch (ENullSymbolTableAccess e) {
+		/* One of the symbol tables didn't exist. */
+	}
+	
 	return ss.str();
 }

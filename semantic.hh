@@ -28,21 +28,27 @@ class SemanticAnalyzer {
 private:
 	std::deque< boost::tuple<TreeNode*,SymbolTable*,TypenameTable> > tuples;
 	void generate_table(TreeNode *t, SymbolTable *s, TypenameTable &e); /* Driver for creating the individual table */
+	void print_table(SymbolTable *s, std::size_t depth);
+
+	/* Functions that adds a symbol to the symbol table */
 	void add_symbol(AbstractSymbol *a, SymbolTable *s);
 	void add_basic_symbol(TreeNode *t, SymbolTable *s, std::string str);
-	void print_table(SymbolTable *s, std::size_t depth);
+
+	/* Functions that create a symbol to add to the symbol table */
+	void symbolize_init_decl(TreeNode *t, SymbolTable *s, std::string type);
+	void symbolize_param_decl(TreeNode *t, SymbolTable *s);
+	void symbolize_function_prototype(TreeNode *t, SymbolTable *s,
+							std::string type);
 
 	/* All of the different rule parsers */
 	void symbolize_simple_decl(TreeNode *t, SymbolTable *s);
-	void symbolize_init_decl(TreeNode *t, SymbolTable *s, std::string id);
+	
 	void symbolize_init_decl_list(TreeNode *t, SymbolTable *s, 
 							std::string id);
-	void symbolize_function_prototype(TreeNode *t, SymbolTable *s,
-							std::string id);
-	void symbolize_param_decl(TreeNode *t, SymbolTable *s);
+	
 	void symbolize_param_decl_list(TreeNode *t, SymbolTable *s);
 public:
-	void add_tree(TreeNode *root, TypenameTable table); /* Instanciates an empty gst with it? */
+	void add_tree(TreeNode *root, TypenameTable table);
 	void generate_all_tables(); /* Iterates through all pairs to populate all tables */
 	void print_all_tables();
 };

@@ -121,6 +121,8 @@ void SemanticAnalyzer::add_symbol(AbstractSymbol *a, SymbolTable *s) {
 /*
  * Check the current symbol table to make sure a symbol hasn't already been
  * declared and if not then create a new symbol and add it to the table.
+ *
+ * TODO: Remove this and move to the functions that call this??
  */
 void SemanticAnalyzer::add_basic_symbol(TreeNode *t, SymbolTable *s, 
 							std::string type) {
@@ -130,11 +132,7 @@ void SemanticAnalyzer::add_basic_symbol(TreeNode *t, SymbolTable *s,
 
 		this->add_symbol(basic, s);
 	} else {
-		std::stringstream ss;
-		ss << "Cannot add a non-terminal to symbol table (";
-		ss << t->prod_text << ")";
-		std::cerr << ss.str() << std::endl;
-		exit(EXIT_SEMANTIC_ERROR);
+		throw ENullTokenAccess();
 	}
 }
 
@@ -178,8 +176,15 @@ void SemanticAnalyzer::symbolize_init_decl(TreeNode *t, SymbolTable *s,
 	
 	/* Basic types contain a leaf in the first child position */
 	if(is_token(t->kids[0])) {
-		this->add_basic_symbol(t->kids[0], s, ident);
-		return;
+		try {
+			this->add_basic_symbol(t->kids[0], s, ident);
+			return;	
+		} catch (ENullTokenAccess e) {
+			std::cerr << e.what() << "(" 
+				<< t->kids[0]->t->get_text() << ")" 
+				<< std::endl;
+			exit(EXIT_SEMANTIC_ERROR);
+		}
 	}
 
 	/* Function prototypes */

@@ -90,8 +90,8 @@ public:
  */
 class ClassSymbol : public AbstractSymbol {
 public:
-	SymbolTable priv;
-	SymbolTable pub;
+	SymbolTable *priv;
+	SymbolTable *pub;
 	ClassSymbol(std::string n, std::string t);
 	ClassSymbol(std::string n, std::string t,
 				SymbolTable pr, SymbolTable pu);
