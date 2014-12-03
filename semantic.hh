@@ -42,10 +42,8 @@ private:
 
 	/* All of the different rule parsers */
 	void symbolize_simple_decl(TreeNode *t, SymbolTable *s);
-	
 	void symbolize_init_decl_list(TreeNode *t, SymbolTable *s, 
 							std::string id);
-	
 	void symbolize_param_decl_list(TreeNode *t, SymbolTable *s);
 public:
 	void add_tree(TreeNode *root, TypenameTable table);

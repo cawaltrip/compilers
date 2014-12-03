@@ -147,15 +147,18 @@ FunctionSymbol::FunctionSymbol(std::string n, std::string t, bool p, bool d)
 	this->params = new SymbolTable(); 
 }
 
+/*
+ * Function symbol tables should never be NULL and thus should always print
+ * but this check won't hurt.
+ */
 std::string FunctionSymbol::to_string(std::size_t depth) {
 	std::stringstream ss;
 	ss << AbstractSymbol::to_string(depth);
-	try {
-		ss << (this->params)->to_string(depth+1);
-		ss << this->locals->to_string(depth+1);	
-	} catch (ENullSymbolTableAccess e) {
-		/* One of the symbol tables didn't exist. */
-	}
-	
+		if(this->params != NULL) {
+			ss << this->params->to_string(depth+1);
+		}
+		if(this->locals != NULL) {
+			ss << this->locals->to_string(depth+1);	
+		}
 	return ss.str();
 }

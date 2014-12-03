@@ -1,4 +1,5 @@
-/* symtable.hh
+/* 
+ * symtable.hh
  * Hash table representing the symbol table.
  * the symbol table.
  * UIdaho CS445 120++ Compiler
@@ -103,14 +104,14 @@ public:
 class FunctionSymbol : public AbstractSymbol {
 public:
 	bool pointer;
-	bool def_needed;
+	bool defined;
 	SymbolTable *params;
 	SymbolTable *locals;
 	FunctionSymbol(std::string n, std::string t,
-				bool ptr = false, bool def_needed = true);
+				bool ptr = false, bool defined = false);
 	FunctionSymbol(std::string n, std::string t,
 				SymbolTable par, SymbolTable loc,
-				bool ptr = false, bool def_needed = true);
+				bool ptr = false, bool defined = false);
 	std::string to_string(std::size_t depth = 0);
 };
 
