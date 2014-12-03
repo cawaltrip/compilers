@@ -141,8 +141,7 @@ BasicSymbol::BasicSymbol(std::string n, std::string t, bool p)
 
 /* Function symbol constructor */
 FunctionSymbol::FunctionSymbol(std::string n, std::string t, bool p, bool d)
-				: AbstractSymbol(n,t), pointer(p),
-				def_needed(d) { 
+				: AbstractSymbol(n,t), pointer(p), defined(d) {
 	this->locals = new SymbolTable();
 	this->params = new SymbolTable(); 
 }

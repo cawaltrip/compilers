@@ -1067,9 +1067,11 @@ function_definition:
 	| decl_specifier_seq declarator ctor_initializer_opt function_body
 		{ $$ = alloc_tree(FUNC_DEF_2, 4, $1, $2, $3, $4); }
 	| declarator function_try_block
-		{ $$ = alloc_tree(FUNC_DEF_3, 2, $1, $2); }
+		{ $$ = alloc_tree(FUNC_DEF_3, 2, $1, $2); 
+						unsupported_feature(); }
 	| decl_specifier_seq declarator function_try_block
-		{ $$ = alloc_tree(FUNC_DEF_4, 3, $1, $2, $3); }
+		{ $$ = alloc_tree(FUNC_DEF_4, 3, $1, $2, $3); 
+						unsupported_feature(); }
 	;
 
 function_body:

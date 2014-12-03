@@ -75,12 +75,21 @@ void SemanticAnalyzer::generate_table(TreeNode *t, SymbolTable *s,
 	 * Get each part of the production rule using integer division
 	 * and modulo.
 	 */
+	/*
 	std::size_t base_rule = t->prod_num / 1000;
 	std::size_t rule_num = t->prod_num % 1000;
+	*/
 
-	switch(base_rule) {
-		case SIMPLE_DECL_R:
+	switch(t->prod_num) {
+		case SIMPLE_DECL_1:
 			this->symbolize_simple_decl(t, s);
+			break;
+		case FUNC_DEF_1:
+		case FUNC_DEF_2:
+			/* Handle FUNC_DEF_1 and FUNC_DEF_2 */
+			break;
+		case CLASS_SPECIFIER_1:
+			/* Handle CLASS_SPECFIER_1 */
 			break;
 		/* 
 		 * If no rule is matched, parse all of the children that exist.
@@ -88,7 +97,7 @@ void SemanticAnalyzer::generate_table(TreeNode *t, SymbolTable *s,
 		default:
 			if(t->num_kids > 0) {
 				for(int i = 0; i < t->num_kids; ++i) {
-					if(t->kids[i] != NULL) { 
+					if(node_exists(t->kids[i])) { 
 						this->generate_table(
 							t->kids[i], s, e);
 					}
@@ -158,9 +167,6 @@ void SemanticAnalyzer::symbolize_simple_decl(TreeNode *t, SymbolTable *s) {
 						t->kids[1], s, ts);
 					break;
 			}
-			break;
-		case SIMPLE_DECL_2:
-			std::clog << "SIMPLE_DECL_2 ???" << std::endl;
 			break;
 		default:
 			break;
