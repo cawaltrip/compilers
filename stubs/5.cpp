@@ -1,7 +1,6 @@
-int times_two(int x);
-
-int times_two(int f) {
-	int ret = f * 2;
+//int times_two(int x);
+int times_two(int x) {
+	int ret = x * 2;
 	return ret;
 }
 

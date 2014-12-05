@@ -9,6 +9,7 @@
 
 #include <cstddef>
 #include <iostream>
+#include <typeinfo>
 
 #include "120rules.hh"
 #include "exception.hh"
@@ -41,7 +42,8 @@ void SemanticAnalyzer::generate_all_tables() {
 		TreeNode *t(this->tuples[i].get<0>());
 		SymbolTable *s(this->tuples[i].get<1>());
 		TypenameTable &e(this->tuples[i].get<2>());
-		this->generate_table(t,s,e);
+		//this->generate_table(t,s,e);
+		this->generate_table(t,s);
 	}
 }
 
@@ -69,8 +71,8 @@ void SemanticAnalyzer::print_all_tables() {
  * Parse the parse tree in a pre-order traversal, identifying and creating
  * all symbols along the way and populating the proper symbol table.
  */
-void SemanticAnalyzer::generate_table(TreeNode *t, SymbolTable *s,
-					TypenameTable &e) {
+void SemanticAnalyzer::generate_table(TreeNode *t, SymbolTable *s) {
+//					TypenameTable &e) {
 	/* 
 	 * Get each part of the production rule using integer division
 	 * and modulo.
@@ -80,31 +82,35 @@ void SemanticAnalyzer::generate_table(TreeNode *t, SymbolTable *s,
 	std::size_t rule_num = t->prod_num % 1000;
 	*/
 
-	switch(t->prod_num) {
-		case SIMPLE_DECL_1:
-			this->symbolize_simple_decl(t, s);
-			break;
-		case FUNC_DEF_1:
-		case FUNC_DEF_2:
-			/* Handle FUNC_DEF_1 and FUNC_DEF_2 */
-			break;
-		case CLASS_SPECIFIER_1:
-			/* Handle CLASS_SPECFIER_1 */
-			break;
-		/* 
-		 * If no rule is matched, parse all of the children that exist.
-		 */
-		default:
-			if(t->num_kids > 0) {
-				for(int i = 0; i < t->num_kids; ++i) {
-					if(node_exists(t->kids[i])) { 
-						this->generate_table(
-							t->kids[i], s, e);
+	try {
+		switch(t->prod_num) {
+			case SIMPLE_DECL_1:
+				this->symbolize_simple_decl(t, s);
+				break;
+			case FUNC_DECL_2:
+				this->symbolize_function_def(t,s);
+				break;
+			/* 
+			 * If no rule is matched, parse all of the children 
+			 * that exist.
+			 */
+			default:
+				if(t->num_kids > 0) {
+					for(int i = 0; i < t->num_kids; ++i) {
+						if(node_exists(t->kids[i])) { 
+							this->generate_table(
+								t->kids[i], s);
+								//s, e);
+						}
 					}
 				}
-			}
-			break;
+				break;
+		}	
+	} catch (ESymbolTableNestedTooDeep e) {
+		std::cerr << e.what() << std::endl;
+		exit(EXIT_SEMANTIC_ERROR);
 	}
+	
 }
 
 /*
@@ -125,6 +131,22 @@ void SemanticAnalyzer::add_symbol(AbstractSymbol *a, SymbolTable *s) {
 	}
 	std::clog << "'" << a->name << "' (" << a->type << ") added to table!";
 	std::clog << std::endl;
+}
+
+/*
+ * Create a wrapper around getting the symbol from the symbol table.
+ */
+AbstractSymbol* SemanticAnalyzer::get_symbol(AbstractSymbol *a, SymbolTable *s) {
+	return this->get_symbol(a->name, s);
+}
+AbstractSymbol* SemanticAnalyzer::get_symbol(std::string name, SymbolTable *s) {
+	AbstractSymbol* symb;
+	try {
+		symb = s->get_symbol(name);
+	} catch (ENoSymbolEntry e) {
+		throw ENoSymbolEntry();
+	}
+	return symb;
 }
 
 /*
@@ -167,7 +189,6 @@ void SemanticAnalyzer::symbolize_simple_decl(TreeNode *t, SymbolTable *s) {
 						t->kids[1], s, ts);
 					break;
 			}
-			break;
 		default:
 			break;
 	}
@@ -264,12 +285,11 @@ void SemanticAnalyzer::symbolize_param_decl_list(TreeNode *t, SymbolTable *s) {
  * kids[0] <-- function name
  * kids[2] <-- possible parameter list
  */
-void SemanticAnalyzer::symbolize_function_prototype(TreeNode *t, SymbolTable *s,
+FunctionSymbol* SemanticAnalyzer::symbolize_function_prototype(TreeNode *t, SymbolTable *s,
 							std::string ident) {
-
 	std::string n = t->kids[0]->t->get_text();
 	FunctionSymbol *func = new FunctionSymbol(n, ident);
-
+	this->add_symbol(func,s);
 	/* Parse parameter list if it exists */
 	if(node_exists(t->kids[2])) {	
 		SymbolTable *p = new SymbolTable(s);
@@ -287,6 +307,33 @@ void SemanticAnalyzer::symbolize_function_prototype(TreeNode *t, SymbolTable *s,
 		func->params = p;
 		s->add_sub_table(p);
 	}
+	return func;
+}
 
-	this->add_symbol(func,s);
+/*
+ * Function definitions only need the locals symbol table (type checking is
+ * where the parameters will need to be checked).  
+ *
+ * Should nested function definitions be supported?  If not, check that the 
+ * symbol table's parent's parent is NULL -- that would mean that the symbol 
+ * table was only nested one level deep and is valid.  Throw an
+ * ESymbolTableNestedTooDeep exception if invalid.
+ */
+void SemanticAnalyzer::symbolize_function_def(TreeNode *t, SymbolTable *s) {
+	FunctionSymbol *f;
+	std::string name = t->kids[1]->kids[0]->t->get_text();
+
+	try {
+		AbstractSymbol *tmp = this->get_symbol(name,s);
+		f = dynamic_cast<FunctionSymbol*>(tmp);
+	} catch (ENoSymbolEntry e) {
+		std::string ret_type = t->kids[0]->t->get_text();
+		f = this->symbolize_function_prototype(t->kids[1], s, ret_type);
+	} catch (const std::bad_cast& e) {
+		std::cerr << e.what() << std::endl;
+		std::cerr << "symbol declared as non-function" << std::endl;
+	}
+	
+	/* Fake the TypenameTable for now because I'm not using it */
+	this->generate_table(t->kids[3], f->locals);
 }

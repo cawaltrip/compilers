@@ -62,8 +62,8 @@ private:
 	std::deque<AbstractSymbol*> bucket[HASHTABLE_SIZE];
 	std::size_t hash(std::string name);
 	bool symbol_exists(std::string n);
-	SymbolTable *parent;
 public:
+	SymbolTable *parent;
 	SymbolTable(SymbolTable *p = NULL); /* Default to NULL parent */
 	std::deque<SymbolTable*> kids; /* TODO: Remove eventually */
 	void add_sub_table(SymbolTable *k); /* TODO: Remove eventually */

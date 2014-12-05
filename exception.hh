@@ -62,4 +62,8 @@ public:
 	ENullSymbolTableAccess() : Exception("Symbol table does not exist") {}
 };
 
+class ESymbolTableNestedTooDeep : public Exception {
+public:
+	ESymbolTableNestedTooDeep() : Exception("Cannot nest symbol table") {}
+};
 #endif /* _EXCEPTION_HH_ */
