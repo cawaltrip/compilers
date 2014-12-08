@@ -139,6 +139,16 @@ std::string SymbolTable::to_string(std::size_t depth) {
 BasicSymbol::BasicSymbol(std::string n, std::string t, bool p)
 				: AbstractSymbol(n,t), pointer(p) { }
 
+/* Stringify basic symbol -- just check if pointer and call parent */
+std::string BasicSymbol::to_string(std::size_t depth) {
+	std::stringstream ss;
+	if(this->pointer) {
+		ss << "(pointer) ";
+	}
+	ss << AbstractSymbol::to_string(depth);
+	return ss.str();
+}
+
 /* Function symbol constructor */
 FunctionSymbol::FunctionSymbol(std::string n, std::string t, bool p, bool d)
 				: AbstractSymbol(n,t), pointer(p), defined(d) {
@@ -152,6 +162,9 @@ FunctionSymbol::FunctionSymbol(std::string n, std::string t, bool p, bool d)
  */
 std::string FunctionSymbol::to_string(std::size_t depth) {
 	std::stringstream ss;
+	if(this->pointer) {
+		ss << "(pointer) ";
+	}
 	ss << AbstractSymbol::to_string(depth);
 		if(this->params != NULL) {
 			ss << this->params->to_string(depth+1);

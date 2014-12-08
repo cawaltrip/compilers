@@ -84,6 +84,7 @@ class BasicSymbol : public AbstractSymbol {
 public:
 	bool pointer;
 	BasicSymbol(std::string n, std::string t, bool p = false);
+	std::string to_string(std::size_t depth = 0);
 };
 
 /*
@@ -96,6 +97,7 @@ public:
 	ClassSymbol(std::string n, std::string t);
 	ClassSymbol(std::string n, std::string t,
 				SymbolTable pr, SymbolTable pu);
+	std::string to_string(std::size_t depth = 0);
 };
 
 /*
@@ -124,6 +126,7 @@ public:
 	std::size_t max_elements;
 	ArraySymbol(std::string n, std::string t,
 				bool p = false, std::size_t e = 1);
+	std::string to_string(std::size_t depth = 0);
 };
 
 #endif /* _SYMTABLE_HH_ */

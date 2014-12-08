@@ -59,3 +59,12 @@ void print_symbol(struct TreeNode *t) {
 		}
 	}
 }
+std::string single_node_string(TreeNode *t) {
+	std::stringstream ss;
+	if(is_token(t)) {
+		ss << t->t->get_text();
+	} else {
+		ss << t->prod_text;
+	}
+	return ss.str();
+}

@@ -36,22 +36,25 @@ private:
 
 	/* Functions that adds a symbol to the symbol table */
 	void add_symbol(AbstractSymbol *a, SymbolTable *s);
-	void add_basic_symbol(TreeNode *t, SymbolTable *s, std::string str);
+	void add_basic_symbol(TreeNode *t, SymbolTable *s, std::string str,
+					bool ptr = false);
 
 	/* Functions that create a symbol to add to the symbol table */
-	void symbolize_init_decl(TreeNode *t, SymbolTable *s, std::string type);
+	void symbolize_init_decl(TreeNode *t, SymbolTable *s,
+					std::string type, bool ptr = false);
 	void symbolize_param_decl(TreeNode *t, SymbolTable *s);
 	FunctionSymbol* symbolize_function_prototype(TreeNode *t,
-							SymbolTable *s,
-							std::string type);
+					SymbolTable *s, std::string type,
+					bool ptr = false);
 
 	/* Functions that use nested symbol tables */
-	void symbolize_function_def(TreeNode *t, SymbolTable *s);
+	void symbolize_function_def(TreeNode *t, SymbolTable *s,
+					bool ptr = false);
 
 	/* All of the different rule parsers */
 	void symbolize_simple_decl(TreeNode *t, SymbolTable *s);
 	void symbolize_init_decl_list(TreeNode *t, SymbolTable *s, 
-							std::string id);
+					std::string id);
 	void symbolize_param_decl_list(TreeNode *t, SymbolTable *s);
 public:
 	void add_tree(TreeNode *root, TypenameTable table);

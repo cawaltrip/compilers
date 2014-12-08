@@ -109,6 +109,9 @@ void SemanticAnalyzer::generate_table(TreeNode *t, SymbolTable *s) {
 	} catch (ESymbolTableNestedTooDeep e) {
 		std::cerr << e.what() << std::endl;
 		exit(EXIT_SEMANTIC_ERROR);
+	} catch (EBadGrammarParse e) {
+		std::cerr << e.what() << std::endl;
+		exit(EXIT_SEMANTIC_ERROR);
 	}
 	
 }
@@ -156,10 +159,10 @@ AbstractSymbol* SemanticAnalyzer::get_symbol(std::string name, SymbolTable *s) {
  * TODO: Remove this and move to the functions that call this??
  */
 void SemanticAnalyzer::add_basic_symbol(TreeNode *t, SymbolTable *s, 
-							std::string type) {
+					std::string type, bool is_pointer) {
 	if(t->t != NULL) {
 		std::string n = t->t->get_text();
-		BasicSymbol *basic = new BasicSymbol(n, type);
+		BasicSymbol *basic = new BasicSymbol(n, type, is_pointer);
 
 		this->add_symbol(basic, s);
 	} else {
@@ -199,28 +202,49 @@ void SemanticAnalyzer::symbolize_simple_decl(TreeNode *t, SymbolTable *s) {
  * and add the necessary symbols to the symbol table.
  */
 void SemanticAnalyzer::symbolize_init_decl(TreeNode *t, SymbolTable *s, 
-							std::string ident) {
+					std::string ident, bool ptr) {
+
+	std::size_t i = 0;
+	//bool ptr = false;
 	
-	/* Basic types contain a leaf in the first child position */
-	if(is_token(t->kids[0])) {
+	/* Make sure parse tree isn't destroyed */
+	TreeNode *x = t;
+
+	/* Check and adjust for pointer */
+	if(x->kids[0]->prod_num == DECLARATOR_2) {
+		ptr = true;
+		++i;
+		x = t->kids[0];
+	}
+
+	/* Now that pointer's been determined, handle the init-decl */
+	/* Basic Symbol */
+	if(is_token(x->kids[i])) {
 		try {
-			this->add_basic_symbol(t->kids[0], s, ident);
-			return;	
+			this->add_basic_symbol(x->kids[i], s, ident, ptr);
+			return;
 		} catch (ENullTokenAccess e) {
-			std::cerr << e.what() << "(" 
-				<< t->kids[0]->t->get_text() << ")" 
-				<< std::endl;
+			std::cerr << e.what() << std::endl;
 			exit(EXIT_SEMANTIC_ERROR);
 		}
 	}
 
-	/* Function prototypes */
-	if(t->kids[0]->prod_num == DIRECT_DECL_5) {
-		this->symbolize_function_prototype(t->kids[0], s, ident);
+	/* 
+	 * Wasn't a basic symbol.  Check for function prototype -- function
+	 * definitions are handled in different parent node.  No need to handle
+	 * here.
+	 */
+	if(x->kids[i]->prod_num == DIRECT_DECL_5) {
+		this->symbolize_function_prototype(x->kids[i], s, ident, ptr);
 		return;
 	}
 
 	/* Undefined parse reached */
+	std::clog << "Undefined parse reached. ";
+	std::clog << "Current node: " << single_node_string(x) << std::endl;
+	std::clog << "Remaining subtree: " << std::endl;
+	print_tree(x);
+	std::clog << std::endl;
 	throw EBadGrammarParse();
 }
 
@@ -285,10 +309,12 @@ void SemanticAnalyzer::symbolize_param_decl_list(TreeNode *t, SymbolTable *s) {
  * kids[0] <-- function name
  * kids[2] <-- possible parameter list
  */
-FunctionSymbol* SemanticAnalyzer::symbolize_function_prototype(TreeNode *t, SymbolTable *s,
-							std::string ident) {
+FunctionSymbol* SemanticAnalyzer::symbolize_function_prototype(TreeNode *t,
+							SymbolTable *s,
+							std::string ident, 
+							bool is_pointer) {
 	std::string n = t->kids[0]->t->get_text();
-	FunctionSymbol *func = new FunctionSymbol(n, ident);
+	FunctionSymbol *func = new FunctionSymbol(n, ident, is_pointer);
 	this->add_symbol(func,s);
 	/* Parse parameter list if it exists */
 	if(node_exists(t->kids[2])) {	
@@ -314,21 +340,35 @@ FunctionSymbol* SemanticAnalyzer::symbolize_function_prototype(TreeNode *t, Symb
  * Function definitions only need the locals symbol table (type checking is
  * where the parameters will need to be checked).  
  *
- * Should nested function definitions be supported?  If not, check that the 
- * symbol table's parent's parent is NULL -- that would mean that the symbol 
- * table was only nested one level deep and is valid.  Throw an
- * ESymbolTableNestedTooDeep exception if invalid.
+ * Nested functions are implicitly allowed in this code, however the syntax
+ * checking would flag those and so it's not a problem.
  */
-void SemanticAnalyzer::symbolize_function_def(TreeNode *t, SymbolTable *s) {
+void SemanticAnalyzer::symbolize_function_def(TreeNode *t, SymbolTable *s,
+								bool ptr) {
+
+	//std::size_t i = 0;
+	//bool ptr = false;
+	
+	/* Use a special copy of the tree in case a pointer exists */
+	TreeNode *x = t;
+
+	/* Check and adjust for pointer */
+	if(x->kids[1]->prod_num == DECLARATOR_2) {
+		ptr = true;
+		x = t->kids[1]->kids[1]; /* TreeNode for direct declarator */
+	} else {
+		x = t->kids[1];
+	}
+
 	FunctionSymbol *f;
-	std::string name = t->kids[1]->kids[0]->t->get_text();
+	std::string name = x->kids[0]->t->get_text();
 
 	try {
 		AbstractSymbol *tmp = this->get_symbol(name,s);
 		f = dynamic_cast<FunctionSymbol*>(tmp);
 	} catch (ENoSymbolEntry e) {
 		std::string ret_type = t->kids[0]->t->get_text();
-		f = this->symbolize_function_prototype(t->kids[1], s, ret_type);
+		f = this->symbolize_function_prototype(x, s, ret_type, ptr);
 	} catch (const std::bad_cast& e) {
 		std::cerr << e.what() << std::endl;
 		std::cerr << "symbol declared as non-function" << std::endl;

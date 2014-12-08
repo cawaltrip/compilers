@@ -8,6 +8,7 @@
 #define _EXCEPTION_HH_
 
 #include <exception>
+#include <sstream>
 #include <string>
 
 /*
@@ -23,7 +24,9 @@ public:
 	virtual ~Exception() throw (){}
 
 	virtual const char* what() const throw () {
-		return err_msg.c_str();
+		std::stringstream ss;
+		ss << "120++ Error: " << err_msg;
+		return ss.str().c_str();
 	}
 };
 
@@ -34,36 +37,42 @@ public:
 
 class ENoTypenameEntry : public Exception {
 public:
-	ENoTypenameEntry() : Exception("Typename Entry not found") {}
+	ENoTypenameEntry() 
+		: Exception("Semantic: Typename Entry not found") {}
 };
 
 class ENoSymbolEntry : public Exception {
 public:
-	ENoSymbolEntry() : Exception("Symbol Entry not found") {}
+	ENoSymbolEntry() :
+		Exception("Semantic: Symbol Entry not found") {}
 };
 
 class EDuplicateSymbol : public Exception {
 public:
-	EDuplicateSymbol() : Exception("Symbol already exists") {}
+	EDuplicateSymbol() : Exception("Semantic: Symbol already exists") {}
 };
 
 class EBadGrammarParse : public Exception {
 public:
-	EBadGrammarParse() : Exception("Unexpected grammar rule parse") {}
+	EBadGrammarParse() 
+		: Exception("Semantic: Unexpected grammar rule parse") {}
 };
 
 class ENullTokenAccess : public Exception {
 public:
-	ENullTokenAccess() : Exception("Tree Node is not a leaf (no token)") {}
+	ENullTokenAccess()
+		: Exception("Semantic: Tree Node is not a leaf (no token)") {}
 };
 
 class ENullSymbolTableAccess : public Exception {
 public:
-	ENullSymbolTableAccess() : Exception("Symbol table does not exist") {}
+	ENullSymbolTableAccess()
+		: Exception("Semantic: Symbol table does not exist") {}
 };
 
 class ESymbolTableNestedTooDeep : public Exception {
 public:
-	ESymbolTableNestedTooDeep() : Exception("Cannot nest symbol table") {}
+	ESymbolTableNestedTooDeep() 
+		: Exception("Semantic: Cannot nest symbol table") {}
 };
 #endif /* _EXCEPTION_HH_ */

@@ -1000,7 +1000,7 @@ static std::string get_production_text(const unsigned int num) {
 			s << "init-decl-" << rule;
 			break;
 		case 175:
-			s << "decl-" << rule;
+			s << "declarator-" << rule;
 			break;
 		case 176:
 			s << "direct-decl-" << rule;

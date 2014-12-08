@@ -20,4 +20,6 @@ bool node_exists(struct TreeNode *t);
 void print_tree(struct TreeNode *t, int depth = 0);
 void print_symbol(struct TreeNode *t);
 
+std::string single_node_string(struct TreeNode *t);
+
 #endif /* _TREENODE_HH_ */
