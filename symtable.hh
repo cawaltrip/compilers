@@ -95,7 +95,7 @@ public:
 	SymbolTable *pub;
 	ClassSymbol(std::string n, std::string t);
 	ClassSymbol(std::string n, std::string t,
-				SymbolTable pr, SymbolTable pu);
+				SymbolTable pr = NULL, SymbolTable pu = NULL);
 	std::string to_string(std::size_t depth = 0);
 };
 

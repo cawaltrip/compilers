@@ -128,6 +128,10 @@ FunctionSymbol::FunctionSymbol(std::string n, std::string t, bool p, bool d)
 ArraySymbol::ArraySymbol(std::string n, std::string t, bool p, std::size_t e) 
 				: AbstractSymbol(n,t),
 				pointer(p), max_elements(e) { }
+ClassSymbol::ClassSymbol(std::string n, std::string t) : AbstractSymbol(n,t) {
+	this->priv = new SymbolTable();
+	this->pub = new SymbolTable();
+}
 
 
 /* String representation of symbols */
@@ -166,5 +170,12 @@ std::string ArraySymbol::to_string(std::size_t depth) {
 	}
 	ss << "[" << this->max_elements << "] ";
 	ss << AbstractSymbol::to_string(depth);
+	return ss.str();
+}
+std::string ClassSymbol::to_string(std::size_t depth) {
+	std::stringstream ss;
+	ss << AbstractSymbol::to_string(depth);
+	ss << this->priv->to_string(depth+1);
+	ss << this->pub->to_string(depth+1);
 	return ss.str();
 }
