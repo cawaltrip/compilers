@@ -17,10 +17,7 @@
 #include "semantic.hh"
 #include "treenode.hh"
 
-/* 
- * TODO: Remove this -- won't be using list of nested symbol tables.  Will 
- * instead iterate through symbol table.
- */
+
 void SemanticAnalyzer::add_tree(TreeNode *r, TypenameTable e) {
 	this->tuples.push_back(boost::make_tuple(r,new SymbolTable(),e));
 }
@@ -336,7 +333,6 @@ FunctionSymbol* SemanticAnalyzer::symbolize_function_prototype(TreeNode *t,
 				break;
 		}
 		func->params = p;
-		s->add_sub_table(p);
 	}
 	return func;
 }

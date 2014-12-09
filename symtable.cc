@@ -11,16 +11,6 @@
 #include "symtable.hh"
 #include "exception.hh"
 
-/* Default construction of symbols */
-AbstractSymbol::AbstractSymbol(std::string n, std::string t)
-			: name(n), type(t) { }
-/* Default string representation of a symbol */
-std::string AbstractSymbol::to_string(std::size_t depth) {
-	std::string spaces = std::string(depth, '>');
-	std::stringstream ss;
-	ss << spaces << this->type << " " << this->name << std::endl;
-	return ss.str();
-}
 
 /* 
  * The only time that SymbolTable's parent will be NULL is the Global Symbol
@@ -31,17 +21,7 @@ SymbolTable::SymbolTable(SymbolTable *p) {
 	this->parent = p;
 }
 
-/*
- * Just a wrapper function for nesting scopes.
- *
- * TODO: Will remove!
- */
-void SymbolTable::add_sub_table(SymbolTable *k) {
-	this->kids.push_back(k);
-}
-/* 
- * This hashing method is identical to the Typename Table hash method.
- */
+/* This hashing method is identical to the Typename Table hash method */
 std::size_t SymbolTable::hash(std::string name) {
 	std::size_t hash = 0;
 	const char* s = name.c_str();
@@ -135,11 +115,28 @@ std::string SymbolTable::to_string(std::size_t depth) {
 	return ss.str();
 }
 
-/* Basic Symbol constructor */
+/* Symbol constructors */
+AbstractSymbol::AbstractSymbol(std::string n, std::string t)
+			: name(n), type(t) { }
 BasicSymbol::BasicSymbol(std::string n, std::string t, bool p)
 				: AbstractSymbol(n,t), pointer(p) { }
+FunctionSymbol::FunctionSymbol(std::string n, std::string t, bool p, bool d)
+				: AbstractSymbol(n,t), pointer(p), defined(d) {
+	this->locals = new SymbolTable();
+	this->params = new SymbolTable(); 
+}
+ArraySymbol::ArraySymbol(std::string n, std::string t, bool p, std::size_t e) 
+				: AbstractSymbol(n,t),
+				pointer(p), max_elements(e) { }
 
-/* Stringify basic symbol -- just check if pointer and call parent */
+
+/* String representation of symbols */
+std::string AbstractSymbol::to_string(std::size_t depth) {
+	std::string spaces = std::string(depth, '>');
+	std::stringstream ss;
+	ss << spaces << this->type << " " << this->name << std::endl;
+	return ss.str();
+}
 std::string BasicSymbol::to_string(std::size_t depth) {
 	std::stringstream ss;
 	if(this->pointer) {
@@ -148,18 +145,6 @@ std::string BasicSymbol::to_string(std::size_t depth) {
 	ss << AbstractSymbol::to_string(depth);
 	return ss.str();
 }
-
-/* Function symbol constructor */
-FunctionSymbol::FunctionSymbol(std::string n, std::string t, bool p, bool d)
-				: AbstractSymbol(n,t), pointer(p), defined(d) {
-	this->locals = new SymbolTable();
-	this->params = new SymbolTable(); 
-}
-
-/*
- * Function symbol tables should never be NULL and thus should always print
- * but this check won't hurt.
- */
 std::string FunctionSymbol::to_string(std::size_t depth) {
 	std::stringstream ss;
 	if(this->pointer) {
@@ -174,19 +159,6 @@ std::string FunctionSymbol::to_string(std::size_t depth) {
 		}
 	return ss.str();
 }
-
-/*
- * ArraySymbol is basically like a BasicSymbol except that it has a count
- * of the number of elements in the array.  This assumes that type checking
- * has occurred to verify that the number of elements is actually an integer.
- */
-ArraySymbol::ArraySymbol(std::string n, std::string t, bool p, std::size_t e) 
-				: AbstractSymbol(n,t),
-				pointer(p), max_elements(e) { }
-
-/*
- * Print out an ArraySymbol including pointer and element count information
- */
 std::string ArraySymbol::to_string(std::size_t depth) {
 	std::stringstream ss;
 	if(this->pointer) {

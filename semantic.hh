@@ -62,8 +62,6 @@ private:
 	bool tc_compare_two(std::string, TreeNode *t);
 public:
 	void add_tree(TreeNode *root, TypenameTable table);
-
-	/* Iterates through all pairs to populate all tables */
 	void generate_all_tables();
 	void print_all_tables();
 };

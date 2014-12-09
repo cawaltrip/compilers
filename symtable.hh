@@ -1,5 +1,6 @@
 /* 
  * symtable.hh
+ *
  * Hash table representing the symbol table.
  * the symbol table.
  * UIdaho CS445 120++ Compiler
@@ -14,7 +15,6 @@
 
 #include "typename.hh"
 
-
 /*
  * AbstractSymbol is the base class for the other symbols to inherit
  * from.  Allows for polymorphism to be used in defining the types of the
@@ -28,7 +28,6 @@ public:
 	std::string name;
 	std::string type;
 	//TypenameEntry type;
-	//explicit AbstractSymbol(std::string n, TypenameEntry t);
 	explicit AbstractSymbol(std::string n, std::string t);
 	virtual std::string to_string(std::size_t depth = 0);
 };
@@ -109,8 +108,8 @@ public:
 	bool defined;
 	SymbolTable *params;
 	SymbolTable *locals;
-	FunctionSymbol(std::string n, std::string t,
-				bool ptr = false, bool defined = false);
+	FunctionSymbol(std::string n, std::string t, bool ptr = false,
+							bool defined = false);
 	FunctionSymbol(std::string n, std::string t,
 				SymbolTable par, SymbolTable loc,
 				bool ptr = false, bool defined = false);
@@ -124,8 +123,8 @@ class ArraySymbol : public AbstractSymbol {
 public:
 	bool pointer;
 	std::size_t max_elements;
-	ArraySymbol(std::string n, std::string t,
-				bool p = false, std::size_t e = 1);
+	ArraySymbol(std::string n, std::string t, bool p = false,
+							std::size_t e = 1);
 	std::string to_string(std::size_t depth = 0);
 };
 
