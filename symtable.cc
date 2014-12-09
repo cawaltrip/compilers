@@ -174,3 +174,25 @@ std::string FunctionSymbol::to_string(std::size_t depth) {
 		}
 	return ss.str();
 }
+
+/*
+ * ArraySymbol is basically like a BasicSymbol except that it has a count
+ * of the number of elements in the array.  This assumes that type checking
+ * has occurred to verify that the number of elements is actually an integer.
+ */
+ArraySymbol::ArraySymbol(std::string n, std::string t, bool p, std::size_t e) 
+				: AbstractSymbol(n,t),
+				pointer(p), max_elements(e) { }
+
+/*
+ * Print out an ArraySymbol including pointer and element count information
+ */
+std::string ArraySymbol::to_string(std::size_t depth) {
+	std::stringstream ss;
+	if(this->pointer) {
+		ss << "(pointer) ";
+	}
+	ss << "[" << this->max_elements << "] ";
+	ss << AbstractSymbol::to_string(depth);
+	return ss.str();
+}

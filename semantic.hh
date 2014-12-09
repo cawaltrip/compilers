@@ -46,6 +46,8 @@ private:
 	FunctionSymbol* symbolize_function_prototype(TreeNode *t,
 					SymbolTable *s, std::string type,
 					bool ptr = false);
+	void symbolize_array(TreeNode *t, SymbolTable *s,
+					std::string ident, bool ptr = false);
 
 	/* Functions that use nested symbol tables */
 	void symbolize_function_def(TreeNode *t, SymbolTable *s,
@@ -56,6 +58,8 @@ private:
 	void symbolize_init_decl_list(TreeNode *t, SymbolTable *s, 
 					std::string id);
 	void symbolize_param_decl_list(TreeNode *t, SymbolTable *s);
+
+	bool tc_compare_two(std::string, TreeNode *t);
 public:
 	void add_tree(TreeNode *root, TypenameTable table);
 

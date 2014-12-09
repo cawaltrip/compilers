@@ -233,9 +233,14 @@ void SemanticAnalyzer::symbolize_init_decl(TreeNode *t, SymbolTable *s,
 	 * Wasn't a basic symbol.  Check for function prototype -- function
 	 * definitions are handled in different parent node.  No need to handle
 	 * here.
+	 *
+	 * Also check for arrays
 	 */
 	if(x->kids[i]->prod_num == DIRECT_DECL_5) {
 		this->symbolize_function_prototype(x->kids[i], s, ident, ptr);
+		return;
+	} else if(x->kids[i]->prod_num == DIRECT_DECL_6) {
+		this->symbolize_array(x->kids[i], s, ident, ptr);
 		return;
 	}
 
@@ -345,9 +350,6 @@ FunctionSymbol* SemanticAnalyzer::symbolize_function_prototype(TreeNode *t,
  */
 void SemanticAnalyzer::symbolize_function_def(TreeNode *t, SymbolTable *s,
 								bool ptr) {
-
-	//std::size_t i = 0;
-	//bool ptr = false;
 	
 	/* Use a special copy of the tree in case a pointer exists */
 	TreeNode *x = t;
@@ -372,8 +374,38 @@ void SemanticAnalyzer::symbolize_function_def(TreeNode *t, SymbolTable *s,
 	} catch (const std::bad_cast& e) {
 		std::cerr << e.what() << std::endl;
 		std::cerr << "symbol declared as non-function" << std::endl;
+		return;
 	}
 	
 	/* Fake the TypenameTable for now because I'm not using it */
 	this->generate_table(t->kids[3], f->locals);
+}
+
+/*
+ * Array symbols are similar to other types of symbols except that they fall
+ * under DIRECT-DECL-6 and have some sort of integer inside the square
+ * brackets.  This function will also do type checking on the inside to make
+ * sure that it can even be added as a symbol -- that is, make sure that the
+ * number of elements is actually an integer.
+ */
+void SemanticAnalyzer::symbolize_array(TreeNode *t, SymbolTable *s,
+						std::string ident, bool ptr) {
+	std::string name = t->kids[0]->t->get_text();
+	std::size_t elems = t->kids[2]->t->get_ival();
+
+	ArraySymbol *a = new ArraySymbol(name, ident, ptr, elems);
+	this->add_symbol(a,s);
+	return;
+}
+
+/* Check the type of two types to verify that they are the same */
+bool SemanticAnalyzer::tc_compare_two(std::string type, TreeNode *t) {
+	/* Eventually dig through to find the token with a type */
+	/*
+	TreeNode *x = t;
+	while(!is_token(x)) {
+
+	}
+	*/
+	return (type == t->t->get_text());
 }

@@ -1,5 +1,15 @@
-int basic_symb;
-void noparamfunc();
-void parameterized_function_1(int prm1);
-void parameterized_function_3(int prm1, float prm2, char prm3);
-int second_basic_symbol;
+char plain_char;
+char* char_ptr;
+
+char* char_ptr_function();
+
+char* char_ptr_function() {
+	int x = 5;
+	char *my_string = "Hi there";
+	return my_string;
+}
+
+int non_ptr_function(int prm1) {
+	int x = 3;
+	return prm1;
+}
