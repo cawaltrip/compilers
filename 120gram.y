@@ -1132,7 +1132,7 @@ class_key:
 	| STRUCT
 		{ $$ = alloc_tree(CLASS_KEY_2, 1, $1); }
 	| UNION
-		{ $$ = NULL; unsupported_feature(); } /* TODO: Find out if we support unions. */
+		{ $$ = NULL; unsupported_feature(); }
 	;
 
 member_specification:
@@ -1521,175 +1521,175 @@ type_id_list:
 
 declaration_seq_opt:
 	%empty
-		{ $$ = NULL; }/* epsilon */
+		{ $$ = NULL; } /* epsilon */
 	| declaration_seq
 		{ $$ = alloc_tree(DECL_SEQ_OPT_2, 1, $1); }
 	;
 
 nested_name_specifier_opt:
 	%empty
-		{ $$ = NULL; }/* epsilon */
+		{ $$ = NULL; } /* epsilon */
 	| nested_name_specifier
 		{ $$ = alloc_tree(NESTED_NAME_SPEC_OPT_2, 1, $1); }
 	;
 
 expression_list_opt:
 	%empty
-		{ $$ = NULL; }/* epsilon */
+		{ $$ = NULL; } /* epsilon */
 	| expression_list
 		{ $$ = alloc_tree(EXPR_LIST_OPT_2, 1, $1); }
 	;
 
 COLONCOLON_opt:
 	%empty
-		{ $$ = NULL; }/* epsilon */
+		{ $$ = NULL; } /* epsilon */
 	| COLONCOLON
 		{ $$ = alloc_tree(SCOPE_RESOLUTION_OPT_2, 1, $1); }
 	;
 
 new_placement_opt:
 	%empty
-		{ $$ = NULL; }/* epsilon */
+		{ $$ = NULL; } /* epsilon */
 	| new_placement
 		{ $$ = alloc_tree(NEW_PLACEMENT_OPT_2, 1, $1); }
 	;
 
 new_initializer_opt:
 	%empty
-		{ $$ = NULL; }/* epsilon */
+		{ $$ = NULL; } /* epsilon */
 	| new_initializer
 		{ $$ = alloc_tree(NEW_INIT_OPT_2, 1, $1); }
 	;
 
 new_declarator_opt:
 	%empty
-		{ $$ = NULL; }/* epsilon */
+		{ $$ = NULL; } /* epsilon */
 	| new_declarator
 		{ $$ = alloc_tree(NEW_DECL_OPT_2, 1, $1); }
 	;
 
 expression_opt:
 	%empty
-		{ $$ = NULL; }/* epsilon */
+		{ $$ = NULL; } /* epsilon */
 	| expression
 		{ $$ = alloc_tree(EXPR_OPT_2, 1, $1); }
 	;
 
 statement_seq_opt:
 	%empty
-		{ $$ = NULL; }/* epsilon */
+		{ $$ = NULL; } /* epsilon */
 	| statement_seq
 		{ $$ = alloc_tree(STMT_SEQ_OPT_2, 1, $1); }
 	;
 
 condition_opt:
 	%empty
-		{ $$ = NULL; }/* epsilon */
+		{ $$ = NULL; } /* epsilon */
 	| condition
 		{ $$ = alloc_tree(COND_OPT_2, 1, $1); }
 	;
 
 enumerator_list_opt:
 	%empty
-		{ $$ = NULL; }/* epsilon */
+		{ $$ = NULL; } /* epsilon */
 	| enumerator_list
 		{ $$ = NULL; unsupported_feature(); }
 	;
 
 initializer_opt:
 	%empty
-		{ $$ = NULL; }/* epsilon */
+		{ $$ = NULL; } /* epsilon */
 	| initializer
 		{ $$ = alloc_tree(INIT_OPT_2, 1, $1); }
 	;
 
 constant_expression_opt:
 	%empty
-		{ $$ = NULL; }/* epsilon */
+		{ $$ = NULL; } /* epsilon */
 	| constant_expression
 		{ $$ = alloc_tree(CONST_EXPR_OPT_2, 1, $1); }
 	;
 
 abstract_declarator_opt:
 	%empty
-		{ $$ = NULL; }/* epsilon */
+		{ $$ = NULL; } /* epsilon */
 	| abstract_declarator
 		{ $$ = alloc_tree(ABSTRACT_DECL_OPT_2, 1, $1); }
 	;
 
 type_specifier_seq_opt:
 	%empty
-		{ $$ = NULL; }/* epsilon */
+		{ $$ = NULL; } /* epsilon */
 	| type_specifier_seq
 		{ $$ = alloc_tree(TYPE_SPEC_SEQ_OPT_2, 1, $1); }
 	;
 
 direct_abstract_declarator_opt:
 	%empty
-		{ $$ = NULL; }/* epsilon */
+		{ $$ = NULL; } /* epsilon */
 	| direct_abstract_declarator
 		{ $$ = alloc_tree(DIRECT_ABSTRACT_DECL_OPT_2, 1, $1); }
 	;
 
 ctor_initializer_opt:
 	%empty
-		{ $$ = NULL; }/* epsilon */
+		{ $$ = NULL; } /* epsilon */
 	| ctor_initializer
 		{ $$ = alloc_tree(CTOR_INIT_OPT_2, 1, $1); }
 	;
 
 COMMA_opt:
 	%empty
-		{ $$ = NULL; }/* epsilon */
+		{ $$ = NULL; } /* epsilon */
 	| ','
 		{ $$ = alloc_tree(COMMA_OPT_2, 1, $1); }
 	;
 
 member_specification_opt:
 	%empty
-		{ $$ = NULL; }/* epsilon */
+		{ $$ = NULL; } /* epsilon */
 	| member_specification
 		{ $$ = alloc_tree(MEMBER_SPEC_OPT_2, 1, $1); }
 	;
 
 SEMICOLON_opt:
 	%empty
-		{ $$ = NULL; }/* epsilon */
+		{ $$ = NULL; } /* epsilon */
 	| ';'
 		{ $$ = alloc_tree(SEMICOLON_OPT_2, 1, $1); }
 	;
 
 conversion_declarator_opt:
 	%empty
-		{ $$ = NULL; }/* epsilon */
+		{ $$ = NULL; } /* epsilon */
 	| conversion_declarator
 		{ $$ = alloc_tree(CONVERSION_DECLARATOR_OPT_2, 1, $1); }
 	;
 
 EXPORT_opt:
 	%empty
-		{ $$ = NULL; }/* epsilon */
+		{ $$ = NULL; } /* epsilon */
 	| EXPORT
 		{ $$ = alloc_tree(EXPORT_OPT_2, 1, $1); }
 	;
 
 handler_seq_opt:
 	%empty
-		{ $$ = NULL; }/* epsilon */
+		{ $$ = NULL; } /* epsilon */
 	| handler_seq
 		{ $$ = alloc_tree(HANDLER_SEQ_OPT_2, 1, $1); }
 	;
 
 assignment_expression_opt:
 	%empty
-		{ $$ = NULL; }/* epsilon */
+		{ $$ = NULL; } /* epsilon */
 	| assignment_expression
 		{ $$ = alloc_tree(ASSIGN_EXPR_OPT_2, 1, $1); }
 	;
 
 type_id_list_opt:
 	%empty
-		{ $$ = NULL; }/* epsilon */
+		{ $$ = NULL; } /* epsilon */
 	| type_id_list
 		{ $$ = alloc_tree(TYPE_ID_LIST_OPT_2, 1, $1); }
 	;
@@ -1750,7 +1750,7 @@ static void unsupported_feature(std::string str) {
 	if(FULL_PARSE_TREES) { 
 		PARSE_ERROR = true;
 	} else {
-		exit(EXIT_UNSUPPORTED); /* return 3 is unsupported feature detected */
+		exit(EXIT_UNSUPPORTED);
 	}
 }
 
