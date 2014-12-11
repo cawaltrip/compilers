@@ -1,8 +1,3 @@
-/* 
- * This is a test file of a full-fledged program
- * to test my 120++ compiler.
- */
-
 #include <string>
 #include <iostream>
 
@@ -15,13 +10,16 @@ private:
 	string name;
 	int number_of_legs;
 public:
+	cat(int legs) {
+		this->number_of_legs = legs;
+	}
 	void meow();
 	void eat();
 	string get_name(float foo);
 };
 
 int main() {
-	cat Momo;
+	cat Momo(4);
 	int x;
 	float z = 7.7;
 
