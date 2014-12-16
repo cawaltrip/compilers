@@ -10,12 +10,11 @@ typedef struct TypenameEntry {
 	std::string name;
 	int category;
 	std::string nspace;
+	std::size_t size;
 
-	TypenameEntry(std::string name, int cat, std::string nspace = "") {
-		this->name = name;
-		this->category = cat;
-		this->nspace = nspace;
-	}
+	TypenameEntry(std::string n, int c, std::string ns = "",
+						std::size_t s = 8)
+			: name(n), category(c), nspace(ns), size(s) {}
 } TypenameEntry;
 
 class TypenameTable {
