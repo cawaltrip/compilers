@@ -116,19 +116,19 @@ std::string SymbolTable::to_string(std::size_t depth) {
 }
 
 /* Symbol constructors */
-AbstractSymbol::AbstractSymbol(std::string n, std::string t)
+AbstractSymbol::AbstractSymbol(std::string n, TypenameEntry t)
 			: name(n), type(t) { }
-BasicSymbol::BasicSymbol(std::string n, std::string t, bool p)
+BasicSymbol::BasicSymbol(std::string n, TypenameEntry t, bool p)
 				: AbstractSymbol(n,t), pointer(p) { }
-FunctionSymbol::FunctionSymbol(std::string n, std::string t, bool p, bool d)
+FunctionSymbol::FunctionSymbol(std::string n, TypenameEntry t, bool p, bool d)
 				: AbstractSymbol(n,t), pointer(p), defined(d) {
 	this->locals = new SymbolTable();
 	this->params = new SymbolTable(); 
 }
-ArraySymbol::ArraySymbol(std::string n, std::string t, bool p, std::size_t e) 
+ArraySymbol::ArraySymbol(std::string n, TypenameEntry t, bool p, std::size_t e) 
 				: AbstractSymbol(n,t),
 				pointer(p), max_elements(e) { }
-ClassSymbol::ClassSymbol(std::string n, std::string t) : AbstractSymbol(n,t) {
+ClassSymbol::ClassSymbol(std::string n, TypenameEntry t) : AbstractSymbol(n,t) {
 	this->priv = new SymbolTable();
 	this->pub = new SymbolTable();
 }

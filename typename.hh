@@ -3,10 +3,13 @@
 
 #include <cstddef>
 #include <deque>
+#include <ostream>
 #include <string>
 #include <utility>
 
 typedef struct TypenameEntry {
+	friend std::ostream & operator<<(std::ostream &os,
+						const TypenameEntry &t);
 	std::string name;
 	int category;
 	std::string nspace;
@@ -46,6 +49,7 @@ inline bool operator==(const TypenameEntry& lhs, const TypenameEntry& rhs) {
 inline bool operator!=(const TypenameEntry& lhs, const TypenameEntry& rhs) { 
 	return !(lhs == rhs.name);
 }
+
 
 
 

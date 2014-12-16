@@ -26,9 +26,8 @@
 class AbstractSymbol {
 public:
 	std::string name;
-	std::string type;
-	//TypenameEntry type;
-	explicit AbstractSymbol(std::string n, std::string t);
+	TypenameEntry type;
+	explicit AbstractSymbol(std::string n, TypenameEntry t);
 	virtual std::string to_string(std::size_t depth = 0);
 };
 
@@ -82,7 +81,7 @@ public:
 class BasicSymbol : public AbstractSymbol {
 public:
 	bool pointer;
-	BasicSymbol(std::string n, std::string t, bool p = false);
+	BasicSymbol(std::string n, TypenameEntry t, bool p = false);
 	std::string to_string(std::size_t depth = 0);
 };
 
@@ -93,8 +92,8 @@ class ClassSymbol : public AbstractSymbol {
 public:
 	SymbolTable *priv;
 	SymbolTable *pub;
-	ClassSymbol(std::string n, std::string t);
-	ClassSymbol(std::string n, std::string t,
+	ClassSymbol(std::string n, TypenameEntry t);
+	ClassSymbol(std::string n, TypenameEntry t,
 				SymbolTable pr = NULL, SymbolTable pu = NULL);
 	std::string to_string(std::size_t depth = 0);
 };
@@ -108,9 +107,9 @@ public:
 	bool defined;
 	SymbolTable *params;
 	SymbolTable *locals;
-	FunctionSymbol(std::string n, std::string t, bool ptr = false,
+	FunctionSymbol(std::string n, TypenameEntry t, bool ptr = false,
 							bool defined = false);
-	FunctionSymbol(std::string n, std::string t,
+	FunctionSymbol(std::string n, TypenameEntry t,
 				SymbolTable par, SymbolTable loc,
 				bool ptr = false, bool defined = false);
 	std::string to_string(std::size_t depth = 0);
@@ -123,7 +122,7 @@ class ArraySymbol : public AbstractSymbol {
 public:
 	bool pointer;
 	std::size_t max_elements;
-	ArraySymbol(std::string n, std::string t, bool p = false,
+	ArraySymbol(std::string n, TypenameEntry t, bool p = false,
 							std::size_t e = 1);
 	std::string to_string(std::size_t depth = 0);
 };

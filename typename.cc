@@ -10,12 +10,23 @@
 #include "typename.hh"
 #include "exception.hh"
 
+std::ostream &operator<<(std::ostream &os, const TypenameEntry &t) {
+	if(t.nspace != "") {
+		os << t.nspace << "::";
+	}
+	os << t.name;
+
+	return os;
+}
+
 /* Add primitives when creating new TypenameTable */
 TypenameTable::TypenameTable() {
 	this->insert("int", INT);
 	this->insert("char", CHAR);
 	this->insert("float", FLOAT);
 	this->insert("double", DOUBLE); /* May remove this token */
+	this->insert("long", INT); /* Fixes issues calling longs and shorts */
+	this->insert("short", INT);
 }
 
 std::size_t TypenameTable::hash(std::string name) {

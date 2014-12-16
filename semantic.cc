@@ -39,8 +39,7 @@ void SemanticAnalyzer::generate_all_tables() {
 		TreeNode *t(this->tuples[i].get<0>());
 		SymbolTable *s(this->tuples[i].get<1>());
 		TypenameTable &e(this->tuples[i].get<2>());
-		//this->generate_table(t,s,e);
-		this->generate_table(t,s);
+		this->generate_table(t,s,e);
 	}
 }
 
@@ -68,42 +67,32 @@ void SemanticAnalyzer::print_all_tables() {
  * Parse the parse tree in a pre-order traversal, identifying and creating
  * all symbols along the way and populating the proper symbol table.
  */
-void SemanticAnalyzer::generate_table(TreeNode *t, SymbolTable *s) {
-//					TypenameTable &e) {
-	/* 
-	 * Get each part of the production rule using integer division
-	 * and modulo.
-	 */
-	/*
-	std::size_t base_rule = t->prod_num / 1000;
-	std::size_t rule_num = t->prod_num % 1000;
-	*/
-
+void SemanticAnalyzer::generate_table(TreeNode *t, SymbolTable *s, 
+							TypenameTable &e) {
 	try {
 		switch(t->prod_num) {
 			case SIMPLE_DECL_1:
-				this->symbolize_simple_decl(t, s);
+				this->symbolize_simple_decl(t, s, e);
 				break;
 			case FUNC_DECL_2:
-				this->symbolize_function_def(t,s);
+				this->symbolize_function_def(t,s, e);
 				break;
 			/* 
 			 * If no rule is matched, parse all of the children 
 			 * that exist.
 			 */
 			default:
-				if(t->num_kids > 0) {
-					for(int i = 0; i < t->num_kids; ++i) {
-						if(node_exists(t->kids[i])) { 
-							this->generate_table(
-								t->kids[i], s);
-								//s, e);
-						}
+				//if(t->num_kids > 0) { /* Not sure I need this */
+				for(int i = 0; i < t->num_kids; ++i) {
+					if(node_exists(t->kids[i])) { 
+						this->generate_table(
+							t->kids[i], s, e);
 					}
 				}
+				//}
 				break;
 		}	
-	} catch (ESymbolTableNestedTooDeep e) {
+	} catch (ESymbolTableNestedTooDeep e) { /* Won't ever be thrown */
 		std::cerr << e.what() << std::endl;
 		exit(EXIT_SEMANTIC_ERROR);
 	} catch (EBadGrammarParse e) {
@@ -136,10 +125,12 @@ void SemanticAnalyzer::add_symbol(AbstractSymbol *a, SymbolTable *s) {
 /*
  * Create a wrapper around getting the symbol from the symbol table.
  */
-AbstractSymbol* SemanticAnalyzer::get_symbol(AbstractSymbol *a, SymbolTable *s) {
+AbstractSymbol* SemanticAnalyzer::get_symbol(AbstractSymbol *a,
+							SymbolTable *s) {
 	return this->get_symbol(a->name, s);
 }
-AbstractSymbol* SemanticAnalyzer::get_symbol(std::string name, SymbolTable *s) {
+AbstractSymbol* SemanticAnalyzer::get_symbol(std::string name,
+							SymbolTable *s) {
 	AbstractSymbol* symb;
 	try {
 		symb = s->get_symbol(name);
@@ -155,12 +146,11 @@ AbstractSymbol* SemanticAnalyzer::get_symbol(std::string name, SymbolTable *s) {
  *
  * TODO: Remove this and move to the functions that call this??
  */
-void SemanticAnalyzer::add_basic_symbol(TreeNode *t, SymbolTable *s, 
-					std::string type, bool is_pointer) {
+void SemanticAnalyzer::add_basic_symbol(TreeNode *t, SymbolTable *s,
+					TypenameEntry e, bool is_pointer) {
 	if(t->t != NULL) {
 		std::string n = t->t->get_text();
-		BasicSymbol *basic = new BasicSymbol(n, type, is_pointer);
-
+		BasicSymbol *basic = new BasicSymbol(n, e, is_pointer);
 		this->add_symbol(basic, s);
 	} else {
 		throw ENullTokenAccess();
@@ -174,19 +164,19 @@ void SemanticAnalyzer::add_basic_symbol(TreeNode *t, SymbolTable *s,
  * A simple declarator will either be an initialization list or a
  * class/function initialization.
  */
-void SemanticAnalyzer::symbolize_simple_decl(TreeNode *t, SymbolTable *s) {
-	std::string ts;
+void SemanticAnalyzer::symbolize_simple_decl(TreeNode *t, SymbolTable *s,
+							TypenameTable e) {
 	switch(t->prod_num) {
 		case SIMPLE_DECL_1:
-			ts = t->kids[0]->t->get_text();
+			//e.get_entry(t->kids[0]->t->get_text());
 			switch(t->kids[1]->prod_num) {
 				case INIT_DECL_1:
 					this->symbolize_init_decl(
-						t->kids[1], s, ts);
+						t->kids[1], s, e, e.get_entry(t->kids[0]->t->get_text()));
 					break;
 				case INIT_DECL_LIST_2:
 					this->symbolize_init_decl_list(
-						t->kids[1], s, ts);
+						t->kids[1], s, e, e.get_entry(t->kids[0]->t->get_text()));
 					break;
 			}
 		default:
@@ -198,8 +188,9 @@ void SemanticAnalyzer::symbolize_simple_decl(TreeNode *t, SymbolTable *s) {
  * function prototypes.  Parse the subtree and identify the type of declaration
  * and add the necessary symbols to the symbol table.
  */
-void SemanticAnalyzer::symbolize_init_decl(TreeNode *t, SymbolTable *s, 
-					std::string ident, bool ptr) {
+void SemanticAnalyzer::symbolize_init_decl(TreeNode *t, SymbolTable *s,
+					TypenameTable e, TypenameEntry type,
+					bool ptr) {
 
 	std::size_t i = 0;
 	//bool ptr = false;
@@ -218,10 +209,10 @@ void SemanticAnalyzer::symbolize_init_decl(TreeNode *t, SymbolTable *s,
 	/* Basic Symbol */
 	if(is_token(x->kids[i])) {
 		try {
-			this->add_basic_symbol(x->kids[i], s, ident, ptr);
+			this->add_basic_symbol(x->kids[i], s, type, ptr);
 			return;
-		} catch (ENullTokenAccess e) {
-			std::cerr << e.what() << std::endl;
+		} catch (ENullTokenAccess ex) {
+			std::cerr << ex.what() << std::endl;
 			exit(EXIT_SEMANTIC_ERROR);
 		}
 	}
@@ -234,10 +225,10 @@ void SemanticAnalyzer::symbolize_init_decl(TreeNode *t, SymbolTable *s,
 	 * Also check for arrays
 	 */
 	if(x->kids[i]->prod_num == DIRECT_DECL_5) {
-		this->symbolize_function_prototype(x->kids[i], s, ident, ptr);
+		this->symbolize_function_prototype(x->kids[i], s, e, type, ptr);
 		return;
 	} else if(x->kids[i]->prod_num == DIRECT_DECL_6) {
-		this->symbolize_array(x->kids[i], s, ident, ptr);
+		this->symbolize_array(x->kids[i], s, type, ptr);
 		return;
 	}
 
@@ -255,17 +246,18 @@ void SemanticAnalyzer::symbolize_init_decl(TreeNode *t, SymbolTable *s,
  * something like a function that we need to dig further down into.
  */
 void SemanticAnalyzer::symbolize_init_decl_list(TreeNode *t, SymbolTable *s,
-							std::string ident) {
+							TypenameTable e,
+							TypenameEntry type) {
 	for(std::size_t i = 0; i < t->num_kids; ++i) {
 		if(node_exists(t->kids[i])) {
 			switch(t->kids[i]->prod_num) {
 				case INIT_DECL_LIST_2:
 					this->symbolize_init_decl_list(
-							t->kids[i], s, ident);
+							t->kids[i], s, e, type);
 					break;
 				case INIT_DECL_1:
 					this->symbolize_init_decl(
-							t->kids[i], s, ident);
+							t->kids[i], s, e, type);
 					break;
 			}
 		}
@@ -279,25 +271,29 @@ void SemanticAnalyzer::symbolize_init_decl_list(TreeNode *t, SymbolTable *s,
  * Is ident actually needed?  It should be because we never actually have a
  * long list -- it's always individual variables.
  */
-void SemanticAnalyzer::symbolize_param_decl(TreeNode *t, SymbolTable *s) {
-	this->add_basic_symbol(t->kids[1], s, t->kids[0]->t->get_text());
+void SemanticAnalyzer::symbolize_param_decl(TreeNode *t, SymbolTable *s,
+							TypenameTable e) {
+	TypenameEntry type = e.get_entry(t->kids[0]->t->get_text());
+	this->add_basic_symbol(t->kids[1], s, type);
 }
 
 /*
  * Parameter declaration lists are similar (if not identical) to initialization
  * declaration lists.
  */
-void SemanticAnalyzer::symbolize_param_decl_list(TreeNode *t, SymbolTable *s) {
+void SemanticAnalyzer::symbolize_param_decl_list(TreeNode *t,
+							SymbolTable *s,
+							TypenameTable e) {
 	for(std::size_t i = 0; i < t->num_kids; ++i) {
 		if(node_exists(t->kids[i])) {
 			switch(t->kids[i]->prod_num) {
 				case PARAM_DECL_LIST_2:
 					this->symbolize_param_decl_list(
-							t->kids[i], s);
+							t->kids[i], s, e);
 					break;
 				case PARAM_DECL_1:
 					this->symbolize_param_decl(
-							t->kids[i], s);
+							t->kids[i], s, e);
 					break;
 			}
 		}
@@ -313,20 +309,22 @@ void SemanticAnalyzer::symbolize_param_decl_list(TreeNode *t, SymbolTable *s) {
  */
 FunctionSymbol* SemanticAnalyzer::symbolize_function_prototype(TreeNode *t,
 							SymbolTable *s,
-							std::string ident, 
+							TypenameTable e,
+							TypenameEntry type, 
 							bool is_pointer) {
 	std::string n = t->kids[0]->t->get_text();
-	FunctionSymbol *func = new FunctionSymbol(n, ident, is_pointer);
+	FunctionSymbol *func = new FunctionSymbol(n, type, is_pointer);
 	this->add_symbol(func,s);
 	/* Parse parameter list if it exists */
 	if(node_exists(t->kids[2])) {	
 		SymbolTable *p = new SymbolTable(s);
 		switch(t->kids[2]->prod_num) {
 			case PARAM_DECL_LIST_2:
-				this->symbolize_param_decl_list(t->kids[2], p);
+				this->symbolize_param_decl_list(
+							t->kids[2], p, e);
 				break;
 			case PARAM_DECL_1:
-				this->symbolize_param_decl(t->kids[2], p);
+				this->symbolize_param_decl(t->kids[2], p, e);
 				break;
 			default:
 				throw EBadGrammarParse();
@@ -345,7 +343,7 @@ FunctionSymbol* SemanticAnalyzer::symbolize_function_prototype(TreeNode *t,
  * checking would flag those and so it's not a problem.
  */
 void SemanticAnalyzer::symbolize_function_def(TreeNode *t, SymbolTable *s,
-								bool ptr) {
+						TypenameTable e, bool ptr) {
 	
 	/* Use a special copy of the tree in case a pointer exists */
 	TreeNode *x = t;
@@ -364,17 +362,17 @@ void SemanticAnalyzer::symbolize_function_def(TreeNode *t, SymbolTable *s,
 	try {
 		AbstractSymbol *tmp = this->get_symbol(name,s);
 		f = dynamic_cast<FunctionSymbol*>(tmp);
-	} catch (ENoSymbolEntry e) {
-		std::string ret_type = t->kids[0]->t->get_text();
-		f = this->symbolize_function_prototype(x, s, ret_type, ptr);
-	} catch (const std::bad_cast& e) {
-		std::cerr << e.what() << std::endl;
+	} catch (ENoSymbolEntry ex) {
+		TypenameEntry type = e.get_entry(t->kids[0]->t->get_text());
+		f = this->symbolize_function_prototype(x, s, e, type, ptr);
+	} catch (const std::bad_cast& ex) {
+		std::cerr << ex.what() << std::endl;
 		std::cerr << "symbol declared as non-function" << std::endl;
 		return;
 	}
 	
 	/* Fake the TypenameTable for now because I'm not using it */
-	this->generate_table(t->kids[3], f->locals);
+	this->generate_table(t->kids[3], f->locals, e);
 }
 
 /*
@@ -385,11 +383,11 @@ void SemanticAnalyzer::symbolize_function_def(TreeNode *t, SymbolTable *s,
  * number of elements is actually an integer.
  */
 void SemanticAnalyzer::symbolize_array(TreeNode *t, SymbolTable *s,
-						std::string ident, bool ptr) {
+						TypenameEntry e, bool ptr) {
 	std::string name = t->kids[0]->t->get_text();
 	std::size_t elems = t->kids[2]->t->get_ival();
 
-	ArraySymbol *a = new ArraySymbol(name, ident, ptr, elems);
+	ArraySymbol *a = new ArraySymbol(name, e, ptr, elems);
 	this->add_symbol(a,s);
 	return;
 }
