@@ -62,16 +62,16 @@ private:
 	std::size_t hash(std::string name);
 	bool symbol_exists(std::string n);
 public:
-	SymbolTable *parent;
 	SymbolTable(SymbolTable *p = NULL); /* Default to NULL parent */
-	std::deque<SymbolTable*> kids; /* TODO: Remove eventually */
-	void add_sub_table(SymbolTable *k); /* TODO: Remove eventually */
+
+	SymbolTable *parent;
+
 	bool insert(std::string n, AbstractSymbol *s); /* TODO: Make void */
-	AbstractSymbol* search(std::string n); /* May need to be pointers */
+	AbstractSymbol* search(std::string n); /* TODO: remove function */
 	AbstractSymbol* get_symbol(std::string n);
 	AbstractSymbol* get_scoped_symbol(std::string n);
 	bool remove(std::string n);
-	void print_table(std::size_t depth = 0); /* May want this private */
+	void print_table(std::size_t depth = 0); /* TODO: Do I need this? */
 	bool empty();
 	std::string to_string(std::size_t depth = 0);
 };
