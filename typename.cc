@@ -6,8 +6,17 @@
 
 #include <iostream>
 
+#include "120gram.tab.h"
 #include "typename.hh"
 #include "exception.hh"
+
+/* Add primitives when creating new TypenameTable */
+TypenameTable::TypenameTable() {
+	this->insert("int", INT);
+	this->insert("char", CHAR);
+	this->insert("float", FLOAT);
+	this->insert("double", DOUBLE); /* May remove this token */
+}
 
 std::size_t TypenameTable::hash(std::string name) {
 	/* 

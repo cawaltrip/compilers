@@ -27,6 +27,7 @@ public:
 	int lookup(std::string name);
 	std::pair<int,std::string> lookup_namespace(std::string name);
 	TypenameEntry get_entry(std::string name);
+	TypenameTable();
 };
 
 /*
