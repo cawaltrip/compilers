@@ -344,18 +344,17 @@ std::list<std::string> include_stack;
 			}
 %%
 
-void lexerr(std::string str)
-{
-	/* TODO: Add a list of errors */
-	std::stringstream s;
-	s << get_current_filename() << ":";
-	s << yylineno << ":";
-	s << yytext << ": ";
-	s << "lexical error: ";
-	s << str;
+void lexerr(std::string str) {
+	std::stringstream ss;
+
+	ss << "120++ Error: Lexical: ";
+	ss << get_current_filename() << ":";
+	ss << yylineno << ": ";
+	ss << str;
+	ss << " (token: " << yytext << ")";
 
 	errors++;
-	std::cerr << s.str();
+	std::cerr << ss.str() << std::endl;
 	exit(EXIT_LEXICAL_ERROR);
 }
 void add_to_lookup(std::deque<std::string> filelist, int category) {
