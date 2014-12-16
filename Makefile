@@ -23,6 +23,7 @@ endif
 # Filename configurations #############
 #######################################
 BIN=120++
+BIN_NAME=120
 CC_SOURCES=120++.cc token.cc treenode.cc typename.cc symtable.cc semantic.cc
 C_SOURCES=lex.yy.c 120gram.tab.c
 OBJECTS=$(CC_SOURCES:.cc=.o) $(C_SOURCES:.c=.o)
@@ -33,7 +34,7 @@ OBJECTS=$(CC_SOURCES:.cc=.o) $(C_SOURCES:.c=.o)
 all: $(BIN)
 
 $(BIN): $(OBJECTS)
-	$(CPP) -lboost_program_options $(LDFLAGS) $^ -o $@
+	$(CPP) -lboost_program_options $(LDFLAGS) $^ -o $(BIN_NAME)
 
 .c.o:
 	$(CPP) $(CPPFLAGS) -c $< -o $@
