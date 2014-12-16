@@ -23,8 +23,8 @@
 # OSX Files
 .DS_Store
 
-# New sample code
-#stubs/
+# Windows files
+System Volume Information/
 
 # Object files
 *.o
