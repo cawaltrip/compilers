@@ -143,7 +143,7 @@ std::list<std::string> include_stack;
 "if"                    { create_token(IF);         return IF; }
 "inline"		{ create_token(INLINE);		return INLINE; }
 "int"                   { create_token(INT);        return INT; }
-"long"                  { create_token(LONG);       return LONG; }
+"long"                  { create_token(INT);       return INT; }
 "mutable"		{ create_token(MUTABLE);	return MUTABLE; }
 "namespace"		{ create_token(NAMESPACE);	return NAMESPACE; }
 "new"			{ create_token(NEW);		return NEW; }
@@ -155,7 +155,7 @@ std::list<std::string> include_stack;
 "reinterpret_cast"	{ create_token(REINTERPRET_CAST); 
 			  return REINTERPRET_CAST; }
 "return"                { create_token(RETURN);     return RETURN; }
-"short"                 { create_token(SHORT);      return SHORT; }
+"short"                 { create_token(INT);      return INT; }
 "signed"                { create_token(SIGNED);     return SIGNED; }
 "sizeof"                { create_token(SIZEOF);     return SIZEOF; }
 "static"                { create_token(STATIC);     return STATIC; }
