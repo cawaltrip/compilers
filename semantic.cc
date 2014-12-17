@@ -267,9 +267,6 @@ void SemanticAnalyzer::symbolize_init_decl_list(TreeNode *t, SymbolTable *s,
 /*
  * Parameter declarations are similar (if not identical) to initialization 
  * declarations.
- * 
- * Is ident actually needed?  It should be because we never actually have a
- * long list -- it's always individual variables.
  */
 void SemanticAnalyzer::symbolize_param_decl(TreeNode *t, SymbolTable *s,
 							TypenameTable e) {
@@ -390,16 +387,4 @@ void SemanticAnalyzer::symbolize_array(TreeNode *t, SymbolTable *s,
 	ArraySymbol *a = new ArraySymbol(name, e, ptr, elems);
 	this->add_symbol(a,s);
 	return;
-}
-
-/* Check the type of two types to verify that they are the same */
-bool SemanticAnalyzer::tc_compare_two(std::string type, TreeNode *t) {
-	/* Eventually dig through to find the token with a type */
-	/*
-	TreeNode *x = t;
-	while(!is_token(x)) {
-
-	}
-	*/
-	return (type == t->t->get_text());
 }
