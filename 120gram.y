@@ -1716,6 +1716,7 @@ struct TreeNode* alloc_tree(yyrule y, int num_kids, ...) {
 	t->prod_num = y;
 	t->prod_text = get_production_text(y);
 	t->num_kids = num_kids;
+	t->s = NULL;
 
 	int threshold;
 	if(FULL_PARSE_TREES) {

@@ -2,6 +2,7 @@
 #define _TREENODE_HH_
 
 #include <string>
+#include "symtable.hh"
 #include "token.hh"
 
 /* TODO: Dynamically allocate kids */
@@ -11,6 +12,7 @@ struct TreeNode {
 	int num_kids;
 	struct TreeNode *kids[10];
 	Token *t;
+	SymbolTable *s;
 };
 
 bool is_leaf(struct TreeNode *t);

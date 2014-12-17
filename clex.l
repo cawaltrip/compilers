@@ -423,6 +423,7 @@ void create_token(int cat, int line, std::string file,
 	
 	struct TreeNode* treeptr = new struct TreeNode();
 	treeptr->t = new Token(cat, line, file, text, val);
+	treeptr->s = NULL;
 	treeptr->num_kids = 0;
 	treeptr->prod_num = -1; /* or `cat`? */
 	treeptr->prod_text.clear(); /* or `text`? */
