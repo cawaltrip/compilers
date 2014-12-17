@@ -18,6 +18,7 @@ struct TreeNode {
 bool is_leaf(struct TreeNode *t);
 bool is_token(struct TreeNode *t);
 bool node_exists(struct TreeNode *t);
+bool has_symbol_table(struct TreeNode *t);
 
 void print_tree(struct TreeNode *t, int depth = 0);
 void print_symbol(struct TreeNode *t);

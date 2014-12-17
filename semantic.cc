@@ -63,6 +63,22 @@ void SemanticAnalyzer::print_all_tables() {
 	}
 }
 
+void SemanticAnalyzer::print_all_trees() {
+	std::deque< 
+		boost::tuple<TreeNode*,SymbolTable*,TypenameTable> 
+		>::iterator it;
+	for(it = this->tuples.begin(); it != this->tuples.end(); ++it) {
+		std::size_t i = it - this->tuples.begin();
+
+		std::clog << "Printing tree #" << i << std::endl;
+		std::clog << "===================================" << std::endl;
+
+		print_tree(this->tuples[i].get<0>());
+
+		std::clog << std::endl;
+	}
+}
+
 /*
  * Parse the parse tree in a pre-order traversal, identifying and creating
  * all symbols along the way and populating the proper symbol table.

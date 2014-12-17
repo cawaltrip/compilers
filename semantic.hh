@@ -67,6 +67,7 @@ public:
 	void add_tree(TreeNode *root, TypenameTable table);
 	void generate_all_tables();
 	void print_all_tables();
+	void print_all_trees();
 };
 
 #endif /* _SEMANTIC_HH_ */
