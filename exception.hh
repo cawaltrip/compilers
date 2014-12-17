@@ -49,7 +49,8 @@ public:
 
 class EDuplicateSymbol : public Exception {
 public:
-	EDuplicateSymbol() : Exception("Semantic: Symbol already exists") {}
+	EDuplicateSymbol() : Exception("Semantic: Symbol already " \
+					"exists in Symbol Table") { }
 };
 
 class EBadGrammarParse : public Exception {

@@ -129,10 +129,12 @@ void SemanticAnalyzer::generate_table(TreeNode *t, SymbolTable *s,
 void SemanticAnalyzer::add_symbol(AbstractSymbol *a, SymbolTable *s) {
 	try {
 		s->insert(a->name,a);
-	} catch (EDuplicateSymbol e) {
-		std::cerr << e.what() << ": " << a->name << std::endl;
+	} catch (EDuplicateSymbol ex) {
+		std::stringstream ss;
+		ss << ex.what() << ": " << a->name;
+		std::cerr << ss.str() << std::endl;
 		exit(EXIT_SEMANTIC_ERROR);
-		throw EDuplicateSymbol(); /* Never reached, maybe future use */
+		//throw EDuplicateSymbol(); /* Never reached, maybe future use */
 	}
 	std::clog << "'" << a->name << "' (" << a->type << ") added to table!";
 	std::clog << std::endl;
@@ -142,16 +144,25 @@ void SemanticAnalyzer::add_symbol(AbstractSymbol *a, SymbolTable *s) {
  * Create a wrapper around getting the symbol from the symbol table.
  */
 AbstractSymbol* SemanticAnalyzer::get_symbol(AbstractSymbol *a,
-							SymbolTable *s) {
-	return this->get_symbol(a->name, s);
+							SymbolTable *s,
+							TypenameTable e) {
+	return this->get_symbol(a->name, s, e);
 }
 AbstractSymbol* SemanticAnalyzer::get_symbol(std::string name,
-							SymbolTable *s) {
+							SymbolTable *s,
+							TypenameTable e) {
 	AbstractSymbol* symb;
 	try {
 		symb = s->get_symbol(name);
-	} catch (ENoSymbolEntry e) {
+		e.get_entry(symb->type);
+	} catch (ENoSymbolEntry ex) {
 		throw ENoSymbolEntry();
+	} catch (ENoTypenameEntry ex) {
+		std::stringstream ss;
+		ss << ex.what();
+		ss << "( " << symb->type << " type undeclared!)";
+		std::cerr << ss.str() << std::endl;
+		exit(EXIT_SEMANTIC_ERROR);
 	}
 	return symb;
 }
@@ -159,8 +170,6 @@ AbstractSymbol* SemanticAnalyzer::get_symbol(std::string name,
 /*
  * Check the current symbol table to make sure a symbol hasn't already been
  * declared and if not then create a new symbol and add it to the table.
- *
- * TODO: Remove this and move to the functions that call this??
  */
 void SemanticAnalyzer::add_basic_symbol(TreeNode *t, SymbolTable *s,
 					TypenameEntry e, bool is_pointer) {
@@ -381,7 +390,7 @@ void SemanticAnalyzer::symbolize_function_def(TreeNode *t, SymbolTable *s,
 	std::string name = x->kids[0]->t->get_text();
 
 	try {
-		AbstractSymbol *tmp = this->get_symbol(name,s);
+		AbstractSymbol *tmp = this->get_symbol(name,s, e);
 		f = dynamic_cast<FunctionSymbol*>(tmp);
 	} catch (ENoSymbolEntry ex) {
 		TypenameEntry type = e.get_entry(t->kids[0]->t->get_text());

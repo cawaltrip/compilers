@@ -94,3 +94,12 @@ TypenameEntry TypenameTable::get_entry(std::string name) {
 	}
 	throw ENoTypenameEntry();
 }
+
+TypenameEntry TypenameTable::get_entry(TypenameEntry e) {
+	try {
+		return this->get_entry(e.name);	
+	} catch (ENoTypenameEntry ex) {
+		throw ENoTypenameEntry();
+	}
+	
+}
