@@ -151,7 +151,14 @@ void SemanticAnalyzer::add_basic_symbol(TreeNode *t, SymbolTable *s,
 	if(t->t != NULL) {
 		std::string n = t->t->get_text();
 		BasicSymbol *basic = new BasicSymbol(n, e, is_pointer);
-		this->add_symbol(basic, s);
+		this->add_symbol(basic, s); /* Will exit if exception thrown */
+		
+		/*
+		 * If no exception was thrown then set SymbolTable* in TreeNode
+		 * to be the current symbol table so that we can access it
+		 * during type checking.
+		 */
+		t->s = s;
 	} else {
 		throw ENullTokenAccess();
 	}
@@ -312,6 +319,7 @@ FunctionSymbol* SemanticAnalyzer::symbolize_function_prototype(TreeNode *t,
 	std::string n = t->kids[0]->t->get_text();
 	FunctionSymbol *func = new FunctionSymbol(n, type, is_pointer);
 	this->add_symbol(func,s);
+	t->kids[0]->s = s;
 	/* Parse parameter list if it exists */
 	if(node_exists(t->kids[2])) {	
 		SymbolTable *p = new SymbolTable(s);
@@ -386,5 +394,6 @@ void SemanticAnalyzer::symbolize_array(TreeNode *t, SymbolTable *s,
 
 	ArraySymbol *a = new ArraySymbol(name, e, ptr, elems);
 	this->add_symbol(a,s);
+	t->kids[0]->s = s;
 	return;
 }
