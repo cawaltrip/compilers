@@ -83,4 +83,4 @@ clean:
 	$(RM) *.o *.a
 	$(RM) *.tab.c *.tab.h *gram.output
 	$(RM) lex.yy.c clex.h lex.yy.h
-	$(RM) $(BIN)
+	$(RM) $(BIN_NAME)
