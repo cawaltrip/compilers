@@ -57,11 +57,11 @@ private:
 					TypenameTable e);
 
 	/* Type checking */
-
+	void type_check_tree(TreeNode *t);
 public:
 	void add_tree(TreeNode *root, TypenameTable table);
-	void generate_all_tables();
-	void check_all();
+	void check_semantics();
+	void type_check();
 	void print_all_tables();
 	void print_all_trees();
 };

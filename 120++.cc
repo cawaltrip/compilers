@@ -50,8 +50,7 @@ vector<string> parse_command_line(int argc, char *argv[]);
  *   - Error checking/handling
  */
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
 	vector<string> file_list;
 	FILE *fp;
 
@@ -75,7 +74,6 @@ int main(int argc, char *argv[])
 			yyin = fp;
 			yypush_buffer_state(yy_create_buffer(yyin, 
 							YY_BUF_SIZE));
-			yydebug=0;
 			int ret = yyparse();
 			fclose(fp);
 			yylineno = 1;
@@ -92,10 +90,8 @@ int main(int argc, char *argv[])
 			clog << yyfilename << "'" << endl;
 		}
 	}
-	if(!FULL_PARSE_TREES) {
-		sa.generate_all_tables();
-		sa.print_all_tables();
-	}
+	sa.check_semantics();
+	//sa.print_all_tables();
 
 	return(EXIT_SUCCESS);
 }
@@ -116,10 +112,8 @@ vector<string> parse_command_line(int argc, char *argv[]) {
 						"Compiler Configurations");
 		compiler_opts.add_options()
 			("verbose,v", "   print additional logging messages")
-			("print_level,p", 
-				po::value<string>()->default_value("none"),
-						"   which tree to print: "
-						"full, abstract, none");
+			("tree,t", "   print abstract syntax tree") 
+			("parser_debug,p", "   print parser debug information");
 		po::options_description hidden_opts("Hidden Options");
 		hidden_opts.add_options()
 			("input,I", po::value< vector<string> >(),
@@ -166,28 +160,17 @@ vector<string> parse_command_line(int argc, char *argv[]) {
 
 		if(!vm.count("verbose")) {
 			streambuf *null_log = NULL;
-			clog.rdbuf(null_log); 
+			clog.rdbuf(null_log);
 		}
 
-		if(vm.count("print_level")) {
-			string pl = vm["print_level"].as<string>();
-			if(pl == "none") {
-				PRINT_PARSE_TREES = false;
-			} else if(pl == "abstract") {
-				PRINT_PARSE_TREES = true;
-				FULL_PARSE_TREES = false;
-			} else if(pl == "full") {
-				PRINT_PARSE_TREES = true;
-				FULL_PARSE_TREES = true;
-			} else { 
-				cerr << "Error: invalid print level" << endl;
-				cerr << help_msg.str();
-				throw EHaltCommandLineParse();
-			}
+		if(vm.count("tree")) {
+			PRINT_PARSE_TREES = true;
+		}
+
+		if(vm.count("parser_debug")) {
+			yydebug = 1;
 		} else {
-			cerr << "Print level required" << endl;
-			cerr << help_msg.str();
-			throw EHaltCommandLineParse();
+			yydebug = 0;
 		}
 
 		if(vm.count("input")) {

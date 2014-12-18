@@ -414,6 +414,7 @@ int check_identifier(std::string str) {
 		if(!namespace_std)
 			lexerr("'using namespace std' required in 120++");
 	}
+	
 	create_token(cat);
 	return cat;
 }
@@ -428,6 +429,8 @@ void create_token(int cat, int line, std::string file,
 	treeptr->prod_num = -1; /* or `cat`? */
 	treeptr->prod_text.clear(); /* or `text`? */
 	yylval = treeptr;
+
+	std::clog << "Creating token: " << text << " (" << cat << ")" << std::endl;
 }
 
 void create_token(int category) {

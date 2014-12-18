@@ -10,18 +10,13 @@
 #ifndef _GLOBALS_HH_
 #define _GLOBALS_HH_
 
-/* Read-only flags */
-static bool FULL_PARSE_TREES = false;
-static bool PRINT_PARSE_TREES = true;
-
 /* Global writable flags */
-static bool PARSE_ERROR = false;
+static bool PRINT_PARSE_TREES = false;
 
 /* Custom exit status codes */
 static const unsigned short EXIT_LEXICAL_ERROR = 1;
 static const unsigned short EXIT_SYNTAX_ERROR = 2;
 static const unsigned short EXIT_SEMANTIC_ERROR = 3;
 static const unsigned short EXIT_UNSUPPORTED = 4;
-
 
 #endif /* _GLOBALS_HH_ */

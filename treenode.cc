@@ -28,6 +28,15 @@ bool has_symbol_table(struct TreeNode *t) {
 	return (t->s != NULL);
 }
 
+bool is_identifier(struct TreeNode *t) {
+	if(is_token(t)) {
+		if(t->t->get_category() == IDENTIFIER) {
+			return true;
+		}
+	}
+	return false;
+}
+
 /* 
  * Stolen and modified from Dr. J's CS-445 HW2 Notes:
  * 	http://www2.cs.uidaho.edu/~jeffery/courses/445/hw2.html
@@ -36,13 +45,6 @@ bool has_symbol_table(struct TreeNode *t) {
 void print_tree(struct TreeNode *t, int depth) {
 	std::stringstream s;
 	std::string spaces = std::string(depth*2, ' ');
-
-	/* Test code to make sure SymbolTables are being added to TreeNodes */
-	/*
-	if(has_symbol_table(t)) {
-		s << "<IN A SYMBOL TABLE> ";
-	}
-	*/
 
 	s << spaces;
 
@@ -71,6 +73,7 @@ void print_symbol(struct TreeNode *t) {
 		}
 	}
 }
+
 std::string single_node_string(TreeNode *t) {
 	std::stringstream ss;
 	if(is_token(t)) {

@@ -50,7 +50,7 @@ lex.yy.c: clex.l 120gram.tab.h
 	$(CPP) $(CPPFLAGS) 120gram.tab.c
 
 120gram.tab.c 120gram.tab.h: 120gram.y
-	$(YACC) -dt -Wall 120gram.y
+	$(YACC) -d -Wall 120gram.y
 
 # Semantic Testing
 semantic:

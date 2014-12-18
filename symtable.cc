@@ -125,6 +125,12 @@ FunctionSymbol::FunctionSymbol(std::string n, TypenameEntry t, bool p, bool d)
 	this->locals = new SymbolTable();
 	this->params = new SymbolTable(); 
 }
+FunctionSymbol::FunctionSymbol(std::string n, TypenameEntry t, SymbolTable *s, 
+				bool p, bool d)
+				: AbstractSymbol(n,t), pointer(p), defined(d) {
+	this->locals = new SymbolTable(s);
+	this->params = new SymbolTable(s);
+}
 ArraySymbol::ArraySymbol(std::string n, TypenameEntry t, bool p, std::size_t e) 
 				: AbstractSymbol(n,t),
 				pointer(p), max_elements(e) { }

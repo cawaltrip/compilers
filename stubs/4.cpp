@@ -1,10 +1,18 @@
+#include <iostream>
+#include <string>
+
+using namespace std;
+
 int times_two(int x);
 
 int main(int argc, char argv) {
   char *my_string = "Hello world!";
   long long_var;
   short short_var = 2;
-  cout << my_string << endl;
+  //cout << my_string << endl;
+
+  float f = pi();
+  short_var = 2 + times_two(short_var);
 
   return 0;
 }

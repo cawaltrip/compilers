@@ -26,7 +26,7 @@ void SemanticAnalyzer::add_tree(TreeNode *r, TypenameTable e) {
  * Generate all of the symbols tables by iterating through each
  * parse tree and creating a symbol table from it.
  */
-void SemanticAnalyzer::generate_all_tables() {
+void SemanticAnalyzer::check_semantics() {
 	std::deque< 
 		boost::tuple<TreeNode*,SymbolTable*,TypenameTable> 
 		>::iterator it;
@@ -40,6 +40,19 @@ void SemanticAnalyzer::generate_all_tables() {
 		SymbolTable *s(this->tuples[i].get<1>());
 		TypenameTable &e(this->tuples[i].get<2>());
 		this->generate_table(t,s,e);
+
+		std::clog << std::endl;
+		std::clog << "Printing symbol table #" << i << std::endl;
+		std::clog << "===================================" << std::endl;
+
+		s->print_table();
+
+		std::clog << std::endl;
+		std::clog << "Type checking tree #" << i << std::endl;
+		std::clog << "===================================" << std::endl;
+
+		this->type_check_tree(t);
+		std::clog << std::endl;
 	}
 }
 
@@ -79,12 +92,33 @@ void SemanticAnalyzer::print_all_trees() {
 	}
 }
 
+void SemanticAnalyzer::type_check() {
+	std::deque< 
+		boost::tuple<TreeNode*,SymbolTable*,TypenameTable> 
+		>::iterator it;
+	for(it = this->tuples.begin(); it != this->tuples.end(); ++it) {
+		std::size_t i = it - this->tuples.begin();
+
+		std::clog << "Type checking tree #" << i << std::endl;
+		std::clog << "===================================" << std::endl;
+
+		this->type_check_tree(this->tuples[i].get<0>());
+		std::clog << std::endl;
+	}
+}
+
 /*
  * Parse the parse tree in a pre-order traversal, identifying and creating
- * all symbols along the way and populating the proper symbol table.
+ * all symbols along the way and populating the proper symbol table.  If an
+ * identifier is found during parsing, add the current symbol table to the
+ * node it belongs to.
  */
 void SemanticAnalyzer::generate_table(TreeNode *t, SymbolTable *s, 
 							TypenameTable &e) {
+	if(is_identifier(t)) {
+		t->s = s;
+	}
+
 	try {
 		switch(t->prod_num) {
 			case SIMPLE_DECL_1:
@@ -99,7 +133,7 @@ void SemanticAnalyzer::generate_table(TreeNode *t, SymbolTable *s,
 			 */
 			default:
 				//if(t->num_kids > 0) { /* Not sure I need this */
-				for(int i = 0; i < t->num_kids; ++i) {
+				for(int i = 0; i < t->MAX_KIDS; ++i) {
 					if(node_exists(t->kids[i])) { 
 						this->generate_table(
 							t->kids[i], s, e);
@@ -156,7 +190,7 @@ AbstractSymbol* SemanticAnalyzer::get_symbol(std::string name,
 		symb = s->get_symbol(name);
 		e.get_entry(symb->type);
 	} catch (ENoSymbolEntry ex) {
-		throw ENoSymbolEntry();
+		throw ENoSymbolEntry(); 
 	} catch (ENoTypenameEntry ex) {
 		std::stringstream ss;
 		ss << ex.what();
@@ -225,7 +259,6 @@ void SemanticAnalyzer::symbolize_init_decl(TreeNode *t, SymbolTable *s,
 					bool ptr) {
 
 	std::size_t i = 0;
-	//bool ptr = false;
 	
 	/* Make sure parse tree isn't destroyed */
 	TreeNode *x = t;
@@ -256,7 +289,7 @@ void SemanticAnalyzer::symbolize_init_decl(TreeNode *t, SymbolTable *s,
 	 *
 	 * Also check for arrays
 	 */
-	if(x->kids[i]->prod_num == DIRECT_DECL_5) {
+	if(x->kids[i]->prod_num == DIRECT_DECL_2) {
 		this->symbolize_function_prototype(x->kids[i], s, e, type, ptr);
 		return;
 	} else if(x->kids[i]->prod_num == DIRECT_DECL_6) {
@@ -280,7 +313,7 @@ void SemanticAnalyzer::symbolize_init_decl(TreeNode *t, SymbolTable *s,
 void SemanticAnalyzer::symbolize_init_decl_list(TreeNode *t, SymbolTable *s,
 							TypenameTable e,
 							TypenameEntry type) {
-	for(std::size_t i = 0; i < t->num_kids; ++i) {
+	for(std::size_t i = 0; i < t->MAX_KIDS; ++i) {
 		if(node_exists(t->kids[i])) {
 			switch(t->kids[i]->prod_num) {
 				case INIT_DECL_LIST_2:
@@ -313,7 +346,7 @@ void SemanticAnalyzer::symbolize_param_decl(TreeNode *t, SymbolTable *s,
 void SemanticAnalyzer::symbolize_param_decl_list(TreeNode *t,
 							SymbolTable *s,
 							TypenameTable e) {
-	for(std::size_t i = 0; i < t->num_kids; ++i) {
+	for(std::size_t i = 0; i < t->MAX_KIDS; ++i) {
 		if(node_exists(t->kids[i])) {
 			switch(t->kids[i]->prod_num) {
 				case PARAM_DECL_LIST_2:
@@ -330,7 +363,7 @@ void SemanticAnalyzer::symbolize_param_decl_list(TreeNode *t,
 }
 
 /*
- * Function prototypes are defined in DIRECT_DECL_5.  This also adds a function
+ * Function prototypes are defined in DIRECT_DECL_2.  This also adds a function
  * symbol to the symbol table.
  *
  * kids[0] <-- function name
@@ -400,8 +433,7 @@ void SemanticAnalyzer::symbolize_function_def(TreeNode *t, SymbolTable *s,
 		std::cerr << "symbol declared as non-function" << std::endl;
 		return;
 	}
-	
-	/* Fake the TypenameTable for now because I'm not using it */
+	f->locals = new SymbolTable(s);
 	this->generate_table(t->kids[3], f->locals, e);
 }
 
@@ -422,3 +454,47 @@ void SemanticAnalyzer::symbolize_array(TreeNode *t, SymbolTable *s,
 	t->kids[0]->s = s;
 	return;
 }
+
+
+/* Type Checking */
+void SemanticAnalyzer::type_check_tree(TreeNode *t) {
+	if(!is_leaf(t)) {
+		for(std::size_t i = 0; i < 10; ++i) {
+			if(node_exists(t->kids[i])) {
+				this->type_check_tree(t->kids[i]);
+			}
+		}
+	}
+
+	/* 
+	 * First, make sure if an identifier, that it can find its information
+	 * in the symbol table.
+	 */
+	if(is_identifier(t) && has_symbol_table(t)) {
+		try {
+			AbstractSymbol *symb = t->s->get_scoped_symbol(
+							t->t->get_text());
+			std::clog << "Symbol found: " << symb->name;
+			std::clog << ", type: " << symb->type << std::endl;	
+		} catch (ENoSymbolEntry ex) {
+			std::stringstream ss;
+			ss << ex.what();
+			ss << " (" << t->t->get_text() << " not found!)";
+			std::clog << ss.str() << std::endl;
+		}
+		
+	}
+
+	/*
+	 * Now look for nodes that need to pass type information to their
+	 * parents.
+	 */
+	/*
+	switch(t->prod_num) {
+		case :
+	}
+	*/
+}
+
+
+

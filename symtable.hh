@@ -112,6 +112,8 @@ public:
 	FunctionSymbol(std::string n, TypenameEntry t,
 				SymbolTable par, SymbolTable loc,
 				bool ptr = false, bool defined = false);
+	FunctionSymbol(std::string n, TypenameEntry t, SymbolTable *s, 
+				bool ptr = false, bool defined = false);
 	std::string to_string(std::size_t depth = 0);
 };
 

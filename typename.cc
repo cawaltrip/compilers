@@ -71,13 +71,16 @@ int TypenameTable::lookup(std::string name) {
  * the standard namespace.
  */
 std::pair<int,std::string> TypenameTable::lookup_namespace(std::string name) {
+	//std::clog << "Searching for: " << name << std::endl;
 	std::pair<int, std::string> pair;
 	try {
 		TypenameEntry te = this->get_entry(name);
 		pair = std::make_pair(te.category, te.nspace);
+		//std::clog << "Found entry in TypenameTable, making pair" << std::endl;
 
 	} catch(ENoTypenameEntry e) {
 		pair = std::make_pair(0,"");
+		//std::clog << "ENoTypenameEntry caught, making default pair" << std::endl;
 	}
 	return pair;
 }
