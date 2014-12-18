@@ -1,9 +1,24 @@
-/* symtable.cc
- * Hash table representing the symbol table.
- * the symbol table.
- * UIdaho CS445 120++ Compiler
- * author: Chris Waltrip <walt2178@vandals.uidaho.edu>
+/*
+ * symtable.cc
+ * UIdaho CS-445 120++ Compiler
+ * Symbol Table class for storing of symbols for back-end compilation stages
+ * 
+ * Copyright (C) 2014 Chris Waltrip <walt2178@vandals.uidaho.edu>
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 #include <iostream>
 #include <sstream>
 #include <string>

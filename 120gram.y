@@ -1,16 +1,8 @@
 /*
- * Grammar for 120++, a subset of C++ used in CS 120 at University of Idaho
- *
- * Adaptation by Clinton Jeffery, with help from Matthew Brown, Ranger
- * Adams, and Shea Newton.
- *
- * Based on Sandro Sigala's transcription of the ISO C++ 1996 draft standard.
+ * 120gram.y
+ * UIdaho CS-445 120++ Compiler
+ * Bison-style grammar for 120++ language
  * 
- */
-
-/*	$Id: parser.y,v 1.3 1997/11/19 15:13:16 sandro Exp $	*/
-
-/*
  * Copyright (c) 1997 Sandro Sigala <ssigala@globalnet.it>.
  * All rights reserved.
  *
@@ -33,6 +25,16 @@
  * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
+/*
+ * Grammar for 120++, a subset of C++ used in CS 120 at University of Idaho
+ *
+ * Adaptation by Clinton Jeffery, with help from Matthew Brown, Ranger
+ * Adams, and Shea Newton.
+ *
+ * Based on Sandro Sigala's transcription of the ISO C++ 1996 draft standard.
+ * 
  */
 
 /*

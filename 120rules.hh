@@ -1,9 +1,22 @@
-/* 120rules.hh
- * Defines all of the production rules that can be used as well as a method
- * for looking up what the human-readable text of a production rule is.
+/*
+ * 120rules.hh
+ * UIdaho CS-445 120++ Compiler
+ * Production rule enumeration for use during syntax and semantic analysis.
  * 
- * UIdaho CS445 120++ Compiler
- * author: Chris Waltrip <walt2178@vandals.uidaho.edu>
+ * Copyright (C) 2014 Chris Waltrip <walt2178@vandals.uidaho.edu>
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #ifndef _120_RULES_HH_
@@ -13,6 +26,9 @@
 #include <sstream>
 
 /*
+ * Defines all of the production rules that can be used as well as a method
+ * for looking up what the human-readable text of a production rule is.
+ * 
  * Any enumeration that isn't specifically numbered is auto-incremented,
  * so instead of specifying each of the rules, only the first rule of a
  * production rule set is given.  Each rule set is incremented by 1000 
