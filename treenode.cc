@@ -49,6 +49,10 @@ bool has_symbol_table(struct TreeNode *t) {
 	return (t->s != NULL);
 }
 
+bool has_symbol(struct TreeNode *t) {
+	return (t->a != NULL);
+}
+
 bool is_identifier(struct TreeNode *t) {
 	if(is_token(t)) {
 		if(t->t->get_category() == IDENTIFIER) {

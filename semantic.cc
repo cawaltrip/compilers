@@ -144,14 +144,12 @@ void SemanticAnalyzer::generate_table(TreeNode *t, SymbolTable *s,
 			 * that exist.
 			 */
 			default:
-				//if(t->num_kids > 0) { /* Not sure I need this */
 				for(int i = 0; i < t->MAX_KIDS; ++i) {
 					if(node_exists(t->kids[i])) { 
 						this->generate_table(
 							t->kids[i], s, e);
 					}
 				}
-				//}
 				break;
 		}	
 	} catch (ESymbolTableNestedTooDeep e) { /* Won't ever be thrown */
@@ -230,6 +228,7 @@ void SemanticAnalyzer::add_basic_symbol(TreeNode *t, SymbolTable *s,
 		 * during type checking.
 		 */
 		t->s = s;
+		t->a = basic;
 	} else {
 		throw ENullTokenAccess();
 	}
@@ -406,6 +405,7 @@ FunctionSymbol* SemanticAnalyzer::symbolize_function_prototype(TreeNode *t,
 				break;
 		}
 		func->params = p;
+		t->kids[0]->a = func;
 	}
 	return func;
 }
@@ -464,6 +464,7 @@ void SemanticAnalyzer::symbolize_array(TreeNode *t, SymbolTable *s,
 	ArraySymbol *a = new ArraySymbol(name, e, ptr, elems);
 	this->add_symbol(a,s);
 	t->kids[0]->s = s;
+	t->kids[0]->a = a;
 	return;
 }
 
@@ -482,10 +483,11 @@ void SemanticAnalyzer::type_check_tree(TreeNode *t) {
 	 * First, make sure if an identifier, that it can find its information
 	 * in the symbol table.
 	 */
-	if(is_identifier(t) && has_symbol_table(t)) {
+	if(is_identifier(t) && has_symbol(t)) {
 		try {
-			AbstractSymbol *symb = t->s->get_scoped_symbol(
-							t->t->get_text());
+			//AbstractSymbol *symb = t->s->get_scoped_symbol(
+			//				t->t->get_text());
+			AbstractSymbol *symb = t->a;
 			std::clog << "Symbol found: " << symb->name;
 			std::clog << ", type: " << symb->type << std::endl;	
 		} catch (ENoSymbolEntry ex) {
