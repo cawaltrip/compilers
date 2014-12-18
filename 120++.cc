@@ -126,7 +126,7 @@ vector<string> parse_command_line(int argc, char *argv[]) {
 		/* Basic options don't execute compiler */
 		po::options_description basic_opts("Basic Options");
 		basic_opts.add_options()
-			("help,h", "              print this help and exit");
+			("help,h", "    print this help and exit");
 
 		/* Compiler options control how the compiler operates */
 		po::options_description compiler_opts(

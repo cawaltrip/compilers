@@ -45,10 +45,8 @@
 
 /* TODO: Improve output, especially for error reporting */
 
-%verbose
 %define parse.error verbose
 %define parse.trace
-
 
 %{
 
@@ -74,6 +72,7 @@ struct TreeNode *root;
 
 struct TreeNode* alloc_tree(yyrule y, int num_kids, ...);
 void add_typename(struct TreeNode *t, int cat);
+static void unsupported_warn(std::string str = "");
 static void unsupported_feature(std::string str = "");
 static void yyerror(std::string s);
 %}
@@ -128,6 +127,19 @@ literal:
 	| FALSE
 		{ $$ = $1; }
 	;
+/*----------------------------------------------------------------------
+ * Context-dependent identifiers.
+ *----------------------------------------------------------------------*/
+
+namespace_name:
+	original_namespace_name 
+		{ unsupported_feature(); }
+	;
+
+original_namespace_name:
+	NAMESPACE_NAME
+		{ unsupported_feature(); }
+	;
 
 /*----------------------------------------------------------------------
  * Expressions.
@@ -140,6 +152,8 @@ primary_expression:
 		{ $$ = $1; }
 	| id_expression
 		{ $$ = $1; }
+	| '(' expression ')'
+		{ unsupported_feature(); }
 	;
 
 id_expression:
@@ -152,18 +166,31 @@ id_expression:
 unqualified_id:
 	IDENTIFIER
 		{ $$ = $1; }
+	| operator_function_id
+		{ unsupported_feature(); }
+	| conversion_function_id
+		{ unsupported_feature(); }
+	| '~' CLASS_NAME
+		{ unsupported_feature(); }
 	;
 
 qualified_id:
 	nested_name_specifier unqualified_id
 		{ $$ = alloc_tree(QUALIFIED_ID_1, 2, $1, $2); }
+	| nested_name_specifier TEMPLATE unqualified_id
+		{ unsupported_feature(); }
 	;
 
 nested_name_specifier:
 	CLASS_NAME COLONCOLON nested_name_specifier
 		{ $$ = alloc_tree(NESTED_NAME_1, 3, $1, $2, $3); }
 	| CLASS_NAME COLONCOLON
-		{ $$ = alloc_tree(NESTED_NAME_3, 2, $1, $2); }
+		{ $$ = alloc_tree(NESTED_NAME_2, 2, $1, $2); }
+	| namespace_name COLONCOLON nested_name_specifier
+		{ unsupported_feature(); }
+	| namespace_name COLONCOLON
+		{ unsupported_feature(); }
+
 	;
 
 postfix_expression:
@@ -181,6 +208,30 @@ postfix_expression:
 		{ $$ = alloc_tree(POSTFIX_EXPR_12, 2, $1, $2); }
 	| postfix_expression MINUSMINUS
 		{ $$ = alloc_tree(POSTFIX_EXPR_13, 2, $1, $2); }
+	| postfix_expression '.' TEMPLATE COLONCOLON id_expression
+		{ unsupported_feature(); }
+	| postfix_expression '.' TEMPLATE id_expression
+		{ unsupported_feature(); }
+	| postfix_expression '.' COLONCOLON id_expression
+		{ unsupported_feature(); }
+	| postfix_expression ARROW TEMPLATE COLONCOLON id_expression
+		{ unsupported_feature(); }
+	| postfix_expression ARROW TEMPLATE id_expression
+		{ unsupported_feature(); }
+	| postfix_expression ARROW COLONCOLON id_expression
+		{ unsupported_feature(); }
+	| DYNAMIC_CAST '<' type_id '>' '(' expression ')'
+		{ unsupported_feature(); }
+	| STATIC_CAST '<' type_id '>' '(' expression ')'
+		{ unsupported_feature(); }
+	| REINTERPRET_CAST '<' type_id '>' '(' expression ')'
+		{ unsupported_feature(); }
+	| CONST_CAST '<' type_id '>' '(' expression ')'
+		{ unsupported_feature(); }
+	| TYPEID '(' expression ')'
+		{ unsupported_feature(); }
+	| TYPEID '(' type_id ')'
+		{ unsupported_feature(); }
 	;
 
 expression_list:
@@ -762,9 +813,11 @@ class_key:
 
 member_specification:
 	member_declaration member_specification_opt
-		{ $$ = alloc_tree(MEMBER_SPEC_1, 2, $1, $2); }
+		{ $$ = alloc_tree(MEMBER_SPEC_1, 2, $1, $2); 
+			unsupported_warn(); }
 	| access_specifier ':' member_specification_opt
-		{ $$ = alloc_tree(MEMBER_SPEC_2, 3, $1, $2, $3); }
+		{ $$ = alloc_tree(MEMBER_SPEC_2, 3, $1, $2, $3);
+			unsupported_warn(); }
 	;
 
 member_declaration:
@@ -805,16 +858,31 @@ constant_initializer:
 
 access_specifier:
 	PRIVATE
-		{ $$ = $1; }
+		{ $$ = $1; unsupported_warn(); }
 	| PROTECTED
-		{ $$ = $1; }
+		{ $$ = $1; unsupported_warn(); }
 	| PUBLIC
-		{ $$ = $1; }
+		{ $$ = $1; unsupported_warn(); }
 	;
 
 /*----------------------------------------------------------------------
  * Special member functions.
  *----------------------------------------------------------------------*/
+
+conversion_function_id:
+	OPERATOR conversion_type_id
+		{ unsupported_feature(); }
+	;
+
+conversion_type_id:
+	type_specifier_seq conversion_declarator_opt
+		{ unsupported_feature(); }
+	;
+
+conversion_declarator:
+	ptr_operator conversion_declarator_opt
+		{ unsupported_feature(); }
+	;
 
 ctor_initializer:
 	':' mem_initializer_list
@@ -844,6 +912,15 @@ mem_initializer_id:
 		{ $$ = $1; }
 	| IDENTIFIER
 		{ $$ = $1; }
+	;
+
+/*----------------------------------------------------------------------
+ * Overloading.
+ *----------------------------------------------------------------------*/
+
+operator_function_id:
+	OPERATOR operator_function_id_opt
+		{ unsupported_feature(); }
 	;
 
 /*----------------------------------------------------------------------
@@ -962,10 +1039,28 @@ SEMICOLON_opt:
 		{ $$ = $1; }
 	;
 
+conversion_declarator_opt:
+	%empty
+		{ unsupported_feature(); } /* epsilon */
+	| conversion_declarator
+		{ unsupported_feature(); }
+	;
+
+operator_function_id_opt:
+	%empty
+		{ unsupported_feature(); } /* epsilon */
+	| operator_function_id
+		{ unsupported_feature(); }
+	;
+
 %%
 
 void add_typename(struct TreeNode *t, int cat) {
-	std::clog << "Adding " << t->t->get_text() << " as a (" << cat << ") to lookup table..." << std::endl;
+	std::stringstream ss;
+	ss << "Adding " << t->t->get_text();
+	ss << " as a (" << cat << ") to lookup table...";
+	std::clog << ss.str() << std::endl;
+
 	if(!ident_table.insert(t->t->get_text(), cat)) {
 		yyerror("token already in identifier lookup table");
 	}
@@ -973,10 +1068,7 @@ void add_typename(struct TreeNode *t, int cat) {
 
 struct TreeNode* alloc_tree(yyrule y, int num_kids, ...) {
 	va_list vakid;
-	/* 
-	 * TODO: Need to alloc size of kids seperately (causes a segfault
-	 * when printing if not handled there).
-	 */
+
 	struct TreeNode *t = new struct TreeNode();
 	if(!t) {
 		std::cerr << "TreeNode: Cannot allocate memory." << std::endl;
@@ -996,16 +1088,24 @@ struct TreeNode* alloc_tree(yyrule y, int num_kids, ...) {
 	va_end(vakid);
 	return t;
 }
-
+static void unsupported_warn(std::string str) {
+	if(str.empty()) {
+		str = "120++ operation not implemented yet";
+	}
+	std::stringstream ss;
+	ss << "120++ Warning: Semantic: ";
+	ss << yyfilename << ":" << yylineno << ": ";
+	ss << str << " before '" << yylval->t->get_text() << "' token";
+	std::cerr << ss.str() << std::endl;
+}
 static void unsupported_feature(std::string str) {
 	if(str.empty())
 		str = "C++ operation not supported in 120++";
 	std::stringstream s;
 	s << yyfilename << ":" << yylineno << ": ";
 	s << str << " before '" << yylval->t->get_text() << "' token";
-	s << std::endl;
 
-	std::cerr << s.str();
+	std::cerr << s.str() << std::endl;
 	
 	exit(EXIT_UNSUPPORTED);
 }

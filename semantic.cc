@@ -177,8 +177,7 @@ void SemanticAnalyzer::add_symbol(AbstractSymbol *a, SymbolTable *s) {
 		std::stringstream ss;
 		ss << ex.what() << ": " << a->name;
 		std::cerr << ss.str() << std::endl;
-		exit(EXIT_SEMANTIC_ERROR);
-		//throw EDuplicateSymbol(); /* Never reached, maybe future use */
+		exit(EXIT_SEMANTIC_ERROR); /* Could throw EDuplicateSymbol */
 	}
 	std::clog << "'" << a->name << "' (" << a->type << ") added to table!";
 	std::clog << std::endl;
@@ -224,8 +223,8 @@ void SemanticAnalyzer::add_basic_symbol(TreeNode *t, SymbolTable *s,
 		
 		/*
 		 * If no exception was thrown then set SymbolTable* in TreeNode
-		 * to be the current symbol table so that we can access it
-		 * during type checking.
+		 * to be the current symbol table and Symbol to be the newly
+		 * created symbol so that we can access it during type checking.
 		 */
 		t->s = s;
 		t->a = basic;
@@ -249,11 +248,13 @@ void SemanticAnalyzer::symbolize_simple_decl(TreeNode *t, SymbolTable *s,
 			switch(t->kids[1]->prod_num) {
 				case INIT_DECL_1:
 					this->symbolize_init_decl(
-						t->kids[1], s, e, e.get_entry(t->kids[0]->t->get_text()));
+						t->kids[1], s, e, e.get_entry(
+						t->kids[0]->t->get_text()));
 					break;
 				case INIT_DECL_LIST_2:
 					this->symbolize_init_decl_list(
-						t->kids[1], s, e, e.get_entry(t->kids[0]->t->get_text()));
+						t->kids[1], s, e, e.get_entry(
+						t->kids[0]->t->get_text()));
 					break;
 			}
 		default:
@@ -298,7 +299,7 @@ void SemanticAnalyzer::symbolize_init_decl(TreeNode *t, SymbolTable *s,
 	 * definitions are handled in different parent node.  No need to handle
 	 * here.
 	 *
-	 * Also check for arrays
+	 * Also check for arrays.
 	 */
 	if(x->kids[i]->prod_num == DIRECT_DECL_2) {
 		this->symbolize_function_prototype(x->kids[i], s, e, type, ptr);
@@ -483,20 +484,35 @@ void SemanticAnalyzer::type_check_tree(TreeNode *t) {
 	 * First, make sure if an identifier, that it can find its information
 	 * in the symbol table.
 	 */
-	if(is_identifier(t) && has_symbol(t)) {
-		try {
-			//AbstractSymbol *symb = t->s->get_scoped_symbol(
-			//				t->t->get_text());
-			AbstractSymbol *symb = t->a;
-			std::clog << "Symbol found: " << symb->name;
-			std::clog << ", type: " << symb->type << std::endl;	
-		} catch (ENoSymbolEntry ex) {
-			std::stringstream ss;
-			ss << ex.what();
-			ss << " (" << t->t->get_text() << " not found!)";
-			std::clog << ss.str() << std::endl;
+	if(is_identifier(t)) {
+		AbstractSymbol *symb;
+		if(has_symbol(t)) {
+			symb = t->a;
+		} else {
+			try {
+				if(t->s == NULL) {
+					throw ENullSymbolTableAccess();
+				}
+				symb = t->s->get_scoped_symbol(
+					t->t->get_text());
+			} catch (ENoSymbolEntry ex) {
+				std::stringstream ss;
+				ss << ex.what();
+				ss << " (" << t->t->get_text();
+				ss << " not found!)";
+				std::clog << ss.str() << std::endl;
+				return;
+			} catch (ENullSymbolTableAccess ex) {
+				std::stringstream ss;
+				ss << ex.what();
+				ss << " (" << t->t->get_text();
+				ss << " not found!)";
+				std::clog << ss.str() << std::endl;
+			}
 		}
-		
+		std::clog << "Symbol found: " << symb->name;
+		std::clog << ", type: ";
+		std::clog << symb->type << std::endl;
 	}
 
 	/*

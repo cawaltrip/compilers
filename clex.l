@@ -494,7 +494,10 @@ void create_token(int cat, int line, std::string file,
 	treeptr->prod_text.clear(); /* or `text`? */
 	yylval = treeptr;
 
-	std::clog << "Creating token: " << text << " (" << cat << ")" << std::endl;
+	/*
+	std::clog << "Creating token: " << text;
+	std::clog << " (" << cat << ")" << std::endl;
+	*/
 }
 
 void create_token(int category) {
