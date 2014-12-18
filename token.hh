@@ -1,5 +1,5 @@
 /*
- * symtable.cc
+ * token.hh
  * UIdaho CS-445 120++ Compiler
  * Token class for 120++ compiler
  * 
