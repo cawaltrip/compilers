@@ -51,6 +51,7 @@ LIT      \"(\\.|[^\\"])*\"
 #include <sstream>
 #include <list>
 #include <libgen.h> /* dirname and basename */
+#include <unistd.h>
 #include "120gram.tab.h"
 #include "globals.hh"
 #include "token.hh"
@@ -68,7 +69,11 @@ void add_to_lookup(std::deque<std::string> filelist, int category);
 std::deque<std::string> get_sysinclude_fstream();
 std::deque<std::string> get_sysinclude_iostream();
 std::deque<std::string> get_sysinclude_string();
+void handle_fake_fstream();
+void handle_fake_iostream();
+void handle_fake_string();
 
+void handle_user_include_file(std::string filename);
 void handle_user_include_file();
 int check_identifier(std::string str);
 
@@ -209,16 +214,13 @@ std::list<std::string> include_stack;
 	"<cstring>"	{ sysinclude_cstring		= 1; BEGIN(INITIAL); }
 	"<ctime>"	{ sysinclude_ctime		= 1; BEGIN(INITIAL); }
 	"<fstream>"	{ sysinclude_fstream		= 1;
-			  add_to_lookup(get_sysinclude_fstream(), CLASS_NAME);
-			  BEGIN(INITIAL); }
+			  	handle_fake_fstream();	BEGIN(INITIAL); }
 	"<iomanip>"	{ sysinclude_iomanip		= 1; BEGIN(INITIAL); }
 	"<iostream>"	{ sysinclude_iostream		= 1; 
-			  add_to_lookup(get_sysinclude_iostream(), IDENTIFIER);
-			  BEGIN(INITIAL); }
+				handle_fake_iostream(); BEGIN(INITIAL); }
 	"<string>"	{ sysinclude_string		= 1; 
-			  add_to_lookup(get_sysinclude_string(), CLASS_NAME);
-			  BEGIN(INITIAL); }
-	\"[^\\"]+\"	{ handle_user_include_file(); BEGIN(INITIAL); }
+				handle_fake_string(); 	BEGIN(INITIAL); }
+	\"[^\\"]+\"	{ handle_user_include_file(); 	BEGIN(INITIAL); }
 	"<"[^<>]*">"	{ lexerr("Unknown system include file"); }
 	<<EOF>>		{ lexerr("EOF reached unexpectedly from include"); }
 }
@@ -378,6 +380,7 @@ void lexerr(std::string str) {
 	std::cerr << ss.str() << std::endl;
 	exit(EXIT_LEXICAL_ERROR);
 }
+
 void add_to_lookup(std::deque<std::string> filelist, int category) {
 	for(int i = 0; i < filelist.size(); ++i)
 		ident_table.insert(filelist[i], category, "std");
@@ -391,11 +394,9 @@ std::deque<std::string> get_sysinclude_fstream() {
 }
 std::deque<std::string> get_sysinclude_iostream() {
 	std::deque<std::string> s;
-	s.push_back("cin");
-	s.push_back("cout");
-	s.push_back("cerr");
-	s.push_back("clog");
-	return s;
+	s.push_back("istream");
+	s.push_back("ostream");
+	return s;	
 }
 std::deque<std::string> get_sysinclude_string() {
 	std::deque<std::string> s;
@@ -403,15 +404,52 @@ std::deque<std::string> get_sysinclude_string() {
 	return s;
 }
 
+void handle_fake_fstream() {
+	add_to_lookup(get_sysinclude_fstream(),CLASS_NAME);
+}
+void handle_fake_iostream() {
+	add_to_lookup(get_sysinclude_iostream(), CLASS_NAME);
+
+	std::stringstream ss;
+	ss << "using namespace std;" << std::endl;
+	ss << "istream cin;" << std::endl;
+	ss << "ostream cout;" << std::endl;
+	ss << "ostream cerr;" << std::endl;
+	ss << "ostream clog;" << std::endl;
+	ss << "ostream endl;" << std::endl;
+
+	/* Create a fake file containing the declarations of stream objects */
+	char *tmp1 = strdup("iostream-XXXXXX");
+
+	std::string filename;
+	filename.assign(tmpnam_r(tmp1));
+	free(tmp1);
+
+	FILE *ff = fopen(filename.c_str(), "w");
+	if(!ff) {
+		lexerr("Cannot include <iostream>!");
+		exit(EXIT_FAILURE);
+	} else {
+		fprintf(ff,"%s",ss.str().c_str());
+		handle_user_include_file(filename);
+		unlink(filename.c_str());
+		fclose(ff);
+	}
+	
+}
+void handle_fake_string() {
+	add_to_lookup(get_sysinclude_string(), CLASS_NAME);
+}
+
 /* 
  * Create a new string that contains only the file name to be 
  * included and push it to include_stack so that errors can 
  * eventually report the calling file if include_stack isn't empty.
  */
-void handle_user_include_file() {
+void handle_user_include_file(std::string filename) {
 
-	std::string include = yytext;
-	std::string filename = include.substr(1, (strlen(yytext)-2));
+	//std::string include = yytext;
+	//std::string filename = include.substr(1, (strlen(yytext)-2));
 
 	yyin = fopen(filename.c_str(),"r");
 	if (!yyin) {
@@ -422,6 +460,11 @@ void handle_user_include_file() {
 		push_include_file(filename);
 		yypush_buffer_state(yy_new_buffer(yyin, YY_BUF_SIZE));
 	}
+}
+void handle_user_include_file() {
+	std::string include = yytext;
+	std::string filename = include.substr(1, (strlen(yytext)-2));
+	handle_user_include_file(filename);
 }
 
 int check_identifier(std::string str) {
